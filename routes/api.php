@@ -1,0 +1,42 @@
+<?php
+
+use App\Http\Controllers\AddressController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ImageController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\UserController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
+|
+*/
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+Route::middleware('auth:api')->group(function () {
+    Route::apiResource('users', UserController::class);
+    Route::apiResource('products', ProductController::class);
+    Route::apiResource('categories', CategoryController::class);
+    Route::apiResource('images', ImageController::class);
+    Route::apiResource('message', MessageController::class);
+    Route::apiResource('report', ReportController::class);
+    Route::apiResource('review', ReviewController::class);
+    Route::apiResource('address', AddressController::class);
+});
+Route::get('/users', [UserController::class, 'index']);
+Route::get('/products', [ProductController::class, 'index']);
+Route::post('/users', [UserController::class, 'store']);
+
+
