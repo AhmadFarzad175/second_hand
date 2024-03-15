@@ -27,6 +27,7 @@ class ReportRequest extends FormRequest
             'user_id' => ['required', 'exists:users,id'],
             'product_id' => ['required', 'exists:products,id'],
             'reason' => ['required', 'string', 'max:255'],
+            'date'=> ['nullable', 'string','max:255'],
         ];
         $this->isMethod('PUT') && $this->validate($rules);
         return $rules;

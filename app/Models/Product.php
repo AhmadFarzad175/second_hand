@@ -9,11 +9,14 @@ class Product extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'name',
-        'description',
-        'price',
         'user_id',
         'category_id',
+        'name',
+        'title',
+        'description',
+        'price',
+        'condation',
+        'date',
     ];
     public function user()
     {
@@ -21,8 +24,16 @@ class Product extends Model
         return $this->belongsTo(User::class); // Define a belongsTo relationship
     }
     public function category()
+    {
+        return $this->belongsTo(Category::class); // Define a belongsTo relationship
+    }
+    public function products()
+    {
+        return $this->belongsTo(Address::class); // Define a belongsTo relationship
+    }
+    public function product()
 {
-    return $this->belongsTo(Category::class); // Define a belongsTo relationship
+    return $this->hasMany(Image::class);
 }
 
 }

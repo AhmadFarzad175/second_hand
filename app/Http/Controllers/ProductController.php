@@ -27,11 +27,26 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
-        Product::create($request->validated());
+        // Product::create($request->validated());
+        //
 
-        // Optionally, you can return a response
-        return response()->json(['message' => 'Product created successfully'], 201);
+    $product = Product::create($request->validated());
+
+    // Handle product images
+    if ($request->hasFile('images')) {
+        foreach ($request->file('images') as $image) {
+            $path = $image->store('product_images');
+            $product->images()->create(['image_path' => $path]);
+        }
     }
+
+    // Optionally, you can return a response
+    return response()->json(['message' => 'Product created successfully'], 201);
+}
+
+
+// Optionally, you can return a response
+
 
     /**
      * Display the specified resource.
@@ -45,19 +60,19 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(ProductRequest $request, Product $product)
     {
         $product->update($request->validated());
-        return response()->json('success', 'Product updated successfully');
+        return response()->json(['success'=> 'Product updated successfully']);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy(ProductRequest $product)
     {
         $product->delete();
-        return response()->json('success','Product deleted successfully');
+        return response()->json(['success'=>'Product deleted successfully']);
 
     }
 }

@@ -14,4 +14,8 @@ class Address extends Model
         'state',
         'country',
     ];
+    public function address()
+    {
+        return $this->belongsTo(Product::class); // Define a hasMany relationship
+    }
 }

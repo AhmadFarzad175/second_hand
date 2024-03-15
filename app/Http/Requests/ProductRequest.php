@@ -27,10 +27,11 @@ class ProductRequest extends FormRequest
             'user_id' => 'required|exists:users,id',
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
-            'title' => 'required|string|max:255',
+            'title' => 'nullable|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
             'condation' => 'nullable|string|max:255',
+            'date' => 'nullable|string|max:255',
         ];
 
         $this->isMethod('PUT') && $this->validate($rules);

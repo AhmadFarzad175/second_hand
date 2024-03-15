@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class,'receiver_id');
             $table->foreignIdFor(Product::class,);
             $table->string('reason');
+            $table->date('date');
             $table->timestamps();
         });
     }

@@ -17,13 +17,16 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class);
-            $table->foreignIdFor(Category::class);
+            $table->foreignIdFor(User::class)->constrained();
+            $table->foreignIdFor(Category::class)->constrained();
             $table->string('name');
             $table->string('title');
             $table->text('description');
             $table->decimal('price', 10, 2);
             $table->string('condation')->nullable();
+            // $table->date('date')->nullable();
+            $table->date('date')->default(now());
+
             $table->timestamps();
         });
     }
