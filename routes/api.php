@@ -25,8 +25,6 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-// Route::middleware('auth:api')->group(function () {
-    // });
 Route::apiResource('users', UserController::class);
 Route::apiResource('products', ProductController::class);
 Route::apiResource('categories', CategoryController::class);
@@ -34,4 +32,5 @@ Route::apiResource('messages', MessageController::class);
 Route::apiResource('reports', ReportController::class);
 Route::apiResource('reviews', ReviewController::class);
 Route::apiResource('address', AddressController::class);
+Route::apiResource('images' ,ImageController::class);
 

@@ -9,7 +9,8 @@ class Address extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'Street_address',
+        'user_id',
+        'street_address',
         'city',
         'state',
         'country',
