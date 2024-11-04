@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Favorite>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ProductAttribute>
  */
-class FavoriteFactory extends Factory
+class ProductAttributeFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,9 +17,7 @@ class FavoriteFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' =>rand(1,10),
-            'product_id'=>rand(1,10),
-
+            'name' => $this->faker->word,
         ];
     }
 }

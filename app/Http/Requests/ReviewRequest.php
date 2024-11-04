@@ -23,13 +23,12 @@ class ReviewRequest extends FormRequest
      */
     public function rules(): array
     {
-        $rules = [
-            'user_id' => ['required', 'exists:users,id'],
-            'product_id' => ['required', 'exists:products,id'],
-            'rating' => ['required', 'string', 'max:255'],
-            'comment' => ['required', 'string','max:255'],
-            'date'=> ['nullable', 'string','max:255'],
-
+        $rules =  [
+            'user_id' => 'required|exists:users,id',
+            'product_id' => 'required|exists:products,id',
+            'rating' => 'required|numeric|min:1|max:5', // Assuming a 1-5 rating scale
+            'comment' => 'nullable|string|max:255',
+            'date' => 'nullable|date',
         ];
         $this->isMethod('PUT') && $this->validate($rules);
         return $rules;

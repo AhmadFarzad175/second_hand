@@ -17,16 +17,17 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->constrained();
-            $table->foreignIdFor(Category::class)->constrained();
+            $table->foreignIdFor(User::class); ////////////////this column must delete in this migration
             $table->string('name');
-            $table->string('title');
+            $table->string('location')->nullable();
+            // $table->decimal('latitude', 10, 7)->nullable();
+            // $table->decimal('longitude', 10, 7)->nullable();
             $table->text('description');
+            $table->decimal('previous_price', 10, 2)->nullable();
             $table->decimal('price', 10, 2);
-            $table->string('condation')->nullable();
-            // $table->date('date')->nullable();
+            $table->boolean('condition')->default(false);
+            $table->foreignIdFor(Category::class);
             $table->date('date')->default(now());
-
             $table->timestamps();
         });
     }

@@ -5,66 +5,51 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ReportRequest;
 use App\Http\Resources\ReportResource;
 use App\Models\Report;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class ReportController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a paginated listing of reports.
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        $reports = Report::paginate(10);
-        return ReportResource::collection($reports);
+        $reports = Report::paginate(10); // Fetch and paginate reports
+        return response()->json(ReportResource::collection($reports), 200);
     }
 
-
-
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created report in storage.
      */
-    public function store(ReportRequest $request)
+    public function store(ReportRequest $request): JsonResponse
     {
         $report = Report::create($request->validated());
-        // return new ReportResource($report);
-        return response()->json(['success' => 'report insert successfully']);
+        return response()->json(['success' => 'Report created successfully', 'data' => new ReportResource($report)], 201);
     }
 
-
-
-
-
-
-
-
     /**
-     * Display the specified resource.
+     * Display the specified report.
      */
-    public function show(Report $report)
+    public function show(Report $report): JsonResponse
     {
-        return new ReportResource($report);
+        return response()->json(new ReportResource($report), 200);
     }
 
-
-
     /**
-     * Update the specified resource in storage.
+     * Update the specified report in storage.
      */
-    public function update(ReportRequest $request, Report $report)
+    public function update(ReportRequest $request, Report $report): JsonResponse
     {
         $report->update($request->validated());
-        // return new ReportResource($report);
-        // $report->fill($request->validated())->save();
-        // return new ReportResource($report);
-        return response()->json(['success'=> 'report updated successfully']);
+        return response()->json(['success' => 'Report updated successfully', 'data' => new ReportResource($report)], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified report from storage.
      */
-    public function destroy(Report $report)
+    public function destroy(Report $report): JsonResponse
     {
         $report->delete();
-        return response()->json(["message" => "Report deleted successfully"]);
+        return response()->json(['success' => 'Report deleted successfully'], 200);
     }
 }

@@ -17,7 +17,9 @@ class ImageResource extends JsonResource
         return [
             'id' => $this->id,
             'product_id' => $this->product_id,
-            'image_url' =>$this->image_url,
+            // 'image_url' =>$this->image_url,
+            'image_url' => asset('storage/' . $this->image_url),
+
 
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

@@ -21,6 +21,7 @@ class ReviewResource extends JsonResource
             'rating' => $this->rating,
             'comment' => $this->comment,
             'date' => $this->date,
+            // 'date' => $this->date ? $this->date->format('Y-m-d') : null,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

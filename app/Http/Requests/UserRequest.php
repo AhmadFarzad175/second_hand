@@ -23,7 +23,8 @@ class UserRequest extends FormRequest
             'password' => 'required|string',
             'location' => 'nullable|string',
             'phone' => 'nullable|string',
-            'address_id' => 'nullable|exists:addresses,id',
+            'description' => 'nullable|exists:description,id',
+            'rating' => 'nullable|',
         ];
         // if ($this->isMethod('PUT')) {
         //     foreach ($rules as $key => $rule) {

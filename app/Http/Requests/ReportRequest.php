@@ -24,10 +24,10 @@ class ReportRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'user_id' => ['required', 'exists:users,id'],
-            'product_id' => ['required', 'exists:products,id'],
-            'reason' => ['required', 'string', 'max:255'],
-            'date'=> ['nullable', 'string','max:255'],
+            'user_id' => 'required|exists:users,id',
+            'product_id' => 'required|exists:products,id',
+            'reason' => 'required|string|max:255',
+            'date' => 'nullable|date',
         ];
         $this->isMethod('PUT') && $this->validate($rules);
         return $rules;

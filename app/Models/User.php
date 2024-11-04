@@ -21,14 +21,28 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'address_id',
+        'location',
         'phone',
-        'location'
+        'description'
+        ,'rating'
     ];
     public function products()
     {
         return $this->hasMany(Product::class); // Define a hasMany relationship
     }
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+    public function reports()
+    {
+        return $this->hasMany(Report::class);
+    }
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -49,4 +63,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function scopeSearch($query, $search)
+    {
+        if (!$search) {
+            return $query;
+        }
+
+        return $query->where('name', 'like', '%'. $search. '%')
+            ->orWhere('email', 'like', '%'. $search. '%');
+    }
 }

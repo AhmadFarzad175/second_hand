@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Product;
-use App\Models\User;
+use App\Models\ProductAttribute;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('favorites', function (Blueprint $table) {
+        Schema::create('product_attribute_values', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->constrained();
-            $table->foreignIdFor(Product::class)->constrained();
-            // $table->date('date')->nullable();
+            $table->foreignIdFor(Product::class, 'product_id');
+            $table->foreignIdFor(ProductAttribute::class,'attribute_id');
+            $table->string('value'); // e.g., Red for color, 3 for rooms
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('favorite');
+        Schema::dropIfExists('product_attribute_values');
     }
 };

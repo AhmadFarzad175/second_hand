@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\AddressController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MessageController;
@@ -31,6 +30,6 @@ Route::apiResource('categories', CategoryController::class);
 Route::apiResource('messages', MessageController::class);
 Route::apiResource('reports', ReportController::class);
 Route::apiResource('reviews', ReviewController::class);
-Route::apiResource('address', AddressController::class);
+Route::put('images/update/{id}',[ImageController::class, 'update']);
 Route::apiResource('images' ,ImageController::class);
 

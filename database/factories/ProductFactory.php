@@ -17,13 +17,17 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => rand(1,10),
+            'user_id' => rand(1,10),//it should delete the user from this factory
             'category_id' => rand(1,10),
             'name' => $this->faker->word,
-            'title' => $this->faker->sentence,
             'description' => $this->faker->paragraph,
             'price' => $this->faker->randomFloat(2, 0, 1000),
-            'condation' => $this->faker->word,
+            'location' => $this->faker->address,
+            // 'latitude' => $this->faker->latitude,
+            // 'longitude' => $this->faker->longitude,
+            'previous_price' => $this->faker->optional()->randomFloat(2, 10, 100),
+            'condition' => $this->faker->boolean,
+            'date' => now(),
         ];
     }
 }

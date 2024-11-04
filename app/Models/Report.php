@@ -23,30 +23,30 @@ class Report extends Model
     {
         return $this->belongsTo(Product::class);
     }
-    // Define scopes for commonly used queries
-    public function scopeRecent($query)
-    {
-        return $query->orderBy('created_at', 'desc');
-    }
+    // // Define scopes for commonly used queries
+    // public function scopeRecent($query)
+    // {
+    //     return $query->orderBy('created_at', 'desc');
+    // }
 
     // Define custom accessors or mutators if needed
-    public function getDateAttribute($value)
-    {
-        // Perform any custom formatting if required
-        return date('Y-m-d', strtotime($value));
-    }
+    // public function getDateAttribute($value)
+    // {
+    //     // Perform any custom formatting if required
+    //     return date('Y-m-d', strtotime($value));
+    // }
 
-    public function setDateAttribute($value)
-    {
-        // Perform any custom manipulation or validation of the date attribute
-        $this->attributes['date'] = date('Y-m-d', strtotime($value));
-    }
+    // public function setDateAttribute($value)
+    // {
+    //     // Perform any custom manipulation or validation of the date attribute
+    //     $this->attributes['date'] = date('Y-m-d', strtotime($value));
+    // }
 
     // Define additional methods as needed
-    public function isOverdue()
-    {
-        // Example method to check if the report is overdue
-        return strtotime($this->date) < strtotime('today');
-    }
+    // public function isOverdue()
+    // {
+    //     // Example method to check if the report is overdue
+    //     return strtotime($this->date) < strtotime('today');
+    // }
 
 }

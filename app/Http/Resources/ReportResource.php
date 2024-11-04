@@ -19,7 +19,8 @@ class ReportResource extends JsonResource
             'user_id' => $this->user_id,
             'product_id' => $this->product_id,
             'reason' => $this->reason,
-            'date' => $this->date,
+            // 'date' => $this->date,
+            'date' => $this->date ? $this->date->format('Y-m-d') : null,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

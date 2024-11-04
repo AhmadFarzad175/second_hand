@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Address;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,7 +19,8 @@ return new class extends Migration
             $table->string('password');
             $table->string('location')->nullable();
             $table->string('phone')->nullable();
-            $table->foreignIdFor(Address::class);
+            $table->string('description')->nullable();
+            $table->string('rating')->nullable();
             $table->rememberToken();
             $table->timestamps();
 

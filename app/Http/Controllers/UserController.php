@@ -15,14 +15,14 @@ class UserController extends Controller
     public function index(Request $request)
     {
 
-        // $perPage = $request->input('perPage');
-        // $search = $request->input('search');
-        // $users = User::with(['product','report','address','message','favorite','review'])->search($search);
-        // $users = $perPage ? $users->latest()->paginate($perPage) : $users->latest()->get();
+        $perPage = $request->input('perPage');
+        $search = $request->input('search');
+        $users = User::query()->search($search);
+        $users = $perPage ? $users->latest()->paginate($perPage) : $users->latest()->get();
 
-        // return UserResource::collection($users);
-        $users = User::all();
-        return response()->json($users);
+        return UserResource::collection($users);
+        // $users = User::all();
+        // return response()->json($users);
     }
 
 
@@ -32,9 +32,11 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-        $user = User::create($request->all());
-        // User::create($request->validated());
-        // return response()->json('success', 'user created successfully');
+        // Create the user with validated data
+        $user = User::create($request->validated());
+
+        // Return a success response with status code 201
+        return response()->json(['message' => 'User created successfully', 'user' => new UserResource($user)], 201);
     }
 
     /**

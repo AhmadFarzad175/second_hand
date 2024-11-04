@@ -24,13 +24,14 @@ class ProductRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'user_id' => 'required|exists:users,id',
+            'user_id' => 'required|exists:users,id',//////////////////////the user is must delete in this request
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
-            'title' => 'nullable|string|max:255',
             'description' => 'required|string',
+            'previous_price' => 'nullable|numeric|min:0',
             'price' => 'required|numeric|min:0',
-            'condation' => 'nullable|string|max:255',
+            'location' => 'required|',
+            'condition' => 'nullable|boolean|max:255',
             'date' => 'nullable|string|max:255',
         ];
 

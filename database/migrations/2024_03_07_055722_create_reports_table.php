@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->constrained();
-            $table->foreignIdFor(Product::class)->constrained();
+            $table->foreignIdFor(User::class);
+            $table->foreignIdFor(Product::class);
             $table->string('reason');
             $table->date('date')->nullable();
             $table->timestamps();

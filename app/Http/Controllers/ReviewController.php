@@ -13,6 +13,7 @@ class ReviewController extends Controller
      */
     public function index()
     {
+
         return ReviewResource::collection(Review::paginate(10));
     }
 
@@ -22,7 +23,11 @@ class ReviewController extends Controller
     public function store(ReviewRequest $request)
     {
         $review = Review::create($request->validated());
-        return new ReviewResource($review);
+        return response()->json([
+            'message' => 'Review created successfully',
+            'Review' => new ReviewResource($review),
+        ], 201);
+        // return new ReviewResource($review);
     }
 
     /**
@@ -53,3 +58,4 @@ class ReviewController extends Controller
         return response()->json(['message' => 'Review deleted successfully']);
     }
 }
+
