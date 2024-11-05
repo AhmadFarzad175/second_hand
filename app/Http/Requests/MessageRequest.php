@@ -2,12 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Traits\UpdateRequestRules;
 use Illuminate\Foundation\Http\FormRequest;
 
 class MessageRequest extends FormRequest
 {
-    use UpdateRequestRules;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -18,18 +16,33 @@ class MessageRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         $rules = [
             'sender_id' => 'required|exists:users,id',
-            'receiver_id' => 'required|exists:users,id',
+            'receiver_id' => 'required|exists:users,id|different:sender_id',
             'product_id' => 'required|exists:products,id',
-            'reason' => 'required|string',
+            'reason' => 'required|string|max:255',
+            'date' => 'required|date',
         ];
-        $this->isMethod('PUT') && $rules = array_merge($rules);
+
+        // For update requests, some fields might be optional.
+        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
+            $rules['reason'] = 'sometimes|string|max:255';
+            $rules['date'] = 'sometimes|date';
+        }
+
         return $rules;
+    }
+
+    /**
+     * Get custom messages for validation errors.
+     */
+    public function messages(): array
+    {
+        return [
+            'receiver_id.different' => 'The sender and receiver must be different users.',
+        ];
     }
 }

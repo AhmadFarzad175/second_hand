@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ImageRequest;
 use App\Http\Resources\ImageResource;
 use App\Models\Image;
+use App\Traits\ImageManipulation;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
 class ImageController extends Controller
 {
+    use ImageManipulation;
     /**
      * Display a listing of the resource.
      */
@@ -26,11 +28,7 @@ class ImageController extends Controller
     {
         $validated = $request->validated();
 
-        if ($request->hasFile('image_url')) {
-            // Store the image and save the path
-            $imagePath = $request->file('image_url')->store('images', 'public');
-            $validated['image_url'] = $imagePath;
-        }
+        $request->hasFile('image_url') ? $this->storeImage($request, $validated, "images", 'image_url') : null;
 
         // Ensure to include product_id in the validated data
         $validated['product_id'] = $request->input('product_id'); // Ensure this is sent in the request
@@ -55,16 +53,8 @@ class ImageController extends Controller
     {
         $validated = $request->validated();
 
-        if ($request->hasFile('image_url')) {
-            // Delete the old image if it exists
-            if ($image->image_url && Storage::disk('public')->exists($image->image_url)) {
-                Storage::disk('public')->delete($image->image_url);
-            }
+        $this->updateImage($image, $request, $validated, 'images', 'image_url');
 
-            // Store the new image
-            $imagePath = $request->file('image_url')->store('images', 'public');
-            $validated['image_url'] = $imagePath;
-        }
 
         $image->update($validated);
 
@@ -77,9 +67,7 @@ class ImageController extends Controller
     public function destroy(Image $image)
     {
         // Delete the image file from storage if it exists
-        if ($image->image_url && Storage::disk('public')->exists($image->image_url)) {
-            Storage::disk('public')->delete($image->image_url);
-        }
+        $this->deleteImage($image, 'images', 'image_url');
 
         $image->delete();
 

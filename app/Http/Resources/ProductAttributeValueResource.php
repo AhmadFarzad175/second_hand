@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class MessageResource extends JsonResource
+class ProductAttributeValueResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,11 +15,10 @@ class MessageResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'=> $this->id,
-            'sender_id' => $this->sender_id,
-            'receiver_id' => $this->receiver_id,
-            'reason' => $this->reason,
-            'date' => $this->date,
+            'id' => $this->id,
+            'product_id' => $this->product_id,
+            'attribute_id' => $this->attribute_id,
+            'value' => $this->value,
         ];
     }
 }

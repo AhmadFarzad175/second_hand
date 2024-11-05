@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\MessageRequest;
 use App\Http\Resources\MessageResource;
 use App\Models\Message;
+use Illuminate\Http\JsonResponse;
 
 class MessageController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of messages with pagination.
      */
     public function index()
     {
@@ -17,39 +18,35 @@ class MessageController extends Controller
         return MessageResource::collection($messages);
     }
 
-
-
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created message in storage.
      */
-    public function store(MessageRequest $request)
+    public function store(MessageRequest $request): MessageResource
     {
         $message = Message::create($request->validated());
         return new MessageResource($message);
     }
+    
+    public function show(Message $message): JsonResponse
+    {
+        return response()->json(new MessageResource($message), 200);
+    }
 
     /**
-     * Display the specified resource.
+     * Update the specified message in storage.
      */
-
-
-
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(MessageRequest $request, Message $message)
+    public function update(MessageRequest $request, Message $message): MessageResource
     {
         $message->update($request->validated());
         return new MessageResource($message);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified message from storage.
      */
-    public function destroy(Message $message)
+    public function destroy(Message $message): JsonResponse
     {
         $message->delete();
-        return response()->json(["message"=> "Message deleted successfully"]);
+        return response()->json(['message' => 'Message deleted successfully']);
     }
 }

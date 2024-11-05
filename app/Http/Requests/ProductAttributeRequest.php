@@ -2,12 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Traits\UpdateRequestRules;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CategoryRequest extends FormRequest
+class ProductAttributeRequest extends FormRequest
 {
-    use UpdateRequestRules;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -26,9 +24,7 @@ class CategoryRequest extends FormRequest
         $rules = [
             'name' => 'required|string|max:255',
         ];
-
-
-        $this->isMethod('PUT') && $this ->validate($rules);
+        $this->isMethod('PUT') && $this->validate($rules);
         return $rules;
     }
 }

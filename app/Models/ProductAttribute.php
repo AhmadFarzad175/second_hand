@@ -12,13 +12,10 @@ class ProductAttribute extends Model
     protected $fillable = [
         'name',
     ];
-    // public function categories()
-    // {
-    //     return $this->belongsTo(Category::class);
-    // }
+
     public function categories()
     {
-        return $this->belongsToMany(Category::class, 'attribute_category');
+        return $this->belongsToMany(Category::class, 'attribute_category', 'attribute_id', 'category_id');
     }
 
    // An Attribute has many ProductAttributeValues

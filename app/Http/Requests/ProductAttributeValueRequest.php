@@ -2,12 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Traits\UpdateRequestRules;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CategoryRequest extends FormRequest
+class ProductAttributeValueRequest extends FormRequest
 {
-    use UpdateRequestRules;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -24,11 +22,11 @@ class CategoryRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'name' => 'required|string|max:255',
+            'product_id' => 'required|exists:products,id',
+            'attribute_id' => 'required|exists:product_attributes,id',
+            'value' => 'required|string|max:255',
         ];
-
-
-        $this->isMethod('PUT') && $this ->validate($rules);
+        $this->isMethod('PUT') && $this->validate($rules);
         return $rules;
     }
 }

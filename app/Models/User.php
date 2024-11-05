@@ -23,13 +23,10 @@ class User extends Authenticatable
         'password',
         'location',
         'phone',
-        'description'
-        ,'rating'
+        'description',
+        'rating'
     ];
-    public function products()
-    {
-        return $this->hasMany(Product::class); // Define a hasMany relationship
-    }
+
     public function reviews()
     {
         return $this->hasMany(Review::class);
@@ -42,6 +39,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Report::class);
     }
+    public function product()
+    {
+        return $this->belongsToMany(Product::class, 'favorites')->withTimestamps();
+    }
+
 
 
     /**
@@ -70,7 +72,7 @@ class User extends Authenticatable
             return $query;
         }
 
-        return $query->where('name', 'like', '%'. $search. '%')
-            ->orWhere('email', 'like', '%'. $search. '%');
+        return $query->where('name', 'like', '%' . $search . '%')
+            ->orWhere('email', 'like', '%' . $search . '%');
     }
 }

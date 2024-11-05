@@ -10,21 +10,29 @@ class Product extends Model
     //the user_id should delete in this model////////////////////////////////////////////////////////
     use HasFactory;
     protected $fillable = [
-        'name', 'location', 'description', 'previous_price','price', 'last_price','user_id',
-        'condition', 'date', 'category_id'
+        'name',
+        'location',
+        'description',
+        'previous_price',
+        'price',
+        'last_price',
+        'user_id',
+        'condition',
+        'date',
+        'category_id'
     ];
 
     public function getWhatsappLinkAttribute()
-{
-    // Ensure user relationship is loaded and phone is not null
-    if (!$this->user || !$this->user->phone) {
-        return null; // Return null if user or phone is missing
-    }
+    {
+        // Ensure user relationship is loaded and phone is not null
+        if (!$this->user || !$this->user->phone) {
+            return null; // Return null if user or phone is missing
+        }
 
-    $phone = $this->user->phone; // Access the user's phone
-    $message = "Hello, I'm interested in your product '{$this->name}' listed for {$this->price}.";
-    return "https://wa.me/{$phone}?text=" . urlencode($message);
-}
+        $phone = $this->user->phone; // Access the user's phone
+        $message = "Hello, I'm interested in your product '{$this->name}' listed for {$this->price}.";
+        return "https://wa.me/{$phone}?text=" . urlencode($message);
+    }
 
     public function user()
     {
@@ -52,18 +60,27 @@ class Product extends Model
     {
         return $this->hasMany(ProductAttributeValue::class);
     }
+
+    public function attribute()
+    {
+        return $this->belongsToMany(ProductAttribute::class, 'product_attribute_values', 'product_id', 'attribute_id'); // Define a belongsTo relationship
+    }
     public function reports()
     {
         return $this->hasMany(Report::class); // Define a hasMany relationship
     }
-    public function scopeSearch($query, $search)
-{
-    if (!$search) {
-        return $query;
+
+    public function favoriteByUsers()
+    {
+        return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
     }
-    return $query->where('name', 'LIKE', '%' . $search . '%')
-                 ->orWhere('location', 'LIKE', '%' . $search . '%');
-}
 
-
+    public function scopeSearch($query, $search)
+    {
+        if (!$search) {
+            return $query;
+        }
+        return $query->where('name', 'LIKE', '%' . $search . '%')
+            ->orWhere('location', 'LIKE', '%' . $search . '%');
+    }
 }
