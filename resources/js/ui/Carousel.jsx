@@ -52,6 +52,7 @@ export default function ScrollableTabsWithImagesAndFilterButton() {
             />
           ))}
         </Tabs>
+        
       </Box>
       <Button
         variant="contained"
