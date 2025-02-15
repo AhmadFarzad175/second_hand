@@ -1,19 +1,21 @@
 import { Box } from "@mui/material";
 import ProductCard from "./ProductCard";
-
-
-const productData = Array.from({ length: 20 }, (_, index) => ({
-    id: index + 1,
-    name: `Product ${index + 1}`,
-    location: "City Center",
-    price: `$${(Math.random() * 100).toFixed(2)}`,
-    posted: "2 hours ago",
-    distance: `${Math.floor(Math.random() * 15)} kms away`,
-    image: `/images/img-${index % 10}.jpg`, // Placeholder image URL
-}));
+import { useProducts } from "./../pages/useProducts";
 
 function ProductCards() {
-    // const { isLoading, cabins } = useCabins();
+    const { isLoading, error, products } = useProducts();
+    console.log(products, isLoading, error);
+
+    // Show loading state while fetching data
+    if (isLoading) {
+        return <p>Loading products...</p>;
+    }
+
+    // Show error message if there's an issue fetching data
+    if (error) {
+        return <p>Error: {error.message}</p>;
+    }
+
 
     return (
         <Box
@@ -28,7 +30,7 @@ function ProductCards() {
                 gap: 4, // Spacing between grid items
             }}
         >
-            {productData.map((product) => (
+            {products.map((product) => (
                 <ProductCard product={product} key={product.id} />
             ))}
         </Box>

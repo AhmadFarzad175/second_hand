@@ -40,7 +40,8 @@ function ProductCard({ product }) {
                     aspectRatio: "1", // Ensures the image is square
                     objectFit: "cover", // Ensures the image fits well
                 }}
-                image={product.image}
+                // image={product.image}
+                image={`/images/img-${(product.id) % 9 }.jpg`}
                 alt={product.name}
             />
             <CardContent>
