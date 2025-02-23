@@ -63,7 +63,7 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar }) => {
                 },
             }}
         >
-            <div style={{ padding: "16px", textAlign: "center" }}>
+            <div style={{ padding: "30px", textAlign: "center" }}>
                 <Typography variant="h6">Admin Panel</Typography>
             </div>
             <List sx={{ p: {xs:"17px 10px 10px 10px", md:"17px 0px 10px 10px"}, cursor: "pointer" }}>
@@ -97,7 +97,7 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar }) => {
                                             key={index}
                                             button
                                             sx={{
-                                                pl: 6, // Reduced padding to make space smaller
+                                                pl: 5, // Reduced padding to make space smaller
                                                 "&:hover": {
                                                     borderRadius: 2,
                                                     backgroundColor: "inherit",

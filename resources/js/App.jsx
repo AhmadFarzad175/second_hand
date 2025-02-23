@@ -10,6 +10,7 @@ import AppLayout from "./ui/AppLayout";
 import Dashboard from "./features/dashboard/dashboard";
 import Products from "./features/product/Products";
 import AdminLayout from "./ui/AdminLayout";
+import CreateProduct from "./features/product/CreateProduct";
 
 function App() {
     return (
@@ -19,13 +20,14 @@ function App() {
                 <Route index element={<Home />} />
                 <Route path="product/:id" element={<Product />} />
                 <Route path="favorite" element={<Favorite />} />
-                <Route path="addProduct" element={<AddProduct />} />
+                <Route path="add-product" element={<AddProduct />} />
             </Route>
 
             {/* Admin Panel routes */}
             <Route path="/admin" element={<AdminLayout />}>
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="products" element={<Products />} />
+                <Route path="create-product" element={<CreateProduct />} />
             </Route>
 
             <Route path="/login" element={<Login />} />

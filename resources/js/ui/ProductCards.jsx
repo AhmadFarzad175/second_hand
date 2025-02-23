@@ -4,7 +4,6 @@ import { useProducts } from "./../pages/useProducts";
 
 function ProductCards() {
     const { isLoading, error, products } = useProducts();
-    console.log(products, isLoading, error);
 
     // Show loading state while fetching data
     if (isLoading) {

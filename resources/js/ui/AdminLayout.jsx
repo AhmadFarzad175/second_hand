@@ -14,17 +14,28 @@ function AdminLayout() {
 
     return (
         <Box sx={{ display: "flex" }}>
-            <Sidebar isMobile={isMobile} sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+            <Sidebar
+                isMobile={isMobile}
+                sidebarOpen={sidebarOpen}
+                toggleSidebar={toggleSidebar}
+            />
             <AdminNavBar toggleSidebar={toggleSidebar} />
             <Box
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    p: {xs:"64px 10px 20px 10px", md: "64px 20px 20px 10px"}, // Padding for uniform spacing
+                    p: "100px 10px 20px 10px", // Padding for uniform spacing
+                    pr: { md: "20px" },
                     backgroundColor: "#eee",
                 }}
             >
-                <Card sx={{ p: 3, borderRadius: 2, height: "100vh" }}>
+                <Card
+                    sx={{
+                        p: 5,
+                        borderRadius: "20px",
+                        minHeight: "calc(100vh - 200px)", // Adjust based on your navbar height
+                    }}
+                >
                     <Outlet />
                 </Card>
             </Box>

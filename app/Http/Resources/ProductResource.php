@@ -50,9 +50,12 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'previous_price' => $this->previous_price,
             'price' => $this->price,
-            'condition' => $this->condition ? 'new' : 'used',
+            'condition' => $this->condition ? 'New' : 'Used',
             'date' => $this->date ? Carbon::parse($this->date)->format('Y-m-d') : null, // Parse and format the date
-            'category' => $this->category ? new CategoryResource($this->category) : null,
+            'category' => [
+                'id' => $this->category->id,
+                'name' => $this->category->name,
+            ],
             'images' => $this->images->map(function ($image) {
                 return [
                     'id' => $image->id,
