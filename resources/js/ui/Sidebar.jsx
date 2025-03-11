@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     Drawer,
     List,
@@ -17,32 +18,52 @@ import {
 } from "@mui/icons-material";
 
 const menuItems = [
-    { name: "Dashboard", icon: <Dashboard />, key: "dashboard" },
+    {
+        name: "Dashboard",
+        icon: <Dashboard />,
+        key: "dashboard",
+        path: "/admin/dashboard",
+    },
     {
         name: "Product",
         icon: <ShoppingCart />,
         key: "product",
-        subItems: ["Create Product", "Products"],
+        subItems: [
+            { name: "Create Product", path: "/admin/create-product" },
+            { name: "Products", path: "/admin/products" },
+            { name: "Categories", path: "/admin/categories" },
+        ],
     },
     {
         name: "User",
         icon: <Group />,
         key: "user",
-        subItems: ["Create User", "Users"],
+        subItems: [
+            { name: "Create User", path: "/admin/users" },
+            { name: "Users", path: "/admin/users" },
+        ],
     },
     {
         name: "Setting",
         icon: <Settings />,
         key: "setting",
-        subItems: ["Create Setting", "Settings"],
+        subItems: [
+            { name: "Create Setting", path: "/settings/create" },
+            { name: "Settings", path: "/settings" },
+        ],
     },
 ];
 
 const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar }) => {
-    const [openMenu, setOpenMenu] = useState(null); // Track the currently open menu
+    const [openMenu, setOpenMenu] = useState(null);
+    const navigate = useNavigate(); // React Router navigation
 
-    const handleMenuClick = (menu) => {
-        setOpenMenu((prev) => (prev === menu ? null : menu)); // Toggle the clicked menu, close others
+    const handleMenuClick = (menu, path) => {
+        if (path) {
+            navigate(path); // Navigate to the path if there's no sub-menu
+            return;
+        }
+        setOpenMenu((prev) => (prev === menu ? null : menu));
     };
 
     return (
@@ -66,13 +87,17 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar }) => {
             <div style={{ padding: "30px", textAlign: "center" }}>
                 <Typography variant="h6">Admin Panel</Typography>
             </div>
-            <List sx={{ p: {xs:"17px 10px 10px 10px", md:"17px 0px 10px 10px"}, cursor: "pointer" }}>
-                {/* Menu Items */}
+            <List
+                sx={{
+                    p: { xs: "17px 10px 10px 10px", md: "17px 0px 10px 10px" },
+                    cursor: "pointer",
+                }}
+            >
                 {menuItems.map((item) => (
                     <React.Fragment key={item.key}>
                         <ListItem
                             button
-                            onClick={() => handleMenuClick(item.key)}
+                            onClick={() => handleMenuClick(item.key, item.path)}
                             sx={{
                                 "&:hover": {
                                     borderRadius: 2,
@@ -96,8 +121,11 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar }) => {
                                         <ListItem
                                             key={index}
                                             button
+                                            onClick={() =>
+                                                navigate(subItem.path)
+                                            }
                                             sx={{
-                                                pl: 5, // Reduced padding to make space smaller
+                                                pl: 5,
                                                 "&:hover": {
                                                     borderRadius: 2,
                                                     backgroundColor: "inherit",
@@ -115,7 +143,9 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar }) => {
                                                     sx={{ fontSize: "12px" }}
                                                 />
                                             </ListItemIcon>
-                                            <ListItemText primary={subItem} />
+                                            <ListItemText
+                                                primary={subItem.name}
+                                            />
                                         </ListItem>
                                     ))}
                                 </List>

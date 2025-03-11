@@ -25,6 +25,7 @@ class CategoryRequest extends FormRequest
     {
         $rules = [
             'name' => 'required|string|max:255',
+            'image' => 'required|image',
         ];
 
 

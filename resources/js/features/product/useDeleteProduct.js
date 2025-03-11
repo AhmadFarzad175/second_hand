@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteProduct } from "../repositories/ProductRepository";
+import { deleteProduct } from "../../repositories/ProductRepository";
 import toast from "react-hot-toast";
 
 export function useDeleteProduct() {
@@ -15,7 +15,6 @@ export function useDeleteProduct() {
         },
 
         onError: (err) => toast.error(err.message),
-
     });
 
     return { isDeleting, deletePro };

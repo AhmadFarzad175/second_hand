@@ -6,48 +6,46 @@ import {
     IconButton,
     Menu,
     MenuItem,
-    Chip,
     Box,
     Typography,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useDeleteProduct } from "./useDeleteProduct";
+import { useDeleteCategory } from "./useDeleteCategory";
 
-const ProductRow = ({ row, isSelected, handleClick }) => {
+const CategoryRow = ({ category, handleOpen, isSelected, handleClick }) => {
     const [anchorEl, setAnchorEl] = useState(null);
-    const { isDeleting, deletePro } = useDeleteProduct();
+    const { isDeleting, deleteCat } = useDeleteCategory();
 
     const handleMenuClick = (event) => {
-        event.stopPropagation(); // Stop row selection when clicking on the menu button
+        event.stopPropagation(); // Stop category selection when clicking on the menu button
         setAnchorEl(event.currentTarget);
     };
 
     const handleMenuClose = (event) => {
-        event.stopPropagation(); // Stop row selection when closing the menu
+        event.stopPropagation(); // Stop category selection when closing the menu
         setAnchorEl(null);
     };
 
     const handleDelete = async (event) => {
-        event.stopPropagation(); // Prevent row selection when clicking delete
-        deletePro(row.id);
+        event.stopPropagation(); // Prevent category selection when clicking delete
+        deleteCat(category.id);
         handleMenuClose(event);
     };
 
     const handleRowClick = (event) => {
-        // Prevent row selection when clicking on the menu or its items
+        // Prevent category selection when clicking on the menu or its items
         if (anchorEl && anchorEl.contains(event.target)) {
             return;
         }
-        handleClick(event, row.id);
+        handleClick(event, category.id);
     };
 
     return (
         <TableRow
             hover
-            onClick={handleRowClick} // Use the updated click handler            
+            onClick={handleRowClick} // Use the updated click handler
             role="checkbox"
             aria-checked={isSelected}
             selected={isSelected}
@@ -55,12 +53,12 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
             <TableCell padding="checkbox">
                 <Checkbox checked={isSelected} />
             </TableCell>
-            <TableCell align="left" sx={{ width: 80, height: 80 }}>
-                {row.images.length > 0 ? (
+            <TableCell align="left" sx={{ width: 100, height: 60 }}>
+                {category.image.length > 0 ? (
                     <Box
                         component="img"
-                        src={row.images[0].image_path}
-                        alt="Product"
+                        src={category.image}
+                        alt="Category"  
                         sx={{
                             width: "100%",
                             height: "100%",
@@ -86,35 +84,8 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
                     </Box>
                 )}
             </TableCell>
-            <TableCell>{row.name}</TableCell>
-            <TableCell align="left">{row.category.name}</TableCell>
-            <TableCell align="left">
-                <Box display="flex" flexDirection="column">
-                    <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                        {row.price}
-                    </Typography>
-                    <Typography
-                        variant="body2"
-                        sx={{
-                            color: "text.secondary",
-                            textDecoration: "line-through",
-                        }}
-                    >
-                        {row.previous_price}
-                    </Typography>
-                </Box>
-            </TableCell>
-            <TableCell align="left">
-                <Chip
-                    label={row.condition}
-                    color={row.condition === "New" ? "primary" : "secondary"}
-                    size="small"
-                    variant="outlined"
-                />
-            </TableCell>
-            <TableCell>{row.date}</TableCell>
-            <TableCell align="left">{row.favorites_count}</TableCell>
-            <TableCell align="center">
+            <TableCell align="left">{category.name}</TableCell>
+            <TableCell align="right">
                 <IconButton
                     className="menu-button"
                     onClick={handleMenuClick}
@@ -131,22 +102,14 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
                     <MenuItem
                         onClick={(event) => {
                             event.stopPropagation();
-                            handleMenuClose(event);
-                        }}
-                    >
-                        <VisibilityIcon sx={{ mr: 1 }} />
-                        Show
-                    </MenuItem>
-                    <MenuItem
-                        onClick={(event) => {
-                            event.stopPropagation();
+                            handleOpen(category);
                             handleMenuClose(event);
                         }}
                     >
                         <EditIcon sx={{ mr: 1 }} />
                         Edit
                     </MenuItem>
-                    <MenuItem onClick={handleDelete} disabled={isDeleting}>
+                        <MenuItem onClick={handleDelete} disabled={isDeleting}>
                         <DeleteIcon sx={{ mr: 1 }} />
                         Delete
                     </MenuItem>
@@ -156,4 +119,4 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
     );
 };
 
-export default ProductRow;
+export default CategoryRow;

@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import ProductCard from "./ProductCard";
-import { useProducts } from "./../pages/useProducts";
+import { useProducts } from "../features/product/useProducts";
 
 function ProductCards() {
     const { isLoading, error, products } = useProducts();

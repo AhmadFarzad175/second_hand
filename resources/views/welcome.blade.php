@@ -9,7 +9,7 @@
         @viteReactRefresh
         @vite(['resources/js/main.jsx', 'resources/css/app.css'])    
     </head>
-    <body>
+    <body style="background-color: #eee">
         <div id="root"></div>
     </body>
 </html>

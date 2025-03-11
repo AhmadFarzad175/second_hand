@@ -11,6 +11,7 @@ import Dashboard from "./features/dashboard/dashboard";
 import Products from "./features/product/Products";
 import AdminLayout from "./ui/AdminLayout";
 import CreateProduct from "./features/product/CreateProduct";
+import Categories from "./features/category/Categories";
 
 function App() {
     return (
@@ -28,6 +29,7 @@ function App() {
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="products" element={<Products />} />
                 <Route path="create-product" element={<CreateProduct />} />
+                <Route path="categories" element={<Categories />} />
             </Route>
 
             <Route path="/login" element={<Login />} />

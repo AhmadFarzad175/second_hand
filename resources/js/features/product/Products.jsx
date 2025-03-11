@@ -7,22 +7,25 @@ import {
     TableContainer,
     TablePagination,
     Paper,
+    Tooltip,
+    IconButton,
     LinearProgress,
     Alert,
-    Button,
     Typography,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import { useProducts } from "../../pages/useProducts";
+import { useProducts } from "./useProducts";
 import TableHeader from "./TableHeader";
 import TableToolbar from "./TableToolbar"; // Correct path
 import ProductRow from "./ProductRow";
+import FilterListIcon from "@mui/icons-material/FilterList";
+
 
 const Products = () => {
     const [selected, setSelected] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    const { isLoading, error, products = [] } = useProducts();
+    const { isLoading, error, products=[] } = useProducts();
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
@@ -81,14 +84,11 @@ const Products = () => {
                     </Link>
                     <Typography color="text.primary">Products</Typography>
                 </Breadcrumbs>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    component={Link}
-                    to="/admin/create-product"
-                >
-                    Add Product
-                </Button>
+                <Tooltip title="Filter list">
+                    <IconButton>
+                        <FilterListIcon />
+                    </IconButton>
+                </Tooltip>
             </Box>
 
             <Paper sx={{ width: "100%", mb: 2, elevation: 0, boxShadow: "none" }}>

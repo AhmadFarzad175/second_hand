@@ -9,21 +9,30 @@ class Category extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'name'
+        'name',
+        'image'
     ];
     public function products()
-{
-    return $this->hasMany(Product::class);
-    // Define a hasMany relationship
-}
+    {
+        return $this->hasMany(Product::class);
+        // Define a hasMany relationship
+    }
 
-// public function attributes()
-// {
-//     return $this->hasMany(Attribute::class);
-// }
-public function attributes()
-{
-    return $this->belongsToMany(ProductAttribute::class, 'attribute_category');
-}
+    // public function attributes()
+    // {
+    //     return $this->hasMany(Attribute::class);
+    // }
+    public function attributes()
+    {
+        return $this->belongsToMany(ProductAttribute::class, 'attribute_category');
+    }
 
+    public function scopeSearch($query, $search)
+    {
+        if (!empty($search)) {
+            return $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        return $query;
+    }
 }

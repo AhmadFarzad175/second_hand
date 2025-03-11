@@ -1,7 +1,15 @@
 import React from "react";
-import { Toolbar, Typography, IconButton, Tooltip, alpha } from "@mui/material";
+import {
+    Toolbar,
+    Typography,
+    IconButton,
+    Tooltip,
+    alpha,
+    Button,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import FilterListIcon from "@mui/icons-material/FilterList";
+import { Link } from "react-router-dom";
+
 
 const TableToolbar = ({ numSelected }) => {
     return (
@@ -38,11 +46,16 @@ const TableToolbar = ({ numSelected }) => {
                     </IconButton>
                 </Tooltip>
             ) : (
-                <Tooltip title="Filter list">
-                    <IconButton>
-                        <FilterListIcon />
-                    </IconButton>
-                </Tooltip>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    component={Link}
+                    to="/admin/create-product"
+                    sx={{ whiteSpace: 'nowrap', p: "10px 20px" }}
+
+                >
+                    Add Product
+                </Button>
             )}
         </Toolbar>
     );
