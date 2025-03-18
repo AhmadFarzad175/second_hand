@@ -21,14 +21,16 @@ class UserFactory extends Factory
     {
         return [
             'name' => $this->faker->name,
-            'email' => $this->faker->unique()->safeEmail,
-            'email_verified_at' => now(),
             'password' => bcrypt('password'),
+            'email' => $this->faker->unique()->safeEmail(),
             'remember_token' => Str::random(10),
-            'location' => $this->faker->address,
-            'phone' => $this->faker->phoneNumber,
-            'description' => $this->faker->sentence,
-            'rating' => $this->faker->randomFloat(1, 1, 5), // Random rating between 1.0 and 5.0
+            'rating' => $this->faker->randomFloat(1, 1, 5),
+            'image' =>$this->faker->filePath(),
+            'location' => $this->faker->city(),
+            'phone' => $this->faker->phoneNumber(),
+            'description' => $this->faker->sentence(),
+            'role' => $this->faker->randomElement(['admin', 'user', 'manager']),
+            'isActive' => $this->faker->randomElement(['active', 'inactive']),
         ];
     }
 

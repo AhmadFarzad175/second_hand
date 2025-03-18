@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Category;
-use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,18 +16,18 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class); ////////////////this column must delete in this migration
             $table->string('name');
-            $table->string('location')->nullable();
-            // $table->decimal('latitude', 10, 7)->nullable();
-            // $table->decimal('longitude', 10, 7)->nullable();
-            $table->text('description');
-            $table->decimal('previous_price', 10, 2)->nullable();
-            $table->decimal('price', 10, 2);
-            $table->boolean('condition')->default(false);
             $table->foreignIdFor(Category::class);
+            $table->decimal('net_price', 10, 2); // Changed from price to net_price
+            $table->decimal('discount', 10, 2)->default(0); // New field
+            $table->string('color')->nullable(); // New field
+            $table->integer('quantity')->default(1); // New field
+            $table->boolean('condition')->default(false);
+            $table->string('location')->nullable();
+            $table->text('description');
             $table->date('date')->default(now());
             $table->timestamps();
+
         });
     }
 

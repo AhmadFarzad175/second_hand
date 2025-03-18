@@ -47,7 +47,7 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
     return (
         <TableRow
             hover
-            onClick={handleRowClick} // Use the updated click handler            
+            onClick={handleRowClick} // Use the updated click handler
             role="checkbox"
             aria-checked={isSelected}
             selected={isSelected}
@@ -87,7 +87,7 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
                 )}
             </TableCell>
             <TableCell>{row.name}</TableCell>
-            <TableCell align="left">{row.category.name}</TableCell>
+            <TableCell align="left">{row.category?.name}</TableCell>
             <TableCell align="left">
                 <Box display="flex" flexDirection="column">
                     <Typography variant="body2" sx={{ fontWeight: "bold" }}>

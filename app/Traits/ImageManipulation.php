@@ -38,13 +38,21 @@ trait ImageManipulation
 
 
 
+    // public function deleteImage($model, $folder, $name)
+    // {
+    //     $path = public_path("storage/images/" . "$folder/" . basename($model->$name));
+    //     File::exists($path) ? File::delete($path) : null;
+    // }
     public function deleteImage($model, $folder, $name)
     {
-        $path = public_path("storage/images/" . "$folder/" . basename($model->$name));
-        File::exists($path) ? File::delete($path) : null;
-    }
-    
+        // Get the path of the image to delete
+        $path = public_path("storage/images/$folder/" . basename($model->$name));
 
-    // for employee's controller
+        // Check if the file exists and delete it
+        if (File::exists($path)) {
+            File::delete($path);
+        }
+    }
+
 
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,16 +18,15 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => rand(1,10),//it should delete the user from this factory
-            'category_id' => rand(1,10),
-            'name' => $this->faker->word,
-            'description' => $this->faker->paragraph,
-            'price' => $this->faker->randomFloat(2, 0, 1000),
-            'location' => $this->faker->address,
-            // 'latitude' => $this->faker->latitude,
-            // 'longitude' => $this->faker->longitude,
-            'previous_price' => $this->faker->optional()->randomFloat(2, 10, 100),
-            'condition' => $this->faker->boolean,
+            'name' => $this->faker->word(),
+            'category_id' => Category::inRandomOrder()->first()->id ?? Category::factory(),
+            'net_price' => $this->faker->randomFloat(2, 10, 500), // Generates price between 10-500
+            'discount' => $this->faker->randomFloat(2, 0, 50), // Discount up to 50
+            'color' => $this->faker->safeColorName(), // Random color
+            'quantity' => $this->faker->numberBetween(1, 100), // Quantity between 1-100
+            'condition' => $this->faker->boolean(),
+            'location' => $this->faker->city(),
+            'description' => $this->faker->paragraph(),
             'date' => now(),
         ];
     }

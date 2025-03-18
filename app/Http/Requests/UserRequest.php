@@ -18,22 +18,17 @@ class UserRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'name' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string',
-            'location' => 'nullable|string',
-            'phone' => 'nullable|string',
-            'description' => 'nullable|exists:description,id',
-            'rating' => 'nullable|',
+            'password' => 'nullable|min:6',
+            'location' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'description' => 'nullable|string',
+            'rating' => 'nullable|numeric|min:0|max:5',
+            'role' => 'required|in:admin,user,manager',
+            'isActive' => 'required|in:active,inactive',
         ];
-        // if ($this->isMethod('PUT')) {
-        //     foreach ($rules as $key => $rule) {
-        //         $rules[$key] = str_replace('required', 'sometimes', $rule);
-        //     }
-        // }
-
-        // return $rules;
-
 
         $this->isMethod('put') ? $this->applyUpdateRules($rules) : null;
 
