@@ -43,3 +43,7 @@ Route::put('images/update/{id}',[ImageController::class, 'update']);
 Route::apiResource('images' ,ImageController::class);
 Route::apiResource('product-attributes', ProductAttributeController::class);
 Route::apiResource('product-attribute-values', ProductAttributeValueController::class);
+
+
+
+Route::post('/users/{user}/status', [UserController::class, 'Status']);

@@ -27,7 +27,7 @@ class UserRequest extends FormRequest
             'description' => 'nullable|string',
             'rating' => 'nullable|numeric|min:0|max:5',
             'role' => 'required|in:admin,user,manager',
-            'isActive' => 'required|in:active,inactive',
+            'is_active' => 'required|boolean',
         ];
 
         $this->isMethod('put') ? $this->applyUpdateRules($rules) : null;

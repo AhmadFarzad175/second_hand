@@ -81,4 +81,13 @@ class UserController extends Controller
         return response()->json(['success'=>'User deleted successfully']);
 
     }
+    public function Status(Request $request, User $user)
+{
+    $user->update(['is_active' => !$user->is_active]);
+
+    return response()->json([
+        'message' => __('User status updated successfully!'),
+        'user' => new UserResource($user)
+    ], 200);
+}
 }
