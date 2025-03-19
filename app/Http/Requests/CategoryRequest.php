@@ -7,7 +7,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class CategoryRequest extends FormRequest
 {
-    use UpdateRequestRules;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -23,13 +22,9 @@ class CategoryRequest extends FormRequest
      */
     public function rules(): array
     {
-        $rules = [
+        return [
             'name' => 'required|string|max:255',
-            'image' => 'required|image',
+            'image' => 'sometimes',
         ];
-
-
-        $this->isMethod('PUT') && $this ->validate($rules);
-        return $rules;
     }
 }

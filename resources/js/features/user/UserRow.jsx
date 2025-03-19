@@ -6,7 +6,6 @@ import {
     IconButton,
     Menu,
     MenuItem,
-    Chip,
     Box,
     Typography,
 } from "@mui/material";
@@ -14,11 +13,11 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useDeleteProduct } from "./useDeleteProduct";
+import { useDeleteUser } from "./useDeleteUser";
 
-const ProductRow = ({ row, isSelected, handleClick }) => {
+const UserRow = ({ row, isSelected, handleClick }) => {
     const [anchorEl, setAnchorEl] = useState(null);
-    const { isDeleting, deletePro } = useDeleteProduct();
+    const { isDeleting, deleteUse } = useDeleteUser();
 
     const handleMenuClick = (event) => {
         event.stopPropagation(); // Stop row selection when clicking on the menu button
@@ -32,7 +31,7 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
 
     const handleDelete = async (event) => {
         event.stopPropagation(); // Prevent row selection when clicking delete
-        deletePro(row.id);
+        deleteUse(row.id);
         handleMenuClose(event);
     };
 
@@ -56,11 +55,11 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
                 <Checkbox checked={isSelected} />
             </TableCell>
             <TableCell align="left" sx={{ width: 80, height: 80 }}>
-                {row.images?.length > 0 ? (
+                {row.image?.length > 0 ? (
                     <Box
                         component="img"
-                        src={row.images[0].image_path}
-                        alt="Product"
+                        src={row.image}
+                        alt="User Image"
                         sx={{
                             width: "100%",
                             height: "100%",
@@ -87,33 +86,12 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
                 )}
             </TableCell>
             <TableCell>{row.name}</TableCell>
-            <TableCell align="left">{row.category?.name}</TableCell>
-            <TableCell align="left">
-                <Box display="flex" flexDirection="column">
-                    <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                        {row.price}
-                    </Typography>
-                    <Typography
-                        variant="body2"
-                        sx={{
-                            color: "text.secondary",
-                            textDecoration: "line-through",
-                        }}
-                    >
-                        {row.previous_price}
-                    </Typography>
-                </Box>
-            </TableCell>
-            <TableCell align="left">
-                <Chip
-                    label={row.condition}
-                    color={row.condition === "New" ? "primary" : "secondary"}
-                    size="small"
-                    variant="outlined"
-                />
-            </TableCell>
-            <TableCell>{row.date}</TableCell>
-            <TableCell align="left">{row.favorites_count}</TableCell>
+            <TableCell align="left">{row.phone}</TableCell>
+            <TableCell align="left">{row.province}</TableCell>
+            <TableCell align="left">{row.productAmount}</TableCell>
+            <TableCell>{row.rating}</TableCell>
+            <TableCell align="left">{row.role}</TableCell>
+            <TableCell align="left">{row.isActive}</TableCell>
             <TableCell align="center">
                 <IconButton
                     className="menu-button"
@@ -156,4 +134,4 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
     );
 };
 
-export default ProductRow;
+export default UserRow;

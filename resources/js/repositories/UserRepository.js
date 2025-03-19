@@ -1,8 +1,8 @@
-export async function getProducts() {
-    const response = await fetch('http://127.0.0.1:8000/api/products');
+export async function getUsers() {
+    const response = await fetch('http://127.0.0.1:8000/api/users');
 
     if (!response.ok) {
-      throw new Error('Failed to fetch products');
+      throw new Error('Failed to fetch users');
     }
     
     // Parse response as JSON
@@ -13,11 +13,11 @@ export async function getProducts() {
     
 }
 
-export async function createUpdateProduct(formData, id = null) {
+export async function createUpdateUser(formData, id = null) {
 
   const url = id
-      ? `http://127.0.0.1:8000/api/products/${id}`
-      : `http://127.0.0.1:8000/api/products`;
+      ? `http://127.0.0.1:8000/api/users/${id}`
+      : `http://127.0.0.1:8000/api/users`;
 
   const response = await fetch(url, {
       method: "POST",
@@ -26,23 +26,22 @@ export async function createUpdateProduct(formData, id = null) {
   });
   
   if (!response.ok) {
-    throw new Error(`Failed to ${id ? "update" : "create"} product`);
+    throw new Error(`Failed to ${id ? "update" : "create"} user`);
   }
   
+
   return response.json();
 }
 
 
 
-export async function deleteProduct(id) {
-  const response = await fetch(`http://127.0.0.1:8000/api/products/${id}`, {
+export async function deleteUser(id) {
+  const response = await fetch(`http://127.0.0.1:8000/api/users/${id}`, {
     method: "DELETE",
   });
 
   if (!response.ok) {
-    throw new Error("Failed to delete product");
+    throw new Error("Failed to delete user");
   }
   console.log(response.data);
-
-  // return data;
 }

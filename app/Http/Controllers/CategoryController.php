@@ -27,11 +27,11 @@ class CategoryController extends Controller
     /**
      * Store a new category.
      */
-    public function store(CategoryRequest $request): JsonResponse
+    public function store(CategoryRequest $request)
     {
         $validated = $request->validated();
         $request->hasFile('image') ? $this->storeImage($request, $validated, "categories", 'image') : null;
-        $category = Category::create($validated);
+        Category::create($validated);
         return response()->json(['success'=> 'Category created successfully']);
     }
 
@@ -49,9 +49,9 @@ class CategoryController extends Controller
     public function update(CategoryRequest $request, Category $category): JsonResponse
     {
         $validated = $request->validated();
-        $this->updateImage($category, $request, $validated, 'categories', 'image');
+        $request->hasFile('image') && $this->updateImage($category, $request, $validated, 'categories', 'image');
         $category->update($validated);
-        return response()->json(['success' => 'Category updated successfully', 'data' => new CategoryResource($category)]);
+        return response()->json(['success' => 'Category updated successfully']);
     }
 
     /**

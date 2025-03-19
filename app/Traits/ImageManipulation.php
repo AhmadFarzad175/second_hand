@@ -40,7 +40,7 @@ trait ImageManipulation
 
     public function deleteImage($model, $folder, $name)
     {
-        $path = public_path("storage/images/" . "$folder/" . basename($model->$name));
+        $path = public_path("storage/" . "$folder/" . basename($model->$name));
         File::exists($path) ? File::delete($path) : null;
     }
     
