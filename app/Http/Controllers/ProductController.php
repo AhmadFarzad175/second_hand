@@ -15,23 +15,16 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        // Retrieve filters and pagination settings from the request
         $filters = $request->only(['category', 'price', 'location', 'condition', 'date']);
         $perPage = $request->input('perPage', 10);
         $search = $request->input('search');
 
-        // Start a base query on the Product model with eager-loaded relationships
-        $query = Product::with(['category', 'user', 'images', 'reviews'])
-                        ->orderBy('id', 'ASC')
-                        ->search($search);
+        $query = Product::with(['category', 'user', 'images', 'reviews', 'attribute'])
+            ->orderBy('id', 'ASC')
+            ->search($search);
 
-        // Apply filters using the ProductFilter service
         $filteredQuery = ProductFilter::apply($query, $filters);
-
-        // Apply pagination or get all filtered results
         $products = $perPage ? $filteredQuery->paginate($perPage) : $filteredQuery->get();
-
-        // Return a paginated or collection response with ProductResource
         return ProductResource::collection($products);
     }
 
@@ -41,6 +34,16 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         $product = Product::create($request->validated());
+        // Step 2: Add product attributes if they exist in the request
+        if ($request->has('attributes')) {
+            foreach ($request->attributes as $attribute) {
+                // Assuming the 'attributes' is an array of 'attribute_id' and 'value'
+                $product->attributeValues()->create([
+                    'attribute_id' => $attribute['attribute_id'], // The ID of the attribute
+                    'value' => $attribute['value'],               // The value of the attribute (e.g., 'Red', '3')
+                ]);
+            }
+        }
 
         // Handle product images
         if ($request->hasFile('images')) {
@@ -61,7 +64,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        return ProductResource::make($product->load(['images', 'category', 'user']));
+        return ProductResource::make($product->load(['images', 'category', 'user', 'attribute',]));
     }
 
     /**
@@ -73,8 +76,6 @@ class ProductController extends Controller
 
         // Handle updating images
         if ($request->hasFile('images')) {
-            // Optionally delete old images if needed
-            // $product->images()->delete(); // Uncomment if you want to delete existing images
 
             foreach ($request->file('images') as $image) {
                 $path = $image->store('product_images');

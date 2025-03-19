@@ -47,7 +47,7 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
     return (
         <TableRow
             hover
-            onClick={handleRowClick} // Use the updated click handler            
+            onClick={handleRowClick} // Use the updated click handler
             role="checkbox"
             aria-checked={isSelected}
             selected={isSelected}

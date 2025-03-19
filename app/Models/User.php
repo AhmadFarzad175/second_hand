@@ -18,13 +18,16 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'image',
         'name',
         'email',
         'password',
         'location',
         'phone',
         'description',
-        'rating'
+        'rating',
+        'role',
+        'isActive',
     ];
 
     public function reviews()
@@ -73,6 +76,8 @@ class User extends Authenticatable
         }
 
         return $query->where('name', 'like', '%' . $search . '%')
-            ->orWhere('email', 'like', '%' . $search . '%');
+        ->orWhere('email', 'like', '%' . $search . '%')
+        ->orWhere('phone', 'like', '%' . $search . '%')
+        ->orWhere('province', 'like', '%' . $search . '%');
     }
 }

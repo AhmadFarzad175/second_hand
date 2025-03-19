@@ -7,20 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    //the user_id should delete in this model////////////////////////////////////////////////////////
     use HasFactory;
     protected $fillable = [
         'name',
+        'category_id',
+        'net_price',
+        'discount',
+        'color',
+        'quantity',
+        'condition',
         'location',
         'description',
-        'previous_price',
-        'price',
-        'last_price',
-        'user_id',
-        'condition',
         'date',
-        'category_id'
+
     ];
+
 
     public function getWhatsappLinkAttribute()
     {
@@ -60,6 +61,7 @@ class Product extends Model
     {
         return $this->hasMany(ProductAttributeValue::class);
     }
+    
 
     public function attribute()
     {
@@ -84,3 +86,24 @@ class Product extends Model
             ->orWhere('location', 'LIKE', '%' . $search . '%');
     }
 }
+
+
+
+// it is from product resource
+   // 'attribute_values' => $this->attributeValues->map(function ($attributeValue) {
+            //     return [
+            //         'attribute' => $attributeValue->attribute->name,
+            //         'value' => $attributeValue->value,
+            //     ];
+            // }),
+            // 'reviews' => [
+            //     'count' => $this->reviews->count(),
+            //     'average_rating' => $this->reviews->average('rating'),
+            // ],
+            // 'favorites_count' => $this->favorites->count(),
+            // // 'whatsapp_link' => $this->user->phone
+            // //     ? 'https://wa.me/' . $this->user->phone . '?text=Hello%2C%20I%27m%20interested%20in%20your%20product%20%27' . urlencode($this->name) . '%27%20listed%20for%20' . $this->price
+            // //     : null,
+            // 'whatsapp_link' => $this->user && $this->user->phone
+            //     ? 'https://wa.me/' . $this->user->phone . '?text=' . urlencode("Hello, I'm interested in your product '{$this->name}' listed for {$this->price}")
+                // : null,
