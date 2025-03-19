@@ -139,7 +139,7 @@ const Categories = () => {
                         </Typography>
                     ) : (
                         <Typography sx={{ flex: "1 1 100%" }} variant="h6">
-                            Products
+                            Categories
                         </Typography>
                     )}
                     {selected.length > 0 ? (
@@ -160,8 +160,8 @@ const Categories = () => {
                     )}
                 </Toolbar>
                 {isLoading && <LinearProgress />}
-                <TableContainer>
-                    <Table sx={{ minWidth: 750 }}>
+                <TableContainer >
+                    <Table >
                         <TableHead>
                             <TableRow>
                                 <TableCell padding="checkbox">

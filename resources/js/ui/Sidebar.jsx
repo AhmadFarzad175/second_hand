@@ -39,7 +39,7 @@ const menuItems = [
         icon: <Group />,
         key: "user",
         subItems: [
-            { name: "Create User", path: "/admin/users" },
+            { name: "Create User", path: "/admin/create-user" },
             { name: "Users", path: "/admin/users" },
         ],
     },

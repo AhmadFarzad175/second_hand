@@ -36,6 +36,7 @@ Route::delete('/products/{product}/favorite', [FavoriteController::class, 'destr
 Route::apiResource('users', UserController::class);
 Route::apiResource('products', ProductController::class);
 Route::apiResource('categories', CategoryController::class);
+Route::Post('categories/update/{category}',[CategoryController::class, 'update']);
 Route::apiResource('messages', MessageController::class);
 Route::apiResource('reports', ReportController::class);
 Route::apiResource('reviews', ReviewController::class);

@@ -12,6 +12,8 @@ import Products from "./features/product/Products";
 import AdminLayout from "./ui/AdminLayout";
 import CreateProduct from "./features/product/CreateProduct";
 import Categories from "./features/category/Categories";
+import Users from "./features/user/Users";
+import CreateUser from "./features/user/CreateUser";
 
 function App() {
     return (
@@ -27,9 +29,15 @@ function App() {
             {/* Admin Panel routes */}
             <Route path="/admin" element={<AdminLayout />}>
                 <Route path="dashboard" element={<Dashboard />} />
+
+                {/* Product Menu */}
                 <Route path="products" element={<Products />} />
                 <Route path="create-product" element={<CreateProduct />} />
                 <Route path="categories" element={<Categories />} />
+
+                {/* User Menu */}
+                <Route path="users" element={<Users />} />
+                <Route path="create-user" element={<CreateUser />} />
             </Route>
 
             <Route path="/login" element={<Login />} />
