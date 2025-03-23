@@ -25,7 +25,7 @@ class UserResource extends JsonResource
             'image' => $this->image ? asset('storage/' . $this->image) : null,
             'rating' => $this->rating ?? 0, // Default to 0 if no rating
             'role' => $this->role,
-            'isActive' => $this->isActive,
+            'isactive' => $this->isactive,
 
 
         ];

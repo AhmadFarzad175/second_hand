@@ -35,8 +35,8 @@ class ProductRequest extends FormRequest
             'description' => 'required|string|min:10',
             'date' => 'nullable|date_format:Y-m-d',
             'attributes' => 'nullable|array', // attributes should be an array
-            'attributes.*.attribute_id' => 'required|exists:product_attributes,id', // attribute ID must exist in the product_attributes table
-            'attributes.*.value' => 'required|string|max:255', // value must be a string and is required
+            // 'attributes.*.attribute_id' => 'required|exists:product_attributes,id', // attribute ID must exist in the product_attributes table
+            // 'attributes.*.value' => 'required|string|max:255', // value must be a string and is required
 
         ];
 

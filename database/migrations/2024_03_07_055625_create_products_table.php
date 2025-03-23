@@ -23,11 +23,12 @@ return new class extends Migration
             $table->string('color')->nullable(); // New field
             $table->integer('quantity')->default(1); // New field
             $table->boolean('condition')->default(false);
-            $table->string('location')->nullable();
             $table->text('description');
+            $table->decimal('latitude', 10, 7)->nullable(); // Store latitude
+            $table->decimal('longitude', 10, 7)->nullable();
+            $table->json('attributes');
             $table->date('date')->default(now());
             $table->timestamps();
-
         });
     }
 

@@ -24,7 +24,6 @@ class UserController extends Controller
         $users = $perPage ? $users->latest()->paginate($perPage) : $users->latest()->get();
 
         return UserResource::collection($users);
-
     }
 
 
@@ -66,6 +65,9 @@ class UserController extends Controller
         // $user = User::find($id);
         $validated = $request->validated();
         $this->updateImage($user, $request, $validated, 'users', "image");
+        if ($request->filled('password')) {
+            $validated['password'] = Hash::make($request->password);
+        }
         $user->update($validated);
 
         return new UserResource($user);
@@ -76,18 +78,34 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        $this->deleteImage($user, 'users','image');
+        $this->deleteImage($user, 'users', 'image');
         $user->delete();
-        return response()->json(['success'=>'User deleted successfully']);
-
+        return response()->json(['success' => 'User deleted successfully']);
     }
     public function Status(Request $request, User $user)
-{
-    $user->update(['is_active' => !$user->is_active]);
+    {
+        $user->update($request->validate(['is_active' => !$user->is_active]));
 
-    return response()->json([
-        'message' => __('User status updated successfully!'),
-        'user' => new UserResource($user)
-    ], 200);
+        return response()->json([
+            'message' => __('User status updated successfully!'),
+            'user' => new UserResource($user)
+        ], 200);
+    }
+    public function bulkDelete(Request $request)
+    {
+        $user = $request->validated->input('userIds');
+        $userIds = $request["userIds"];
+        if (!empty($userIds)) {
+            return response()->json(['massage' => 'IDs not found']);
+        }
+        foreach ($userIds as $id) {
+            $user = User::find($id);
+            $this->deleteImage($user, 'users', 'image');
+        }
+        User::whereIn('id', $request->userIds)->delete();
+        return response()->noContent();
+    }
 }
-}
+
+// Developed By: Fahim Rahimi
+// Reach Me: fahimrahimi305@gmail.com

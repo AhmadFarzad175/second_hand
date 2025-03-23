@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ProductResource;
-use App\Models\Product;
 use App\Services\ProductFilter; // Import the ProductFilter service
-use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -19,31 +20,57 @@ class ProductController extends Controller
         $perPage = $request->input('perPage', 10);
         $search = $request->input('search');
 
-        $query = Product::with(['category', 'user', 'images', 'reviews', 'attribute'])
+        // Get the authenticated user's latitude and longitude
+        $user = Auth::user();
+        $userLat = $user->latitude;
+        $userLng = $user->longitude;
+
+        // Start the product query with the necessary relationships
+        $query = Product::with(['category', 'user', 'images', 'reviews', 'attributes'])
             ->orderBy('id', 'ASC')
             ->search($search);
 
+        // If the user’s latitude and longitude are available, add the distance calculation to the query
+        if ($userLat && $userLng) {
+            $query->select('*')
+                ->selectRaw("(
+                6371 * acos(cos(radians($userLat))
+                * cos(radians(latitude))
+                * cos(radians(longitude) - radians($userLng))
+                + sin(radians($userLat))
+                * sin(radians(latitude)))
+            ) AS distance")
+                ->orderBy('distance', 'asc'); // Order products by distance (ascending)
+        }
+
+        // Apply additional filters if provided
         $filteredQuery = ProductFilter::apply($query, $filters);
+
+        // Paginate or get all products
         $products = $perPage ? $filteredQuery->paginate($perPage) : $filteredQuery->get();
+
+        // Return the filtered products in the ProductResource format
         return ProductResource::collection($products);
     }
+
 
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(ProductRequest $request)
     {
-        $product = Product::create($request->validated());
-        // Step 2: Add product attributes if they exist in the request
+        // Validate the location fields if they are provided
+        $validatedData = $request->validated();
+        // Handle attributes (store as a JSON object)
         if ($request->has('attributes')) {
-            foreach ($request->attributes as $attribute) {
-                // Assuming the 'attributes' is an array of 'attribute_id' and 'value'
-                $product->attributeValues()->create([
-                    'attribute_id' => $attribute['attribute_id'], // The ID of the attribute
-                    'value' => $attribute['value'],               // The value of the attribute (e.g., 'Red', '3')
-                ]);
-            }
+            $validatedData['attributes'] = json_encode($request->input('attributes'));
         }
+        $validatedData = $this->handleLocationData($request, $validatedData);
+
+
+        $product = Product::create($validatedData);
+
 
         // Handle product images
         if ($request->hasFile('images')) {
@@ -59,6 +86,7 @@ class ProductController extends Controller
         ], 201);
     }
 
+
     /**
      * Display the specified resource.
      */
@@ -70,13 +98,26 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
+
     public function update(ProductRequest $request, Product $product)
     {
         $product->update($request->validated());
 
-        // Handle updating images
-        if ($request->hasFile('images')) {
 
+        // Validate and get the validated data from the request
+        $validatedData = $request->validated();
+        // Handle attributes (store as a JSON object)
+        if ($request->has('attributes')) {
+            $validatedData['attributes'] = json_encode($request->input('attributes'));
+        }
+
+        $validatedData = $this->handleLocationData($request, $validatedData);
+
+        // Update the product with the validated data
+        $product->update($validatedData);
+
+        // Handle updating images if they exist in the request
+        if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
                 $path = $image->store('product_images');
                 $product->images()->create(['image_path' => $path]);
@@ -85,6 +126,7 @@ class ProductController extends Controller
 
         return response()->json(['success' => 'Product updated successfully']);
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -96,5 +138,19 @@ class ProductController extends Controller
         $product->delete();
 
         return response()->json(['success' => 'Product deleted successfully']);
+    }
+
+    private function handleLocationData(Request $request, array $validatedData)
+    {
+        if ($request->has('latitude') && $request->has('longitude')) {
+            $validatedData['latitude'] = $request->input('latitude');
+            $validatedData['longitude'] = $request->input('longitude');
+        }
+
+        if ($request->has('location')) {
+            $validatedData['location'] = $request->input('location');
+        }
+
+        return $validatedData;
     }
 }

@@ -18,10 +18,10 @@ class UserRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'nullable|min:6',
+            'password' => 'required|min:6',
             'location' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
             'description' => 'nullable|string',
