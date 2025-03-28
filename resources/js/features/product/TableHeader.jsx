@@ -20,7 +20,7 @@ const TableHeader = ({ onSelectAllClick, numSelected, rowCount }) => {
                 <TableCell padding="checkbox">
                     <Checkbox
                         color="primary"
-                        indeterminate={numSelected > 0 && numSelected < rowCount}
+                        // indeterminate={numSelected > 0 && numSelected < rowCount}
                         checked={rowCount > 0 && numSelected === rowCount}
                         onChange={onSelectAllClick}
                     />

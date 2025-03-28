@@ -30,7 +30,7 @@ class CategoryController extends Controller
     public function store(CategoryRequest $request)
     {
         $validated = $request->validated();
-        $request->hasFile('image') ? $this->storeImage($request, $validated, "categories", 'image') : null;
+        $request->hasFile('image') ? $this->storeImage($request, $validated, "images/categories", 'image') : null;
         Category::create($validated);
         return response()->json(['success'=> 'Category created successfully']);
     }

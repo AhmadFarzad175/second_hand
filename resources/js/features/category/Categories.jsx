@@ -167,10 +167,10 @@ const Categories = () => {
                                 <TableCell padding="checkbox">
                                     <Checkbox
                                         color="primary"
-                                        indeterminate={
-                                            selected.length > 0 &&
-                                            selected.length < categories.length
-                                        }
+                                        // indeterminate={
+                                        //     selected.length > 0 &&
+                                        //     selected.length < categories.length
+                                        // }
                                         checked={
                                             categories.length > 0 &&
                                             selected.length ===

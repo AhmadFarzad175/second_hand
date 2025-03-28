@@ -50,7 +50,7 @@ const TableToolbar = ({ numSelected }) => {
                     variant="contained"
                     color="primary"
                     component={Link}
-                    to="/admin/create-product"
+                    to="/admin/create-user"
                     sx={{ whiteSpace: 'nowrap', p: "10px 20px" }}
 
                 >

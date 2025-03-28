@@ -7,6 +7,7 @@ import {
     Menu,
     MenuItem,
     Box,
+    Switch,
     Typography,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -18,6 +19,15 @@ import { useDeleteUser } from "./useDeleteUser";
 const UserRow = ({ row, isSelected, handleClick }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const { isDeleting, deleteUse } = useDeleteUser();
+
+    const handleToggle = (event) => {
+        event.preventDefault();
+        // setData((prevData) =>
+        //     prevData.map((row) =>
+        //         row.id === id ? { ...row, isActive: !row.isActive } : row
+        //     )
+        // );
+    };
 
     const handleMenuClick = (event) => {
         event.stopPropagation(); // Stop row selection when clicking on the menu button
@@ -46,7 +56,7 @@ const UserRow = ({ row, isSelected, handleClick }) => {
     return (
         <TableRow
             hover
-            onClick={handleRowClick} // Use the updated click handler            
+            onClick={handleRowClick} // Use the updated click handler
             role="checkbox"
             aria-checked={isSelected}
             selected={isSelected}
@@ -87,11 +97,16 @@ const UserRow = ({ row, isSelected, handleClick }) => {
             </TableCell>
             <TableCell>{row.name}</TableCell>
             <TableCell align="left">{row.phone}</TableCell>
-            <TableCell align="left">{row.province}</TableCell>
+            <TableCell align="left">{row.location}</TableCell>
             <TableCell align="left">{row.productAmount}</TableCell>
             <TableCell>{row.rating}</TableCell>
             <TableCell align="left">{row.role}</TableCell>
-            <TableCell align="left">{row.isActive}</TableCell>
+            <TableCell align="left">
+                <Switch
+                    checked={row.isActive}
+                    onChange={() => handleToggle(row.id)}
+                />
+            </TableCell>{" "}
             <TableCell align="center">
                 <IconButton
                     className="menu-button"

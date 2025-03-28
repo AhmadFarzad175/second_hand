@@ -17,6 +17,7 @@ class UserRequest extends FormRequest
 
     public function rules(): array
     {
+        // dd('es');
         $rules = [
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'name' => 'required|string|max:255',
@@ -25,9 +26,9 @@ class UserRequest extends FormRequest
             'location' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
             'description' => 'nullable|string',
-            'rating' => 'nullable|numeric|min:0|max:5',
+            // 'rating' => 'nullable|numeric|min:0|max:5',
             'role' => 'required|in:admin,user,manager',
-            'isActive' => 'required|in:active,inactive',
+            // 'isActive' => 'required|in:active,inactive',
         ];
 
         $this->isMethod('put') ? $this->applyUpdateRules($rules) : null;
