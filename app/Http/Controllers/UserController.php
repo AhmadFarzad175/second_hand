@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UserRequest;
-use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Traits\ImageManipulation;
+use App\Http\Requests\UserRequest;
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    use ImageManipulation;
     /**
      * Display a listing of the resource.
      */
@@ -21,8 +24,6 @@ class UserController extends Controller
         $users = $perPage ? $users->latest()->paginate($perPage) : $users->latest()->get();
 
         return UserResource::collection($users);
-        // $users = User::all();
-        // return response()->json($users);
     }
 
 
@@ -32,8 +33,15 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
+        $validated = $request->validated();
         // Create the user with validated data
+        $request->hasFile('image') ? $this->storeImage($request, $validated, 'images/users', "image") : null;
+
+        if ($request->filled('password')) {
+            $validated['password'] = Hash::make($request->password);
+        }
         $user = User::create($request->validated());
+
 
         // Return a success response with status code 201
         return response()->json(['message' => 'User created successfully', 'user' => new UserResource($user)], 201);
@@ -54,7 +62,12 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, User $user)
     {
+        // $user = User::find($id);
         $validated = $request->validated();
+        $this->updateImage($user, $request, $validated, 'users', "image");
+        if ($request->filled('password')) {
+            $validated['password'] = Hash::make($request->password);
+        }
         $user->update($validated);
 
         return new UserResource($user);
@@ -65,7 +78,34 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        $this->deleteImage($user, 'users', 'image');
         $user->delete();
-        return response()->json('success', 'user deleted successfully');
+        return response()->json(['success' => 'User deleted successfully']);
+    }
+    public function Status(Request $request, User $user)
+    {
+        $user->update($request->validate(['is_active' => !$user->is_active]));
+
+        return response()->json([
+            'message' => __('User status updated successfully!'),
+            'user' => new UserResource($user)
+        ], 200);
+    }
+    public function bulkDelete(Request $request)
+    {
+        $user = $request->validated->input('userIds');
+        $userIds = $request["userIds"];
+        if (!empty($userIds)) {
+            return response()->json(['massage' => 'IDs not found']);
+        }
+        foreach ($userIds as $id) {
+            $user = User::find($id);
+            $this->deleteImage($user, 'users', 'image');
+        }
+        User::whereIn('id', $request->userIds)->delete();
+        return response()->noContent();
     }
 }
+
+// Developed By: Fahim Rahimi
+// Reach Me: fahimrahimi305@gmail.com

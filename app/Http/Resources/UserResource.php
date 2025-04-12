@@ -18,10 +18,15 @@ class UserResource extends JsonResource
             "id"=> $this->id,
             'name' => $this->name,
             'email'=> $this->email,
+            'password' => $this->password,
             'phone' => $this->phone,
             'location' => $this->location,
             'description' => $this->description,
-            'rating' => $this->rating,
+            'image' => $this->image ? asset('storage/' . $this->image) : null,
+            'rating' => $this->rating ?? 0, // Default to 0 if no rating
+            'role' => $this->role,
+            'isactive' => $this->isactive,
+
 
         ];
     }

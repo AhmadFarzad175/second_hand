@@ -19,12 +19,12 @@ function AdminLayout() {
                 sidebarOpen={sidebarOpen}
                 toggleSidebar={toggleSidebar}
             />
-            <AdminNavBar toggleSidebar={toggleSidebar} />
+            {/* <AdminNavBar toggleSidebar={toggleSidebar} /> */}
             <Box
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    p: "100px 10px 20px 10px", // Padding for uniform spacing
+                    p: "50px 10px 20px 10px", // Padding for uniform spacing
                     pr: { md: "20px" },
                     backgroundColor: "#eee",
                 }}

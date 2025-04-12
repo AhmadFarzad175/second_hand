@@ -19,8 +19,8 @@ import { useUpdateCategory } from "./useUpdateCategory";
 const CategoryModal = ({ category = {}, open, handleClose }) => {
     const { isCreating, createCategory } = useCreateCategory();
     const { isUpdating, updateCategory } = useUpdateCategory();
-    const { id: editId, ...editValues } = category;
-    const isEditSession = Boolean(editId);
+
+    const isEditSession = Boolean(category?.id);
     const isWorking = isCreating || isUpdating;
 
     const {
@@ -30,25 +30,25 @@ const CategoryModal = ({ category = {}, open, handleClose }) => {
         reset,
         watch,
         setValue,
-    } = useForm({
-        defaultValues: isEditSession ? editValues : { name: "", image: null },
-    });
+    } = useForm();
 
     const imageFile = watch("image");
 
-    // Handle image preview
+    // Fix image preview logic
     const previewImage =
-        imageFile && imageFile[0] && imageFile[0] instanceof File
-            ? URL.createObjectURL(imageFile[0]) // For new uploads
-            : editValues.image || null; // For existing images
+        imageFile && imageFile[0] instanceof File
+            ? URL.createObjectURL(imageFile[0]) // New upload
+            : category?.image || null; // Existing image from backend
 
+    // Reset form values when modal opens
     useEffect(() => {
-        if (open && isEditSession) {
-            reset(editValues); // Reset form with edit values
-        } else if (open) {
-            reset({ name: "", image: null }); // Reset form for new category
+        if (open) {
+            reset({
+                name: category?.name || "",
+                image: null, // Always reset image input
+            });
         }
-    }, [open, isEditSession, editValues, reset]);
+    }, [open, category, reset]);
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -64,23 +64,22 @@ const CategoryModal = ({ category = {}, open, handleClose }) => {
 
     const onSubmit = async (data) => {
         const formData = new FormData();
+
         formData.append("name", data.name);
         if (data.image && data.image[0]) {
             formData.append("image", data.image[0]);
         }
 
         if (isEditSession) {
-            formData.append("id", editId);
-            await updateCategory(formData, {
-                onSuccess: () => {
-                    callHandleClose();
-                },
-            });
+            updateCategory(
+                { formData, id: category.id },
+                {
+                    onSuccess: () => callHandleClose(),
+                }
+            );
         } else {
-            await createCategory(formData, {
-                onSuccess: () => {
-                    callHandleClose();
-                },
+            createCategory(formData, {
+                onSuccess: () => callHandleClose(),
             });
         }
     };
@@ -92,7 +91,7 @@ const CategoryModal = ({ category = {}, open, handleClose }) => {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    px: 3,
+                    pr: 3,
                     pt: 2,
                 }}
             >
@@ -116,7 +115,14 @@ const CategoryModal = ({ category = {}, open, handleClose }) => {
                     }}
                 >
                     {/* Left Side: Inputs */}
-                    <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+                    <Box
+                        sx={{
+                            flex: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 2,
+                        }}
+                    >
                         <TextField
                             label="Category Name"
                             fullWidth
@@ -170,7 +176,9 @@ const CategoryModal = ({ category = {}, open, handleClose }) => {
                             },
                             position: "relative",
                         }}
-                        onClick={() => document.getElementById("imageUpload").click()}
+                        onClick={() =>
+                            document.getElementById("imageUpload").click()
+                        }
                     >
                         {previewImage ? (
                             <Avatar
@@ -184,8 +192,14 @@ const CategoryModal = ({ category = {}, open, handleClose }) => {
                             />
                         ) : (
                             <>
-                                <CloudUpload sx={{ fontSize: 40, color: "#888" }} />
-                                <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+                                <CloudUpload
+                                    sx={{ fontSize: 40, color: "#888" }}
+                                />
+                                <Typography
+                                    variant="body2"
+                                    color="textSecondary"
+                                    sx={{ mt: 1 }}
+                                >
                                     Upload Image
                                 </Typography>
                             </>
@@ -199,7 +213,7 @@ const CategoryModal = ({ category = {}, open, handleClose }) => {
                     id="imageUpload"
                     accept="image/*"
                     style={{ display: "none" }}
-                    onChange={handleFileChange} // Manually handle file change
+                    onChange={handleFileChange}
                 />
 
                 {/* Error Message for Image */}

@@ -18,11 +18,11 @@ import {
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import ErrorText from "../../ui/ErrorText";
 import CloseIcon from "@mui/icons-material/Close";
-import { useCreateProduct } from "./useCreateProduct";
+import { useCreateProduct } from "../product/useCreateProduct";
 
 
 
-export default function CreateProduct() {
+export default function CreateUser() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const [images, setImages] = useState(Array(6).fill(null));
