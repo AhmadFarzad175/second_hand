@@ -38,5 +38,33 @@ class ProductResource extends JsonResource
             : null,
         ];
     }
-   
+  
+
+        /**
+     * Calculate the distance from a given latitude and longitude.
+     *
+     * @param float $latitude
+     * @param float $longitude
+     * @return float
+     */
+    private function calculateDistance($latitude, $longitude)
+    {
+        // Using the Haversine formula to calculate the distance (in km) between two lat/long points
+        $earthRadius = 6371; // Earth radius in kilometers
+
+        $latFrom = deg2rad($latitude);
+        $longFrom = deg2rad($longitude);
+        $latTo = deg2rad($this->latitude);
+        $longTo = deg2rad($this->longitude);
+
+        $latDelta = $latTo - $latFrom;
+        $longDelta = $longTo - $longFrom;
+
+        $a = sin($latDelta / 2) * sin($latDelta / 2) +
+            cos($latFrom) * cos($latTo) *
+            sin($longDelta / 2) * sin($longDelta / 2);
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        return $earthRadius * $c; // Distance in kilometers
+    }
 }

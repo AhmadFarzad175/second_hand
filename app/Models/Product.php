@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
@@ -98,6 +99,18 @@ class Product extends Model
     protected $casts = [
         'attributes' => 'array', // Ensures JSON data is treated as an array
     ];
+    protected static function booted()
+{
+    static::deleting(function ($product) {
+        foreach ($product->images as $image) {
+            if ($image->image_path && Storage::disk('public')->exists($image->image_path)) {
+                Storage::disk('public')->delete($image->image_path);
+            }
+        }
+
+        $product->images()->delete();
+    });
+}
 }
 
 
