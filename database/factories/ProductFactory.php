@@ -17,17 +17,24 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
+
         return [
-            'name' => $this->faker->word(),
-            'category_id' => Category::inRandomOrder()->first()->id ?? Category::factory(),
-            'net_price' => $this->faker->randomFloat(2, 10, 500), // Generates price between 10-500
-            'discount' => $this->faker->randomFloat(2, 0, 50), // Discount up to 50
-            'color' => $this->faker->safeColorName(), // Random color
-            'quantity' => $this->faker->numberBetween(1, 100), // Quantity between 1-100
-            'condition' => $this->faker->boolean(),
-            'location' => $this->faker->city(),
-            'description' => $this->faker->paragraph(),
-            'date' => now(),
+            'name' => $this->faker->word,
+            'category_id' => Category::factory(), // Assuming a Category factory exists
+            'net_price' => $this->faker->randomFloat(2, 10, 1000),
+            'discount' => $this->faker->randomFloat(2, 0, 100),
+            'color' => $this->faker->colorName,
+            'quantity' => $this->faker->numberBetween(1, 100),
+            'condition' => $this->faker->boolean,
+            // 'location' => $this->faker->city,
+            'description' => $this->faker->sentence,
+            'latitude' => $this->faker->latitude(34.0, 35.0), // Example latitude range for Kabul, Afghanistan
+            'longitude' => $this->faker->longitude(69.0, 70.0), // Example longitude range for Kabul
+            'attributes' => json_encode([
+                'size' => $this->faker->word,
+                'color' => $this->faker->colorName,
+            ]),
+            'date' => $this->faker->date,
         ];
     }
 }

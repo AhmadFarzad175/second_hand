@@ -29,14 +29,41 @@ class ProductResource extends JsonResource
             : null,
             'category' => $this->category ? new CategoryResource($this->category) : null,
             'favorites_count' => $this->favorites->count(),
-            'attributes' => $this->attributes
+            'attributes' => $this->attributes,
+            'distance' => $this->when(
+                $request->has('latitude') && $request->has('longitude'),
+                fn() => $this->calculateDistance($request->input('latitude'), $request->input('longitude'))
+            ),
 
         ];
     }
-    // 'attribute_values' => $this->attributeValues->map(function ($attributeValue) {
-    //     return [
-    //         'attribute' => $attributeValue->attribute ? $attributeValue->attribute->name : null,
-    //         'value' => $attributeValue->value,
-    //     ];
-    // }),
+  
+
+        /**
+     * Calculate the distance from a given latitude and longitude.
+     *
+     * @param float $latitude
+     * @param float $longitude
+     * @return float
+     */
+    private function calculateDistance($latitude, $longitude)
+    {
+        // Using the Haversine formula to calculate the distance (in km) between two lat/long points
+        $earthRadius = 6371; // Earth radius in kilometers
+
+        $latFrom = deg2rad($latitude);
+        $longFrom = deg2rad($longitude);
+        $latTo = deg2rad($this->latitude);
+        $longTo = deg2rad($this->longitude);
+
+        $latDelta = $latTo - $latFrom;
+        $longDelta = $longTo - $longFrom;
+
+        $a = sin($latDelta / 2) * sin($latDelta / 2) +
+            cos($latFrom) * cos($latTo) *
+            sin($longDelta / 2) * sin($longDelta / 2);
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        return $earthRadius * $c; // Distance in kilometers
+    }
 }

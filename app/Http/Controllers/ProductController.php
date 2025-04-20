@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ProductResource;
+use Illuminate\Support\Facades\Storage;
 use App\Services\ProductFilter; // Import the ProductFilter service
 
 class ProductController extends Controller
@@ -153,4 +154,39 @@ class ProductController extends Controller
 
         return $validatedData;
     }
+
+public function bulkDelete(Request $request)
+{
+    // Validate that productIds is an array of valid IDs
+    $request->validate([
+        'productIds' => 'required|array',
+        'productIds.*' => 'exists:products,id',
+    ]);
+
+    $productIds = $request->input('productIds');
+
+    // Fetch the products owned by the authenticated user
+    $products = Product::with('images')
+        ->whereIn('id', $productIds)
+        ->where('user_id', Auth::id()) // Authorization: only delete your own
+        ->get();
+
+    if ($products->isEmpty()) {
+        return response()->json(['message' => 'No valid or authorized products found.'], 404);
+    }
+
+    // Delete image files and product entries
+    foreach ($products as $product) {
+        foreach ($product->images as $image) {
+            if ($image->image_path && Storage::disk('public')->exists($image->image_path)) {
+                Storage::disk('public')->delete($image->image_path);
+            }
+        }
+
+        $product->images()->delete();
+        $product->delete();
+    }
+
+    return response()->noContent(); // 204 No Content
+}
 }

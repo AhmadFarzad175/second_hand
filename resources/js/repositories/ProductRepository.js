@@ -4,13 +4,13 @@ export async function getProducts() {
     if (!response.ok) {
       throw new Error('Failed to fetch products');
     }
-    
+
     // Parse response as JSON
     const data = await response.json();
     console.log(data); // Log the data to ensure it's being received
-    
+
     return data.data || []; // Return the data (products)
-    
+
 }
 
 export async function createUpdateProduct(formData, id = null) {
@@ -24,11 +24,11 @@ export async function createUpdateProduct(formData, id = null) {
       body: formData, // No Content-Type header, browser sets it for FormData
       contentType: "multipart/form-data"
   });
-  
+
   if (!response.ok) {
     throw new Error(`Failed to ${id ? "update" : "create"} product`);
   }
-  
+
   return response.json();
 }
 
