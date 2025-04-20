@@ -22,8 +22,8 @@ class ProductController extends Controller
 
         // Get the authenticated user's latitude and longitude
         $user = Auth::user();
-        $userLat = $user->latitude;
-        $userLng = $user->longitude;
+        $userLat = $user?->latitude;
+        $userLng = $user?->longitude;
 
         // Start the product query with the necessary relationships
         $query = Product::with(['category', 'user', 'images', 'reviews', 'attributes'])
