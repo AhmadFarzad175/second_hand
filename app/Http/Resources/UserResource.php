@@ -22,10 +22,10 @@ class UserResource extends JsonResource
             'phone' => $this->phone,
             'location' => $this->location,
             'description' => $this->description,
-            'image' => $this->image ? asset('storage/' . $this->image) : null,
+            'image' => $this->image ? url('storage/' . $this->image) : null, // Image URL if available
             'rating' => $this->rating ?? 0, // Default to 0 if no rating
             'role' => $this->role,
-            'isActive' => $this->isActive,
+            'is_active' => $this->is_active,
 
 
         ];

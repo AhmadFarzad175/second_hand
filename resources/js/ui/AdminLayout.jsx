@@ -24,7 +24,7 @@ function AdminLayout() {
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    p: "50px 10px 20px 10px", // Padding for uniform spacing
+                    p: "30px 10px 20px 10px", // Padding for uniform spacing
                     pr: { md: "20px" },
                     backgroundColor: "#eee",
                 }}
@@ -33,7 +33,7 @@ function AdminLayout() {
                     sx={{
                         padding: { xs: "20px 10px", sm: 1, md: 2, lg:3 },
                         borderRadius: "20px",
-                        minHeight: "calc(100vh - 200px)", // Adjust based on your navbar height
+                        minHeight: "calc(100vh - 100px)", // Adjust based on your navbar height
                     }}
                 >
                     <Outlet />

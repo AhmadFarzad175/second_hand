@@ -13,13 +13,13 @@ class Product extends Model
         'category_id',
         'net_price',
         'discount',
-        'color',
         'quantity',
         'condition',
         'location',
+        'latitude',
+        'longitude',
+        'attributes',
         'description',
-        'date',
-
     ];
 
 
@@ -61,7 +61,7 @@ class Product extends Model
     {
         return $this->hasMany(ProductAttributeValue::class);
     }
-    
+
 
     public function attribute()
     {
@@ -85,6 +85,19 @@ class Product extends Model
         return $query->where('name', 'LIKE', '%' . $search . '%')
             ->orWhere('location', 'LIKE', '%' . $search . '%');
     }
+
+    public function scopeNearby($query, $userLatitude, $userLongitude, $distance = 10)
+    {
+        return $query->selectRaw("
+                *, ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance
+            ", [$userLatitude, $userLongitude, $userLatitude])
+            ->havingRaw("distance < ?", [$distance])
+            ->orderBy('distance', 'asc');
+    }
+
+    protected $casts = [
+        'attributes' => 'array', // Ensures JSON data is treated as an array
+    ];
 }
 
 

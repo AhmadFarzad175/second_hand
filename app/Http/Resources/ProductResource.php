@@ -19,29 +19,24 @@ class ProductResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'location' => $this->location,
-            'description' => $this->description,
-            'net_price' => $this->net_price,
-            'condition' => $this->condition ? 'New' : 'Used',
-            'date' => $this->date ? Carbon::parse($this->date)->format('Y-m-d') : null, // Parse and format the date
-            // 'attribute_values' => $this->attributeValues->map(function ($attributeValue) {
-            //     return [
-            //         'attribute' => $attributeValue->attribute->name,
-            //         'value' => $attributeValue->value,
-            //     ];
-            // }),
-            'attribute_values' => $this->attributeValues->map(function ($attributeValue) {
-                return [
-                    'attribute' => $attributeValue->attribute ? $attributeValue->attribute->name : null,
-                    'value' => $attributeValue->value,
-                ];
-            }),
-            'WhatsApp' => $this->user && $this->user->phone
-                ? 'https://wa.me/' . $this->user->phone . '?text=' . urlencode("Hello, I'm interested in your product '{$this->name}' listed for {$this->price}")
-                : null,
             'category' => $this->category ? new CategoryResource($this->category) : null,
+            'price' => $this->net_price,
+            'discount' => $this->discount,
+            'condition' => $this->condition,
+            'date' => Carbon::parse($this->created_at)->format('Y-m-d'), // Parse and format the date
             'favorites_count' => $this->favorites->count(),
+            'description' => $this->description,
 
+            'location' => $this->location,
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude,
+            'attributes' => $this->attributes,
+            'image' => asset($this->images[0]->image_url),
+            
+            'WhatsApp' => $this->user && $this->user->phone
+            ? 'https://wa.me/' . $this->user->phone . '?text=' . urlencode("Hello, I'm interested in your product '{$this->name}' listed for {$this->price}")
+            : null,
         ];
     }
+   
 }

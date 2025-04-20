@@ -24,7 +24,6 @@ class UserController extends Controller
         $users = $perPage ? $users->latest()->paginate($perPage) : $users->latest()->get();
 
         return UserResource::collection($users);
-
     }
 
 
@@ -41,7 +40,8 @@ class UserController extends Controller
         if ($request->filled('password')) {
             $validated['password'] = Hash::make($request->password);
         }
-        $user = User::create($request->validated());
+        // dd($validated['image']);
+        $user = User::create($validated);
 
 
         // Return a success response with status code 201
@@ -66,6 +66,9 @@ class UserController extends Controller
         // $user = User::find($id);
         $validated = $request->validated();
         $this->updateImage($user, $request, $validated, 'users', "image");
+        if ($request->filled('password')) {
+            $validated['password'] = Hash::make($request->password);
+        }
         $user->update($validated);
 
         return new UserResource($user);
@@ -76,9 +79,38 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        $this->deleteImage($user, 'users','image');
+        $this->deleteImage($user, 'users', 'image');
         $user->delete();
-        return response()->json(['success'=>'User deleted successfully']);
+        return response()->json(['success' => 'User deleted successfully']);
+    }
+    public function Status(Request $request, User $user)
+    {
+        $request->validate([
+            'is_active' => 'required|boolean',
+        ]);
 
+        $user->is_active = $request->is_active; // Assuming 'status' is a boolean (true/false)
+        $user->save();
+
+        return response()->json([
+            'message' => 'User status updated successfully',
+        ]);
+    }
+    public function bulkDelete(Request $request)
+    {
+        $user = $request->validated->input('userIds');
+        $userIds = $request["userIds"];
+        if (!empty($userIds)) {
+            return response()->json(['massage' => 'IDs not found']);
+        }
+        foreach ($userIds as $id) {
+            $user = User::find($id);
+            $this->deleteImage($user, 'users', 'image');
+        }
+        User::whereIn('id', $request->userIds)->delete();
+        return response()->noContent();
     }
 }
+
+// Developed By: Fahim Rahimi
+// Reach Me: fahimrahimi305@gmail.com

@@ -15,42 +15,48 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useDeleteUser } from "./useDeleteUser";
+import { useUpdateUserStatus } from "./toggleSwitch";
+import { useNavigate } from "react-router-dom";
 
-const UserRow = ({ row, isSelected, handleClick }) => {
+const UserRow = ({ user, isSelected, handleClick }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const { isDeleting, deleteUse } = useDeleteUser();
+    const { mutate: updateStatus } = useUpdateUserStatus();
+    const navigate = useNavigate();
 
-    const handleToggle = (event) => {
-        event.preventDefault();
-        // setData((prevData) =>
-        //     prevData.map((row) =>
-        //         row.id === id ? { ...row, isActive: !row.isActive } : row
-        //     )
-        // );
+    const handleStatusChange = (event, id) => {
+        event.stopPropagation();
+        updateStatus({
+            id,
+            isActive: event.target.checked,
+        });
     };
 
     const handleMenuClick = (event) => {
-        event.stopPropagation(); // Stop row selection when clicking on the menu button
+        event.stopPropagation(); // Stop user selection when clicking on the menu button
         setAnchorEl(event.currentTarget);
     };
 
     const handleMenuClose = (event) => {
-        event.stopPropagation(); // Stop row selection when closing the menu
+        event.stopPropagation(); // Stop user selection when closing the menu
         setAnchorEl(null);
     };
 
     const handleDelete = async (event) => {
-        event.stopPropagation(); // Prevent row selection when clicking delete
-        deleteUse(row.id);
+        event.stopPropagation(); // Prevent user selection when clicking delete
+        deleteUse(user.id);
         handleMenuClose(event);
     };
 
     const handleRowClick = (event) => {
-        // Prevent row selection when clicking on the menu or its items
-        if (anchorEl && anchorEl.contains(event.target)) {
+        // Prevent user selection when clicking on the menu, switch, or its items
+        if (
+            (anchorEl && anchorEl.contains(event.target)) ||
+            event.target.closest('.MuiSwitch-root') // Add this check
+        ) {
             return;
         }
-        handleClick(event, row.id);
+        handleClick(event, user.id);
     };
 
     return (
@@ -65,10 +71,10 @@ const UserRow = ({ row, isSelected, handleClick }) => {
                 <Checkbox checked={isSelected} />
             </TableCell>
             <TableCell align="left" sx={{ width: 80, height: 80 }}>
-                {row.image?.length > 0 ? (
+                {user.image?.length > 0 ? (
                     <Box
                         component="img"
-                        src={row.image}
+                        src={user.image}
                         alt="User Image"
                         sx={{
                             width: "100%",
@@ -95,16 +101,19 @@ const UserRow = ({ row, isSelected, handleClick }) => {
                     </Box>
                 )}
             </TableCell>
-            <TableCell>{row.name}</TableCell>
-            <TableCell align="left">{row.phone}</TableCell>
-            <TableCell align="left">{row.location}</TableCell>
-            <TableCell align="left">{row.productAmount}</TableCell>
-            <TableCell>{row.rating}</TableCell>
-            <TableCell align="left">{row.role}</TableCell>
+            <TableCell>{user.name}</TableCell>
+            <TableCell align="left">{user.phone}</TableCell>
+            <TableCell align="left">{user.location}</TableCell>
+            <TableCell align="left">{user.productAmount}</TableCell>
+            <TableCell>{user.rating}</TableCell>
+            <TableCell align="left">{user.role}</TableCell>
             <TableCell align="left">
                 <Switch
-                    checked={row.isActive}
-                    onChange={() => handleToggle(row.id)}
+                    checked={user.is_active}
+                    onChange={(event) => {
+                        event.stopPropagation();
+                        handleStatusChange(event, user.id);
+                    }}
                 />
             </TableCell>{" "}
             <TableCell align="center">
@@ -134,7 +143,9 @@ const UserRow = ({ row, isSelected, handleClick }) => {
                         onClick={(event) => {
                             event.stopPropagation();
                             handleMenuClose(event);
-                        }}
+                            navigate(`/admin/edit-user/${user.id}`, {
+                                state: { user }  // Pass the entire user object
+                            });                        }}
                     >
                         <EditIcon sx={{ mr: 1 }} />
                         Edit

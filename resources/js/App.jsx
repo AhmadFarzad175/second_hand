@@ -33,11 +33,13 @@ function App() {
                 {/* Product Menu */}
                 <Route path="products" element={<Products />} />
                 <Route path="create-product" element={<CreateProduct />} />
+                <Route path="edit-product/:id" element={<CreateProduct />} />
                 <Route path="categories" element={<Categories />} />
 
                 {/* User Menu */}
                 <Route path="users" element={<Users />} />
                 <Route path="create-user" element={<CreateUser />} />
+                <Route path="edit-user/:id" element={<CreateUser />} />
             </Route>
 
             <Route path="/login" element={<Login />} />

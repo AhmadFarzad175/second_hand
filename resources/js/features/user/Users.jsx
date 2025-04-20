@@ -102,11 +102,11 @@ const Users = () => {
                             rowCount={users.length}
                         />
                         <TableBody>
-                            {userRows.map((row) => (
+                            {userRows.map((user) => (
                                 <UserRow
-                                    key={row.id}
-                                    row={row}
-                                    isSelected={selected.includes(row.id)}
+                                    key={user.id}
+                                    user={user}
+                                    isSelected={selected.includes(user.id)}
                                     handleClick={handleClick}
                                 />
                             ))}

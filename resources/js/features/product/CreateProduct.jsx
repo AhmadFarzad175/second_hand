@@ -1,26 +1,17 @@
 import * as React from "react";
-import { useEffect, useState } from "react"; // Import useEffect and useState
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
     Box,
-    TextField,
     Typography,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
     Button,
-    IconButton,
     Paper,
     useTheme,
     useMediaQuery,
 } from "@mui/material";
-import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import ErrorText from "../../ui/ErrorText";
-import CloseIcon from "@mui/icons-material/Close";
 import { useCreateProduct } from "./useCreateProduct";
-
-
+import { TextField, Select, TextArea } from "../../ui/InputFields";
+import ImageUploader from "../../ui/ImageUploader";
 
 export default function CreateProduct() {
     const theme = useTheme();
@@ -43,7 +34,7 @@ export default function CreateProduct() {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch("/api/categories"); // Replace with your API endpoint
+                const response = await fetch("/api/categories");
                 const data = await response.json();
                 setCategories(data.data);
             } catch (error) {
@@ -80,18 +71,65 @@ export default function CreateProduct() {
 
     const onSubmit = (data) => {
         const formData = new FormData();
+        // adding attributes
+        const attributes = {
+            color: data.color,
+            brand: data.brand,
+          };
+
+        //! temporary
+        formData.append("latitude", 35.6892);
+        formData.append("longitude", 23.6892);
+
+          
+          // Append as a JSON string
+          formData.append("attributes", JSON.stringify(attributes));
+
+        // Append other form fields
         for (const key in data) {
             formData.append(key, data[key]);
         }
 
-        imageFiles.forEach((file, index) => {
+        // Append all images under the same key: 'images[]'
+        imageFiles.forEach((file) => {
             if (file) {
-                formData.append(`image${index + 1}`, file);
+                formData.append("images[]", file);
             }
         });
 
+        // Append all images under the same key: 'images[]'
+        // imageFiles.forEach((file, i) => {
+        //     if (file) {
+        //         images[`image${i + 1}`] = file;
+        //     }
+        // });
         createProduct(formData);
     };
+
+    // Prepare options for select components
+    const colorOptions = [
+        { value: "red", label: "Red" },
+        { value: "blue", label: "Blue" },
+        { value: "green", label: "Green" },
+    ];
+
+    // Prepare options for select components
+    const brandOptions = [
+        { value: "iphone", label: "Iphone" },
+        { value: "galaxy", label: "Galaxy" },
+        { value: "nokia", label: "Nokia" },
+        { value: "huawei", label: "Huawei" },
+    ];
+
+    const conditionOptions = [
+        { value: "0", label: "New" },
+        { value: "1", label: "Used" },
+    ];
+
+    const categoryOptions = categories.map((category) => ({
+        value: category.id,
+        label: category.name,
+    }));
 
     return (
         <Box sx={{ padding: { lg: 2 }, maxWidth: 1200, margin: "auto" }}>
@@ -131,196 +169,80 @@ export default function CreateProduct() {
                         >
                             {/* Name */}
                             <TextField
-                                fullWidth
                                 label="Name"
-                                variant="outlined"
-                                size="small"
-                                {...register("name", {
-                                    required: "Name is required",
-                                })}
+                                register={register}
+                                errors={errors}
+                                name="name"
                                 disabled={isWorking}
-                                error={!!errors.name}
-                                helperText={
-                                    errors.name ? errors.name.message : ""
-                                }
                             />
 
                             {/* Categories */}
-                            <FormControl
-                                fullWidth
-                                variant="outlined"
-                                size="small"
+                            <Select
+                                label="Categories"
+                                register={register}
+                                name="category_id"
+                                errors={errors}
+                                options={categoryOptions}
                                 disabled={isWorking}
-                                error={!!errors.categories}
-                            >
-                                <InputLabel>Categories</InputLabel>
-                                <Select
-                                    label="Categories"
-                                    {...register("categories", {
-                                        required: "Category is required",
-                                    })}
-                                >
-                                    {categories.map((category) => (
-                                        <MenuItem
-                                            key={category.id}
-                                            value={category.id}
-                                        >
-                                            {category.name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                                {errors.categories && (
-                                    <ErrorText
-                                        message={errors.categories.message}
-                                    />
-                                )}
-                            </FormControl>
+                            />
 
                             {/* Net Price and Discount */}
                             <Box sx={{ display: "flex", gap: 2 }}>
                                 <TextField
-                                    fullWidth
                                     label="Net Price"
+                                    register={register}
+                                    errors={errors}
+                                    name="net_price"
                                     type="number"
-                                    variant="outlined"
-                                    size="small"
-                                    {...register("netPrice", {
-                                        required: "Net Price is required",
-                                    })}
                                     disabled={isWorking}
-                                    error={!!errors.netPrice}
-                                    helperText={
-                                        errors.netPrice
-                                            ? errors.netPrice.message
-                                            : ""
-                                    }
                                 />
                                 <TextField
-                                    fullWidth
                                     label="Discount"
+                                    register={register}
+                                    errors={errors}
+                                    name="discount"
                                     type="number"
-                                    variant="outlined"
-                                    size="small"
-                                    {...register("discount", {
-                                        required: "Discount is required",
-                                    })}
                                     disabled={isWorking}
-                                    error={!!errors.discount}
-                                    helperText={
-                                        errors.discount
-                                            ? errors.discount.message
-                                            : ""
-                                    }
                                 />
                             </Box>
-
-                            {/* Color */}
-                            <FormControl
-                                fullWidth
-                                variant="outlined"
-                                size="small"
-                                disabled={isWorking}
-                                error={!!errors.color}
-                            >
-                                <InputLabel>Color</InputLabel>
-                                <Select
-                                    label="Color"
-                                    {...register("color", {
-                                        required: "Color is required",
-                                    })}
-                                >
-                                    <MenuItem value="red">Red</MenuItem>
-                                    <MenuItem value="blue">Blue</MenuItem>
-                                    <MenuItem value="green">Green</MenuItem>
-                                </Select>
-                                {errors.color && (
-                                    <ErrorText message={errors.color.message} />
-                                )}
-                            </FormControl>
 
                             {/* Quantity and Condition */}
                             <Box sx={{ display: "flex", gap: 2 }}>
                                 <TextField
-                                    fullWidth
                                     label="Quantity"
+                                    register={register}
+                                    errors={errors}
+                                    name="quantity"
                                     type="number"
-                                    variant="outlined"
-                                    size="small"
-                                    {...register("quantity", {
-                                        required: "Quantity is required",
-                                    })}
                                     disabled={isWorking}
-                                    error={!!errors.quantity}
-                                    helperText={
-                                        errors.quantity
-                                            ? errors.quantity.message
-                                            : ""
-                                    }
                                 />
-                                <FormControl
-                                    fullWidth
-                                    variant="outlined"
-                                    size="small"
+                                <Select
+                                    label="Condition"
+                                    register={register}
+                                    name="condition"
+                                    errors={errors}
+                                    options={conditionOptions}
                                     disabled={isWorking}
-                                    error={!!errors.condition}
-                                >
-                                    <InputLabel>Condition</InputLabel>
-                                    <Select
-                                        label="Condition"
-                                        {...register("condition", {
-                                            required: "Condition is required",
-                                        })}
-                                    >
-                                        <MenuItem value="new">New</MenuItem>
-                                        <MenuItem value="used">Used</MenuItem>
-                                        <MenuItem value="refurbished">
-                                            Refurbished
-                                        </MenuItem>
-                                    </Select>
-                                    {errors.condition && (
-                                        <ErrorText
-                                            message={errors.condition.message}
-                                        />
-                                    )}
-                                </FormControl>
+                                />
                             </Box>
 
                             {/* Use by Location */}
                             <TextField
-                                fullWidth
                                 label="Use by Location"
-                                variant="outlined"
-                                size="small"
-                                {...register("useByLocation", {
-                                    required: "Use by Location is required",
-                                })}
+                                register={register}
+                                errors={errors}
+                                name="useByLocation"
                                 disabled={isWorking}
-                                error={!!errors.useByLocation}
-                                helperText={
-                                    errors.useByLocation
-                                        ? errors.useByLocation.message
-                                        : ""
-                                }
                             />
 
                             {/* Description */}
-                            <TextField
-                                fullWidth
+                            <TextArea
                                 label="Description"
-                                multiline
-                                rows={4}
-                                variant="outlined"
-                                size="small"
-                                {...register("description", {
-                                    required: "Description is required",
-                                })}
+                                register={register}
+                                errors={errors}
+                                name="description"
                                 disabled={isWorking}
-                                error={!!errors.description}
-                                helperText={
-                                    errors.description
-                                        ? errors.description.message
-                                        : ""
-                                }
+                                rows={4}
                             />
                         </Box>
                     </Paper>
@@ -328,6 +250,7 @@ export default function CreateProduct() {
 
                 {/* Right Side - Image Upload Section */}
                 <Box sx={{ flex: 1 }}>
+                    {/* images */}
                     <Paper
                         sx={{
                             p: 3,
@@ -346,106 +269,64 @@ export default function CreateProduct() {
                         <Box
                             sx={{
                                 display: "grid",
-                                gridTemplateColumns: isMobile
-                                    ? "repeat(2, 1fr)"
-                                    : "repeat(3, 1fr)",
+                                gridTemplateColumns: {
+                                    xs: "repeat(2, 1fr)",
+                                    sm: "repeat(3, 1fr)",
+                                },
                                 gap: 2,
                             }}
                         >
                             {images.map((image, index) => (
-                                <Box
-                                    key={index}
-                                    sx={{
-                                        position: "relative",
-                                        width: "100%",
-                                        paddingTop: "100%",
-                                        borderRadius: 2,
-                                        overflow: "hidden",
-                                        backgroundColor: image
-                                            ? "transparent"
-                                            : "action.hover",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        transition:
-                                            "transform 0.2s, box-shadow 0.2s",
-                                        "&:hover": {
-                                            transform: "scale(1.05)",
-                                            boxShadow: 3,
-                                        },
-                                    }}
-                                >
-                                    {!image && (
-                                        <Button
-                                            component="label"
-                                            variant="outlined"
-                                            sx={{
-                                                position: "absolute",
-                                                top: 0,
-                                                left: 0,
-                                                width: "100%",
-                                                height: "100%",
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                backgroundColor: "transparent",
-                                                "&:hover": {
-                                                    backgroundColor:
-                                                        "rgba(255, 255, 255, 0.1)",
-                                                },
-                                            }}
-                                        >
-                                            <AddPhotoAlternateIcon
-                                                sx={{ color: "text.secondary" }}
-                                            />
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                hidden
-                                                onChange={(event) =>
-                                                    handleAddImage(event, index)
-                                                }
-                                            />
-                                        </Button>
-                                    )}
-                                    {image && (
-                                        <>
-                                            <Box
-                                                sx={{
-                                                    position: "absolute",
-                                                    top: 0,
-                                                    left: 0,
-                                                    width: "100%",
-                                                    height: "100%",
-                                                    backgroundImage: `url(${image})`,
-                                                    backgroundSize: "cover",
-                                                    backgroundPosition:
-                                                        "center",
-                                                }}
-                                            />
-                                            <IconButton
-                                                sx={{
-                                                    position: "absolute",
-                                                    top: 4,
-                                                    right: 4,
-                                                    color: "white",
-                                                    backgroundColor:
-                                                        "rgba(0, 0, 0, 0.5)",
-                                                    "&:hover": {
-                                                        backgroundColor:
-                                                            "rgba(0, 0, 0, 0.7)",
-                                                    },
-                                                }}
-                                                onClick={() =>
-                                                    handleRemoveImage(index)
-                                                }
-                                            >
-                                                <CloseIcon />
-                                            </IconButton>
-                                        </>
-                                    )}
+                                <Box key={index}>
+                                    <ImageUploader
+                                        image={image}
+                                        onAddImage={handleAddImage}
+                                        onRemoveImage={handleRemoveImage}
+                                        index={index}
+                                        size="100%"
+                                    />
                                 </Box>
                             ))}
+                        </Box>
+                    </Paper>
+
+                    {/* attributes */}
+                    <Paper
+                        sx={{
+                            my:3,
+                            p: 3,
+                            borderRadius: 2,
+                            boxShadow: 3,
+                            backgroundColor: "background.paper",
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 2,
+                            }}
+                        >
+                        {/* Color */}
+                        <Select
+                            label="Color"
+                            register={register}
+                            name="color"
+                            errors={errors}
+                            options={colorOptions}
+                            disabled={isWorking}
+                        />
+
+                        {/* Brand */}
+                        <Select
+                            label="Brand"
+                            register={register}
+                            name="brand"
+                            errors={errors}
+                            options={brandOptions}
+                            disabled={isWorking}
+                        />
+
                         </Box>
                     </Paper>
                 </Box>
@@ -473,5 +354,3 @@ export default function CreateProduct() {
         </Box>
     );
 }
-
-//! you need to make components for input fields and make less complicated the code

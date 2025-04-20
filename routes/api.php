@@ -29,6 +29,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// Route::post('/register', [AuthController::class, 'register']);
+// Route::post('/login', [AuthController::class, 'login']);
+
+// Route::middleware('auth:sanctum')->group(function () {
+//     Route::get('/user', [AuthController::class, 'userProfile']);
+//     Route::post('/logout', [AuthController::class, 'logout']);
+// });
+
+
 Route::post('/products/{product}/favorite', [FavoriteController::class, 'store'])->name('favorites.store');
 Route::delete('/products/{product}/favorite', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
 
@@ -44,3 +53,9 @@ Route::put('images/update/{id}',[ImageController::class, 'update']);
 Route::apiResource('images' ,ImageController::class);
 Route::apiResource('product-attributes', ProductAttributeController::class);
 Route::apiResource('product-attribute-values', ProductAttributeValueController::class);
+
+
+
+Route::put('/users/{user}/status', [UserController::class, 'Status']);
+Route::delete('bulk-delte-user',[UserController::class, 'bulkDelete']);
+

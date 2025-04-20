@@ -21,8 +21,10 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('description')->nullable();
             $table->string('rating')->nullable();
-            $table->enum('role', ['admin', 'user', 'manager']); 
-            $table->enum('isActive', ['active', 'inactive'])->default('active');
+            $table->enum('role', ['admin', 'user', 'manager']);
+            $table->boolean('is_active')->default(true);
+            $table->decimal('latitude', 10, 7)->nullable(); // Store latitude
+            $table->decimal('longitude', 10, 7)->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

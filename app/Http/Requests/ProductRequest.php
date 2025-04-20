@@ -23,20 +23,24 @@ class ProductRequest extends FormRequest
      */
     public function rules(): array
     {
+        // dd(Request()->file('images'));
         $rules = [
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'net_price' => 'required|numeric|gte:0',
             'discount' => 'nullable|numeric|gte:0',
-            'color' => 'nullable|string|max:255',
             'quantity' => 'required|integer|min:1',
             'condition' => 'nullable|boolean',
-            'location' => 'required|string|max:255',
-            'description' => 'required|string|min:10',
-            'date' => 'nullable|date_format:Y-m-d',
+
+            'location' => 'nullable|string|max:255',
+            'latitude' => 'nullable',
+            'longitude' => 'nullable',
             'attributes' => 'nullable|array', // attributes should be an array
-            'attributes.*.attribute_id' => 'required|exists:product_attributes,id', // attribute ID must exist in the product_attributes table
-            'attributes.*.value' => 'required|string|max:255', // value must be a string and is required
+            
+            'description' => 'required|string|min:10',
+
+            // 'attributes.*.attribute_id' => 'required|exists:product_attributes,id', // attribute ID must exist in the product_attributes table
+            // 'attributes.*.value' => 'required|string|max:255', // value must be a string and is required
 
         ];
 

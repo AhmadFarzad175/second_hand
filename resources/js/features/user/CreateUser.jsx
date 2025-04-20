@@ -12,13 +12,18 @@ import {
 } from "@mui/material";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import CloseIcon from "@mui/icons-material/Close";
-import { TextField, Select } from "./InputFields"; // Import reusable components
+import { TextField, Select, TextArea } from "../../ui/InputFields"; // Import reusable components
 import { useCreateUser } from "./useCreateUser";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function CreateUser() {
     const theme = useTheme();
+    const navigate = useNavigate();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-    const [image, setImage] = useState(null);
+    const { state } = useLocation();
+    const user = state?.user || null;
+
+    const [image, setImage] = useState(user?.image || null);
     const [imageFile, setImageFile] = useState(null);
     const { isCreating, createUser } = useCreateUser(); // Assume this hook exists
     const isWorking = isCreating;
@@ -27,7 +32,17 @@ export default function CreateUser() {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm();
+    } = useForm({
+        defaultValues: {
+            role: 'kdsfasdk', // Default value for your select
+            name: user?.name, // Default value for your select
+            email: user?.email, // Default value for your select
+            phone: user?.phone, // Default value for your select
+            location: user?.location, // Default value for your select
+            description: user?.description, // Default value for your select
+            // Add defaults for other fields if needed
+        },
+    });
 
     const handleAddImage = (event) => {
         if (event.target.files && event.target.files[0]) {
@@ -51,13 +66,24 @@ export default function CreateUser() {
         if (imageFile) {
             formData.append("image", imageFile);
         }
-        createUser(formData);
+        if(user){
+            
+        }
+        createUser(formData, {
+            onSuccess: () => {
+                navigate(
+                    window.location.pathname.includes("/admin")
+                        ? "/admin/users"
+                        : "/"
+                );
+            },
+        });
     };
 
     return (
         <Box sx={{ padding: { lg: 2 }, maxWidth: 1200, margin: "auto" }}>
             <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
-                Create User
+                {user ? "Edit User" : "Create User"}
             </Typography>
             <Paper
                 sx={{
@@ -67,7 +93,11 @@ export default function CreateUser() {
                     backgroundColor: "background.paper",
                 }}
             >
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: "bold", mb: 2 }}>
+                <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{ fontWeight: "bold", mb: 2 }}
+                >
                     User Details
                 </Typography>
                 <Box
@@ -92,14 +122,16 @@ export default function CreateUser() {
                             name="name"
                             disabled={isWorking}
                         />
-                        <TextField
-                            label="Password"
-                            register={register}
-                            errors={errors}
-                            name="password"
-                            type="password"
-                            disabled={isWorking}
-                        />
+                        {!user && (
+                            <TextField
+                                label="Password"
+                                register={register}
+                                errors={errors}
+                                name="password"
+                                type="password"
+                                disabled={isWorking}
+                            />
+                        )}
                         <TextField
                             label="Email"
                             register={register}
@@ -109,10 +141,10 @@ export default function CreateUser() {
                             disabled={isWorking}
                         />
                         <TextField
-                            label="Province"
+                            label="Location"
                             register={register}
                             errors={errors}
-                            name="province"
+                            name="location"
                             disabled={isWorking}
                         />
                         <TextField
@@ -133,6 +165,7 @@ export default function CreateUser() {
                                 { value: "user", label: "User" },
                             ]}
                             disabled={isWorking}
+                            // No defaultValue here - let the form handle it
                         />
                     </Box>
 
@@ -143,6 +176,7 @@ export default function CreateUser() {
                             flexDirection: "column",
                             alignItems: "center",
                             gap: 2,
+                            order: { xs: -1, sm: 1 }, // This makes it appear first on mobile (xs) and in original order on sm and up
                         }}
                     >
                         <Typography variant="h6" sx={{ fontWeight: "bold" }}>
@@ -154,10 +188,11 @@ export default function CreateUser() {
                                 width: "100%",
                                 maxWidth: 300,
                                 height: "300px",
-                                // paddingTop: "100%",
                                 borderRadius: 2,
                                 overflow: "hidden",
-                                backgroundColor: image ? "transparent" : "action.hover",
+                                backgroundColor: image
+                                    ? "transparent"
+                                    : "action.hover",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
@@ -183,11 +218,14 @@ export default function CreateUser() {
                                         justifyContent: "center",
                                         backgroundColor: "transparent",
                                         "&:hover": {
-                                            backgroundColor: "rgba(255, 255, 255, 0.1)",
+                                            backgroundColor:
+                                                "rgba(255, 255, 255, 0.1)",
                                         },
                                     }}
                                 >
-                                    <AddPhotoAlternateIcon sx={{ color: "text.secondary" }} />
+                                    <AddPhotoAlternateIcon
+                                        sx={{ color: "text.secondary" }}
+                                    />
                                     <input
                                         type="file"
                                         accept="image/*"
@@ -216,9 +254,11 @@ export default function CreateUser() {
                                             top: 4,
                                             right: 4,
                                             color: "white",
-                                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                            backgroundColor:
+                                                "rgba(0, 0, 0, 0.5)",
                                             "&:hover": {
-                                                backgroundColor: "rgba(0, 0, 0, 0.7)",
+                                                backgroundColor:
+                                                    "rgba(0, 0, 0, 0.7)",
                                             },
                                         }}
                                         onClick={handleRemoveImage}
@@ -229,6 +269,18 @@ export default function CreateUser() {
                             )}
                         </Box>
                     </Box>
+                </Box>
+
+                {/* Description Text Area - Full width */}
+                <Box sx={{ mt: 4 }}>
+                    <TextArea
+                        label="Description"
+                        name="description"
+                        register={register}
+                        errors={errors}
+                        rows={6}
+                        disabled={isWorking}
+                    />
                 </Box>
 
                 {/* Submit Button */}
@@ -247,7 +299,7 @@ export default function CreateUser() {
                         }}
                         onClick={handleSubmit(onSubmit)}
                     >
-                        Save User
+                        {user ? "Save" : "Create"}
                     </Button>
                 </Box>
             </Paper>

@@ -56,10 +56,10 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
                 <Checkbox checked={isSelected} />
             </TableCell>
             <TableCell align="left" sx={{ width: 80, height: 80 }}>
-                {row.images?.length > 0 ? (
+                {row.image?.length > 0 ? (
                     <Box
                         component="img"
-                        src={row.images[0].image_path}
+                        src={row.image}
                         alt="Product"
                         sx={{
                             width: "100%",
@@ -106,8 +106,8 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
             </TableCell>
             <TableCell align="left">
                 <Chip
-                    label={row.condition}
-                    color={row.condition === "New" ? "primary" : "secondary"}
+                    label={row.condition ? "New" : "Used"}
+                    color={row.condition ? "primary" : "secondary"}
                     size="small"
                     variant="outlined"
                 />

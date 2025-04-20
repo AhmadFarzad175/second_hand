@@ -20,14 +20,14 @@ return new class extends Migration
             $table->foreignIdFor(Category::class);
             $table->decimal('net_price', 10, 2); // Changed from price to net_price
             $table->decimal('discount', 10, 2)->default(0); // New field
-            $table->string('color')->nullable(); // New field
             $table->integer('quantity')->default(1); // New field
-            $table->boolean('condition')->default(false);
-            $table->string('location')->nullable();
+            $table->boolean('condition')->default(false); // 0 = new 1 = used
             $table->text('description');
-            $table->date('date')->default(now());
+            $table->decimal('latitude', 10, 7)->nullable(); // Store latitude
+            $table->decimal('longitude', 10, 7)->nullable();
+            $table->string('location')->nullable();
+            $table->json('attributes');
             $table->timestamps();
-
         });
     }
 
