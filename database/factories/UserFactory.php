@@ -30,7 +30,8 @@ class UserFactory extends Factory
             'phone' => $this->faker->phoneNumber(),
             'description' => $this->faker->sentence(),
             'role' => $this->faker->randomElement(['admin', 'user', 'manager']),
-            'isActive' => $this->faker->randomElement(['active', 'inactive']),
+            'is_active' => $this->faker->randomElement([true, false]),
+
         ];
     }
 

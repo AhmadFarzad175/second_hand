@@ -27,7 +27,7 @@ class User extends Authenticatable
         'description',
         'rating',
         'role',
-        'isActive',
+        'is_active',
     ];
 
     public function reviews()

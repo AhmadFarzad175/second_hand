@@ -11,6 +11,11 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\ProductAttributeController;
+use App\Http\Controllers\Mobile\UserMobileController;
+use App\Http\Controllers\Mobile\ReportMobileController;
+use App\Http\Controllers\Mobile\ReviewMobileController;
+use App\Http\Controllers\Mobile\MessageMobileController;
+use App\Http\Controllers\Mobile\FavoriteMobileController;
 use App\Http\Controllers\ProductAttributeValueController;
 
 
@@ -55,4 +60,60 @@ Route::apiResource('product-attributes', ProductAttributeController::class);
 Route::apiResource('product-attribute-values', ProductAttributeValueController::class);
 Route::post('/users/{user}/status', [UserController::class, 'Status']);
 Route::delete('bulk-delte-user',[UserController::class, 'bulkDelete']);
+
+
+
+
+
+
+
+Route::prefix('v1/mobile')->group(function () {
+
+    // Public routes (unauthenticated mobile access)
+    Route::get('/products', [ProductController::class, 'index']); // With filters
+    Route::get('/products/{product}', [ProductController::class, 'show']);
+
+    Route::get('/categories', [CategoryController::class, 'index']);
+    Route::get('/categories/{category}', [CategoryController::class, 'show']);
+
+    Route::get('/reviews', [ReviewController::class, 'index']);
+    Route::get('/reviews/{review}', [ReviewController::class, 'show']);
+
+    Route::get('/product-attributes', [ProductAttributeController::class, 'index']);
+    Route::get('/product-attribute-values', [ProductAttributeValueController::class, 'index']);
+
+    // Search route
+    Route::get('/search/products', [ProductController::class, 'index']); // Use ?search=query
+
+    // Optional filter-specific route if needed
+    Route::get('/products/filter', [ProductController::class, 'index']); // Uses request filters
+
+    // Authenticated routes (needs mobile login)
+    Route::middleware('auth:sanctum')->group(function () {
+
+        // User
+        // Route::get('/me', [AuthController::class, 'userProfile']);
+        // Route::post('/logout', [AuthController::class, 'logout']);
+
+        // User-specific products
+        Route::post('/products', [ProductController::class, 'store']);
+        Route::put('/products/{product}', [ProductController::class, 'update']);
+        Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+
+        // Favorites
+        Route::post('/products/{product}/favorite', [FavoriteController::class, 'store']);
+        Route::delete('/products/{product}/favorite', [FavoriteController::class, 'destroy']);
+
+        // Reviews
+        Route::post('/reviews', [ReviewController::class, 'store']);
+
+        // Messaging
+        Route::apiResource('/messages', MessageController::class);
+
+        // Image updates
+        Route::post('/images', [ImageController::class, 'store']);
+        Route::put('/images/update/{id}', [ImageController::class, 'update']);
+        Route::delete('/images/{id}', [ImageController::class, 'destroy']);
+    });
+});
 
