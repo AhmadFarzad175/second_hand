@@ -34,13 +34,11 @@ export default function CreateUser() {
         formState: { errors },
     } = useForm({
         defaultValues: {
-            role: 'kdsfasdk', // Default value for your select
-            name: user?.name, // Default value for your select
-            email: user?.email, // Default value for your select
-            phone: user?.phone, // Default value for your select
-            location: user?.location, // Default value for your select
-            description: user?.description, // Default value for your select
-            // Add defaults for other fields if needed
+            name: user?.name, 
+            email: user?.email, 
+            phone: user?.phone, 
+            location: user?.location, 
+            description: user?.description, 
         },
     });
 
@@ -160,6 +158,7 @@ export default function CreateUser() {
                             register={register}
                             errors={errors}
                             name="role"
+                            defaultValue={user.role}
                             options={[
                                 { value: "admin", label: "Admin" },
                                 { value: "user", label: "User" },

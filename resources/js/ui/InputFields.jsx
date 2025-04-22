@@ -1,9 +1,7 @@
 import React from "react";
 import {
     TextField as MuiTextField,
-    FormControl,
-    InputLabel,
-    Select as MuiSelect,
+
     MenuItem,
 } from "@mui/material";
 
@@ -32,6 +30,7 @@ export const TextField = ({
 
 export const Select = ({ 
     label, 
+    defaultValue,
     register, 
     name, 
     errors, 
@@ -44,6 +43,7 @@ export const Select = ({
             select
             label={label}
             fullWidth
+            defaultValue={defaultValue}
             variant="outlined"
             size="medium"
             error={!!errors[name]}

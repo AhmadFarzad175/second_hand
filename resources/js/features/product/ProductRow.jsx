@@ -100,7 +100,7 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
                             textDecoration: "line-through",
                         }}
                     >
-                        {row.previous_price}
+                        {row.price - row.discount}
                     </Typography>
                 </Box>
             </TableCell>

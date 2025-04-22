@@ -28,7 +28,7 @@ class ProductController extends Controller
 
         // Start the product query with the necessary relationships
         $query = Product::with(['category', 'user', 'images', 'reviews'])
-            ->orderBy('id', 'ASC')
+            ->orderBy('id', 'DESC')
             ->search($search);
 
         // If the user’s latitude and longitude are available, add the distance calculation to the query
