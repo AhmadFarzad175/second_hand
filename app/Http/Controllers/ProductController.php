@@ -160,7 +160,7 @@ public function bulkDelete(Request $request)
     if ($products->isEmpty()) {
         return response()->json(['message' => 'No valid or authorized products found.'], 404);
     }
-
+// it is the comment which i need for pushing
     // Delete image files and product entries
     foreach ($products as $product) {
         foreach ($product->images as $image) {

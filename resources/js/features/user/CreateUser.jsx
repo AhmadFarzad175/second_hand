@@ -34,11 +34,11 @@ export default function CreateUser() {
         formState: { errors },
     } = useForm({
         defaultValues: {
-            name: user?.name, 
-            email: user?.email, 
-            phone: user?.phone, 
-            location: user?.location, 
-            description: user?.description, 
+            name: user?.name,
+            email: user?.email,
+            phone: user?.phone,
+            location: user?.location,
+            description: user?.description,
         },
     });
 
@@ -50,6 +50,8 @@ export default function CreateUser() {
             setImageFile(file);
         }
     };
+
+    // heel
 
     const handleRemoveImage = () => {
         setImage(null);
@@ -64,8 +66,7 @@ export default function CreateUser() {
         if (imageFile) {
             formData.append("image", imageFile);
         }
-        if(user){
-            
+        if (user) {
         }
         createUser(formData, {
             onSuccess: () => {
