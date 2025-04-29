@@ -8,7 +8,7 @@ const TableHeader = ({ onSelectAllClick, numSelected, rowCount }) => {
         { id: 2, numeric: false, label: "User Name" },
         { id: 3, numeric: true, label: "Phone" },
         { id: 4, numeric: false, label: "Province" },
-        { id: 5, numeric: true, label: "Product Amounts" },
+        { id: 5, numeric: true, label: "Products" },
         { id: 6, numeric: true, label: "Rating" },
         { id: 7, numeric: false, label: "Role" },
         { id: 8, numeric: false, label: "Active" },

@@ -19,10 +19,17 @@ class CategoryController extends Controller
     {
         $perPage = $request->input('perPage');
         $search = $request->input('search');
-        $category = Category::query()->search($search);
-        $category = $perPage ? $category->latest()->paginate($perPage) : $category->latest()->get();
+
+        $category = Category::query()->withCount('products')->search($search);
+
+        $category = $perPage
+            ? $category->latest()->paginate($perPage)
+            : $category->latest()->get();
+
         return CategoryResource::collection($category);
     }
+
+
 
     /**
      * Store a new category.
@@ -32,7 +39,7 @@ class CategoryController extends Controller
         $validated = $request->validated();
         $request->hasFile('image') ? $this->storeImage($request, $validated, "images/categories", 'image') : null;
         Category::create($validated);
-        return response()->json(['success'=> 'Category created successfully']);
+        return response()->json(['success' => 'Category created successfully']);
     }
 
     /**
@@ -49,7 +56,7 @@ class CategoryController extends Controller
     public function update(CategoryRequest $request, Category $category): JsonResponse
     {
         $validated = $request->validated();
-        $request->hasFile('image') && $this->updateImage($category, $request, $validated, 'categories', 'image');
+        $request->hasFile('image') && $this->updateImage($category, $request, $validated, 'images/categories', 'image');
         $category->update($validated);
         return response()->json(['success' => 'Category updated successfully']);
     }
@@ -59,7 +66,7 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category): JsonResponse
     {
-        $this->deleteImage($category, 'categories', 'image');
+        $this->deleteImage($category, 'images/categories', 'image');
         $category->delete();
         return response()->json(['success' => 'Category deleted successfully']);
     }

@@ -15,33 +15,31 @@ import CloseIcon from "@mui/icons-material/Close";
 import { TextField, Select, TextArea } from "../../ui/InputFields"; // Import reusable components
 import { useCreateUser } from "./useCreateUser";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useUpdateUser } from "./useUpdateUser";
 
 export default function CreateUser() {
     const theme = useTheme();
     const navigate = useNavigate();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const { state } = useLocation();
-    const user = state?.user || null;
+    const { id: editId, ...editValues } = state?.user || {};
+    console.log(editValues);
 
-    const [image, setImage] = useState(user?.image || null);
+    const isEditSession = Boolean(editId);
+    
+
+    const [image, setImage] = useState(editValues?.image || null);
     const [imageFile, setImageFile] = useState(null);
     const { isCreating, createUser } = useCreateUser(); // Assume this hook exists
-    const isWorking = isCreating;
+    const { isUpdating, updateUser } = useUpdateUser(); // Assume this hook exists
+    const isWorking = isCreating || isUpdating;
 
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm({
-        defaultValues: {
-            role: 'kdsfasdk', // Default value for your select
-            name: user?.name, // Default value for your select
-            email: user?.email, // Default value for your select
-            phone: user?.phone, // Default value for your select
-            location: user?.location, // Default value for your select
-            description: user?.description, // Default value for your select
-            // Add defaults for other fields if needed
-        },
+        defaultValues: isEditSession ? editValues : {},
     });
 
     const handleAddImage = (event) => {
@@ -66,9 +64,21 @@ export default function CreateUser() {
         if (imageFile) {
             formData.append("image", imageFile);
         }
-        if(user){
-            
-        }
+
+        if (isEditSession) {
+            updateUser(
+                { formData, id: editId },
+                {
+                    onSuccess: () => {
+                        navigate(
+                            window.location.pathname.includes("/admin")
+                                ? "/admin/users"
+                                : "/"
+                        );
+                    },
+                }
+            );
+        } else {
         createUser(formData, {
             onSuccess: () => {
                 navigate(
@@ -78,12 +88,13 @@ export default function CreateUser() {
                 );
             },
         });
+    }
     };
 
     return (
         <Box sx={{ padding: { lg: 2 }, maxWidth: 1200, margin: "auto" }}>
             <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
-                {user ? "Edit User" : "Create User"}
+                {isEditSession ? "Edit User" : "Create User"}
             </Typography>
             <Paper
                 sx={{
@@ -122,7 +133,7 @@ export default function CreateUser() {
                             name="name"
                             disabled={isWorking}
                         />
-                        {!user && (
+                        {!isEditSession && (
                             <TextField
                                 label="Password"
                                 register={register}
@@ -160,6 +171,7 @@ export default function CreateUser() {
                             register={register}
                             errors={errors}
                             name="role"
+                            defaultValue={editValues?.role}
                             options={[
                                 { value: "admin", label: "Admin" },
                                 { value: "user", label: "User" },
@@ -299,7 +311,7 @@ export default function CreateUser() {
                         }}
                         onClick={handleSubmit(onSubmit)}
                     >
-                        {user ? "Save" : "Create"}
+                        {isEditSession ? "Save" : "Create"}
                     </Button>
                 </Box>
             </Paper>

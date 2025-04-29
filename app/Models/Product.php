@@ -12,6 +12,7 @@ class Product extends Model
     protected $fillable = [
         'name',
         'category_id',
+        'user_id',
         'net_price',
         'discount',
         'quantity',
@@ -38,7 +39,6 @@ class Product extends Model
 
     public function user()
     {
-
         return $this->belongsTo(User::class); // Define a belongsTo relationship
     }
     public function category()
@@ -54,10 +54,10 @@ class Product extends Model
     {
         return $this->hasMany(Favorite::class); // Define a hasMany relationship
     }
-    public function images()
-    {
-        return $this->hasMany(Image::class); // Define a hasMany relationship
-    }
+        public function images()
+        {
+            return $this->hasMany(Image::class); // Define a hasMany relationship
+        }
     public function attributeValues()
     {
         return $this->hasMany(ProductAttributeValue::class);

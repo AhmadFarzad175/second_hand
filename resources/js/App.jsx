@@ -14,6 +14,7 @@ import CreateProduct from "./features/product/CreateProduct";
 import Categories from "./features/category/Categories";
 import Users from "./features/user/Users";
 import CreateUser from "./features/user/CreateUser";
+import ShowProduct from "./features/product/showProduct";
 
 function App() {
     return (
@@ -32,6 +33,7 @@ function App() {
 
                 {/* Product Menu */}
                 <Route path="products" element={<Products />} />
+                <Route path="product/:id" element={<ShowProduct />} />
                 <Route path="create-product" element={<CreateProduct />} />
                 <Route path="edit-product/:id" element={<CreateProduct />} />
                 <Route path="categories" element={<Categories />} />

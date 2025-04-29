@@ -19,9 +19,15 @@ class ProductResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'category' => $this->category ? new CategoryResource($this->category) : null,
-            'price' => $this->net_price,
+            'category' => [
+                'id' => $this->category->id,
+                'name' => $this->category->name
+            ],
+            'category_id' => $this->category_id,
+            'user' => $this->user->name,
+            'net_price' => $this->net_price,
             'discount' => $this->discount,
+            'quantity' => $this->quantity,
             'condition' => $this->condition,
             'date' => Carbon::parse($this->created_at)->format('Y-m-d'), // Parse and format the date
             'favorites_count' => $this->favorites->count(),
@@ -31,16 +37,16 @@ class ProductResource extends JsonResource
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'attributes' => $this->attributes,
-            'image' => asset($this->images[0]->image_url),
-            
+            'image' => asset('storage/' .$this->images[0]?->image_url),
+
             'WhatsApp' => $this->user && $this->user->phone
-            ? 'https://wa.me/' . $this->user->phone . '?text=' . urlencode("Hello, I'm interested in your product '{$this->name}' listed for {$this->price}")
-            : null,
+                ? 'https://wa.me/' . $this->user->phone . '?text=' . urlencode("Hello, I'm interested in your product '{$this->name}' listed for {$this->price}")
+                : null,
         ];
     }
-  
 
-        /**
+
+    /**
      * Calculate the distance from a given latitude and longitude.
      *
      * @param float $latitude

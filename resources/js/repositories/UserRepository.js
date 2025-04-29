@@ -16,7 +16,7 @@ export async function getUsers() {
   export async function createUpdateUser(formData, id = null) {
 
     const url = id
-        ? `http://127.0.0.1:8000/api/users/${id}`
+        ? `http://127.0.0.1:8000/api/users/update/${id}`
         : `http://127.0.0.1:8000/api/users`;
 
     const response = await fetch(url, {

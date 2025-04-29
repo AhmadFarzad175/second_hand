@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,6 +19,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->foreignIdFor(Category::class);
+            $table->foreignIdFor(User::class);
             $table->decimal('net_price', 10, 2); // Changed from price to net_price
             $table->decimal('discount', 10, 2)->default(0); // New field
             $table->integer('quantity')->default(1); // New field

@@ -8,6 +8,7 @@ import {
     MenuItem,
     Box,
     Typography,
+    Chip,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EditIcon from "@mui/icons-material/Edit";
@@ -58,7 +59,7 @@ const CategoryRow = ({ category, handleOpen, isSelected, handleClick }) => {
                     <Box
                         component="img"
                         src={category.image}
-                        alt="Category"  
+                        alt="Category"
                         sx={{
                             width: "100%",
                             height: "100%",
@@ -85,6 +86,14 @@ const CategoryRow = ({ category, handleOpen, isSelected, handleClick }) => {
                 )}
             </TableCell>
             <TableCell align="left">{category.name}</TableCell>
+            <TableCell align="left">
+                <Chip
+                    label={category.total_products}
+                    color="primary"
+                    size="small"
+                    variant="outlined"
+                />
+            </TableCell>
             <TableCell align="right">
                 <IconButton
                     className="menu-button"
@@ -109,7 +118,7 @@ const CategoryRow = ({ category, handleOpen, isSelected, handleClick }) => {
                         <EditIcon sx={{ mr: 1 }} />
                         Edit
                     </MenuItem>
-                        <MenuItem onClick={handleDelete} disabled={isDeleting}>
+                    <MenuItem onClick={handleDelete} disabled={isDeleting}>
                         <DeleteIcon sx={{ mr: 1 }} />
                         Delete
                     </MenuItem>

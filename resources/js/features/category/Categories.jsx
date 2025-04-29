@@ -193,6 +193,12 @@ const Categories = () => {
                                     Name
                                 </TableCell>
                                 <TableCell
+                                    align={"left"}
+                                    sx={{ fontWeight: "bold" }}
+                                >
+                                    total Products
+                                </TableCell>
+                                <TableCell
                                     align={"right"}
                                     sx={{ fontWeight: "bold" }}
                                 >

@@ -65,10 +65,9 @@ class UserController extends Controller
     {
         // $user = User::find($id);
         $validated = $request->validated();
-        $this->updateImage($user, $request, $validated, 'users', "image");
-        if ($request->filled('password')) {
-            $validated['password'] = Hash::make($request->password);
-        }
+        // dd($validated);
+        $this->updateImage($user, $request, $validated, 'images/users', "image");
+
         $user->update($validated);
 
         return new UserResource($user);
@@ -79,7 +78,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        $this->deleteImage($user, 'users', 'image');
+        $this->deleteImage($user, 'images/users', 'image');
         $user->delete();
         return response()->json(['success' => 'User deleted successfully']);
     }
@@ -105,7 +104,7 @@ class UserController extends Controller
         }
         foreach ($userIds as $id) {
             $user = User::find($id);
-            $this->deleteImage($user, 'users', 'image');
+            $this->deleteImage($user, 'images/users', 'image');
         }
         User::whereIn('id', $request->userIds)->delete();
         return response()->noContent();
