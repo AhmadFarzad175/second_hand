@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MessageSent;
 use App\Http\Requests\MessageRequest;
 use App\Http\Resources\MessageResource;
 use App\Models\Message;
@@ -24,9 +25,14 @@ class MessageController extends Controller
     public function store(MessageRequest $request): MessageResource
     {
         $message = Message::create($request->validated());
+        event(new MessageSent($message));
+        
+        // broadcast(new MessageSent($message));
+
+        // return response()->json(['message' => 'Message sent successfully!']);
         return new MessageResource($message);
     }
-    
+
     public function show(Message $message): JsonResponse
     {
         return response()->json(new MessageResource($message), 200);
