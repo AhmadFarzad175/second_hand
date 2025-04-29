@@ -9,6 +9,7 @@ import {
     Box,
     Switch,
     Typography,
+    Chip,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -52,7 +53,7 @@ const UserRow = ({ user, isSelected, handleClick }) => {
         // Prevent user selection when clicking on the menu, switch, or its items
         if (
             (anchorEl && anchorEl.contains(event.target)) ||
-            event.target.closest('.MuiSwitch-root') // Add this check
+            event.target.closest(".MuiSwitch-root") // Add this check
         ) {
             return;
         }
@@ -104,7 +105,14 @@ const UserRow = ({ user, isSelected, handleClick }) => {
             <TableCell>{user.name}</TableCell>
             <TableCell align="left">{user.phone}</TableCell>
             <TableCell align="left">{user.location}</TableCell>
-            <TableCell align="left">{user.productAmount}</TableCell>
+            <TableCell align="left">
+                <Chip
+                    label={user.total_product}
+                    color="primary"
+                    size="small"
+                    variant="outlined"
+                />
+            </TableCell>
             <TableCell>{user.rating}</TableCell>
             <TableCell align="left">{user.role}</TableCell>
             <TableCell align="left">
@@ -115,7 +123,7 @@ const UserRow = ({ user, isSelected, handleClick }) => {
                         handleStatusChange(event, user.id);
                     }}
                 />
-            </TableCell>{" "}
+            </TableCell>
             <TableCell align="center">
                 <IconButton
                     className="menu-button"
@@ -144,8 +152,9 @@ const UserRow = ({ user, isSelected, handleClick }) => {
                             event.stopPropagation();
                             handleMenuClose(event);
                             navigate(`/admin/edit-user/${user.id}`, {
-                                state: { user }  // Pass the entire user object
-                            });                        }}
+                                state: { user }, // Pass the entire user object
+                            });
+                        }}
                     >
                         <EditIcon sx={{ mr: 1 }} />
                         Edit

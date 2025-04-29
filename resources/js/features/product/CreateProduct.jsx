@@ -10,25 +10,41 @@ import {
     useMediaQuery,
 } from "@mui/material";
 import { useCreateProduct } from "./useCreateProduct";
-import { TextField, Select, TextArea } from "../../ui/InputFields";
+import {
+    TextField,
+    Select,
+    TextArea,
+    LocationField,
+} from "../../ui/InputFields";
 import ImageUploader from "../../ui/ImageUploader";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function CreateProduct() {
     const theme = useTheme();
+    const navigate = useNavigate();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const { isCreating, createProduct } = useCreateProduct();
+
     const [images, setImages] = useState(Array(6).fill(null));
     const [imageFiles, setImageFiles] = useState(Array(6).fill(null));
-    const { isCreating, createProduct } = useCreateProduct();
+    const [categories, setCategories] = useState([]);
+
+    const { state } = useLocation();
+    console.log(state);
+    const { id: editId, ...editValues } = state?.row || {};
+
+    const isEditSession = Boolean(editId);
+
     const isWorking = isCreating;
 
     const {
         register,
         handleSubmit,
-        formState: { errors },
-    } = useForm();
-
-    // State to store categories
-    const [categories, setCategories] = useState([]);
+        setValue,
+        formState: { errors, isSubmitting },
+    } = useForm({
+        defaultValues: isEditSession ? editValues : {},
+    });
 
     // Fetch categories from API
     useEffect(() => {
@@ -71,19 +87,19 @@ export default function CreateProduct() {
 
     const onSubmit = (data) => {
         const formData = new FormData();
+        const [latitude, longitude] = data.useByLocation.split(",").map(Number);
         // adding attributes
         const attributes = {
             color: data.color,
             brand: data.brand,
-          };
+        };
 
         //! temporary
-        formData.append("latitude", 35.6892);
-        formData.append("longitude", 23.6892);
+        formData.append("latitude", latitude);
+        formData.append("longitude", longitude);
 
-          
-          // Append as a JSON string
-          formData.append("attributes", JSON.stringify(attributes));
+        // Append as a JSON string
+        formData.append("attributes", JSON.stringify(attributes));
 
         // Append other form fields
         for (const key in data) {
@@ -103,7 +119,15 @@ export default function CreateProduct() {
         //         images[`image${i + 1}`] = file;
         //     }
         // });
-        createProduct(formData);
+        createProduct(formData, {
+            onSuccess: () => {
+                navigate(
+                    window.location.pathname.includes("/admin")
+                        ? "/admin/products"
+                        : "/"
+                );
+            },
+        });
     };
 
     // Prepare options for select components
@@ -134,7 +158,7 @@ export default function CreateProduct() {
     return (
         <Box sx={{ padding: { lg: 2 }, maxWidth: 1200, margin: "auto" }}>
             <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
-                Create Product
+                {isEditSession ? "Update" : "Create"} Product
             </Typography>
             <Box
                 sx={{
@@ -179,6 +203,7 @@ export default function CreateProduct() {
                             {/* Categories */}
                             <Select
                                 label="Categories"
+                                defaultValue={editValues?.category_id}
                                 register={register}
                                 name="category_id"
                                 errors={errors}
@@ -218,6 +243,7 @@ export default function CreateProduct() {
                                 />
                                 <Select
                                     label="Condition"
+                                    defaultValue={editValues?.condition}
                                     register={register}
                                     name="condition"
                                     errors={errors}
@@ -226,13 +252,16 @@ export default function CreateProduct() {
                                 />
                             </Box>
 
-                            {/* Use by Location */}
-                            <TextField
+                            {/* Location */}
+
+                            <LocationField
                                 label="Use by Location"
                                 register={register}
                                 errors={errors}
                                 name="useByLocation"
-                                disabled={isWorking}
+                                disabled={isSubmitting}
+                                showButton={true}
+                                setValue={setValue}
                             />
 
                             {/* Description */}
@@ -293,7 +322,7 @@ export default function CreateProduct() {
                     {/* attributes */}
                     <Paper
                         sx={{
-                            my:3,
+                            my: 3,
                             p: 3,
                             borderRadius: 2,
                             boxShadow: 3,
@@ -307,26 +336,25 @@ export default function CreateProduct() {
                                 gap: 2,
                             }}
                         >
-                        {/* Color */}
-                        <Select
-                            label="Color"
-                            register={register}
-                            name="color"
-                            errors={errors}
-                            options={colorOptions}
-                            disabled={isWorking}
-                        />
+                            {/* Color */}
+                            <Select
+                                label="Color"
+                                register={register}
+                                name="color"
+                                errors={errors}
+                                options={colorOptions}
+                                disabled={isWorking}
+                            />
 
-                        {/* Brand */}
-                        <Select
-                            label="Brand"
-                            register={register}
-                            name="brand"
-                            errors={errors}
-                            options={brandOptions}
-                            disabled={isWorking}
-                        />
-
+                            {/* Brand */}
+                            <Select
+                                label="Brand"
+                                register={register}
+                                name="brand"
+                                errors={errors}
+                                options={brandOptions}
+                                disabled={isWorking}
+                            />
                         </Box>
                     </Paper>
                 </Box>

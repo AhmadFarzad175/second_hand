@@ -46,7 +46,7 @@ trait ImageManipulation
     public function deleteImage($model, $folder, $name)
     {
         // Get the path of the image to delete
-        $path = public_path("storage/images/$folder/" . basename($model->$name));
+        $path = public_path("storage/$folder/" . basename($model->$name));
 
         // Check if the file exists and delete it
         if (File::exists($path)) {

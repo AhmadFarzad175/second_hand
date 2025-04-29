@@ -15,9 +15,11 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useDeleteProduct } from "./useDeleteProduct";
+import { useNavigate } from "react-router-dom";
 
 const ProductRow = ({ row, isSelected, handleClick }) => {
     const [anchorEl, setAnchorEl] = useState(null);
+    const navigate = useNavigate();
     const { isDeleting, deletePro } = useDeleteProduct();
 
     const handleMenuClick = (event) => {
@@ -86,22 +88,40 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
                     </Box>
                 )}
             </TableCell>
-            <TableCell>{row.name}</TableCell>
-            <TableCell align="left">{row.category?.name}</TableCell>
             <TableCell align="left">
                 <Box display="flex" flexDirection="column">
                     <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                        {row.price}
+                        {row.name}
                     </Typography>
+
                     <Typography
                         variant="body2"
                         sx={{
                             color: "text.secondary",
-                            textDecoration: "line-through",
+                            fontSize:"14px"
                         }}
                     >
-                        {row.price - row.discount}
+                        {row.user}
                     </Typography>
+                </Box>
+            </TableCell>
+            <TableCell align="left">{row.category?.name}</TableCell>
+            <TableCell align="left">
+                <Box display="flex" flexDirection="column">
+                    <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                        {row.net_price - row.discount}
+                    </Typography>
+                    {Number(row.discount) > 0 && (
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                color: "text.secondary",
+                                textDecoration: "line-through",
+                            }}
+                        >
+                            {row.net_price}
+                        </Typography>
+                    )}
                 </Box>
             </TableCell>
             <TableCell align="left">
@@ -132,6 +152,7 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
                         onClick={(event) => {
                             event.stopPropagation();
                             handleMenuClose(event);
+                            navigate(`/admin/product/${row.id}`);
                         }}
                     >
                         <VisibilityIcon sx={{ mr: 1 }} />
@@ -141,6 +162,9 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
                         onClick={(event) => {
                             event.stopPropagation();
                             handleMenuClose(event);
+                            navigate(`/admin/edit-product/${row.id}`, {
+                                state: { row }, // Pass the entire user object
+                            });
                         }}
                     >
                         <EditIcon sx={{ mr: 1 }} />

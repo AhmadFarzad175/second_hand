@@ -7,7 +7,6 @@ export function useUpdateCategory() {
 
     const { mutate: updateCategory, isLoading: isUpdating } = useMutation({
         mutationFn: ({ formData, id }) => {
-          console.log(formData)
             return createUpdateCategory(formData, id);
         },
         onSuccess: () => {

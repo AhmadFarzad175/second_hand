@@ -3,15 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Traits\ImageManipulation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ProductResource;
 use Illuminate\Support\Facades\Storage;
 use App\Services\ProductFilter; // Import the ProductFilter service
+use Illuminate\Support\Facades\File;
+
 
 class ProductController extends Controller
 {
+    use ImageManipulation;
     /**
      * Display a listing of the resource with filtering.
      */
@@ -61,15 +65,11 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the location fields if they are provided
-        $validatedData = $request->input();
-        // $validatedData = $request->validated();
-        // Handle attributes (store as a JSON object)
-        // if ($request->has('attributes')) {
-        //     $validatedData['attributes'] = json_encode($request->input('attributes'));
-        // }
+        $validated = $request->input();
+        $validated['user_id'] = Auth::user()?->id || 1;
 
-        $product = Product::create($validatedData);
+        // CREATE PRODUCT
+        $product = Product::create($validated);
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
@@ -77,7 +77,7 @@ class ProductController extends Controller
                 $path = $image->store('images/products', 'public');
 
                 // Save the path to the images table
-                $product->images()->create(['image_url' => 'storage/' . $path]);
+                $product->images()->create(['image_url' => $path]);
             }
         }
 
@@ -101,30 +101,35 @@ class ProductController extends Controller
 
     public function update(ProductRequest $request, Product $product)
     {
-        $product->update($request->validated());
-
-
         // Validate and get the validated data from the request
-        $validatedData = $request->validated();
-        // Handle attributes (store as a JSON object)
-        if ($request->has('attributes')) {
-            $validatedData['attributes'] = json_encode($request->input('attributes'));
-        }
+        $validated = $request->validated();
 
-        $validatedData = $this->handleLocationData($request, $validatedData);
+        // Update product fields
+        $product->update($validated);
 
-        // Update the product with the validated data
-        $product->update($validatedData);
-
-        // Handle updating images if they exist in the request
+        // Handle images (if new images are uploaded)
         if ($request->hasFile('images')) {
+            // Optional: delete old images from storage and database
+            foreach ($product->images as $oldImage) {
+                // Delete the file from storage
+                if (Storage::disk('public')->exists(str_replace('storage/', '', $oldImage->image_url))) {
+                    Storage::disk('public')->delete(str_replace('storage/', '', $oldImage->image_url));
+                }
+
+                // Delete from DB
+                $oldImage->delete();
+            }
+
+            // Store new images
             foreach ($request->file('images') as $image) {
-                $path = $image->store('product_images');
-                $product->images()->create(['image_path' => $path]);
+                $path = $image->store('images/products', 'public');
+                $product->images()->create(['image_url' => $path]);
             }
         }
 
-        return response()->json(['success' => 'Product updated successfully']);
+        return response()->json([
+            'message' => 'Product updated successfully',
+        ]);
     }
 
 
@@ -133,46 +138,53 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        // Delete associated images
-        $product->images()->delete();
-        $product->delete();
-
-        return response()->json(['success' => 'Product deleted successfully']);
-    }
-
-
-public function bulkDelete(Request $request)
-{
-    // Validate that productIds is an array of valid IDs
-    $request->validate([
-        'productIds' => 'required|array',
-        'productIds.*' => 'exists:products,id',
-    ]);
-
-    $productIds = $request->input('productIds');
-
-    // Fetch the products owned by the authenticated user
-    $products = Product::with('images')
-        ->whereIn('id', $productIds)
-        ->where('user_id', Auth::id()) // Authorization: only delete your own
-        ->get();
-
-    if ($products->isEmpty()) {
-        return response()->json(['message' => 'No valid or authorized products found.'], 404);
-    }
-// it is the comment which i need for pushing
-    // Delete image files and product entries
-    foreach ($products as $product) {
         foreach ($product->images as $image) {
-            if ($image->image_path && Storage::disk('public')->exists($image->image_path)) {
-                Storage::disk('public')->delete($image->image_path);
-            }
+            $this->deleteImage($image, 'images/products', 'image_url');
         }
 
         $product->images()->delete();
         $product->delete();
+
+        return response()->json(['success' => 'Product deleted successfully']);
+        // foreach ($product->images as $image) {
+        //     $path = public_path($image->image_url);
+        //     File::exists($path) ? File::delete($path) : null;
+        // }
     }
 
-    return response()->noContent(); // 204 No Content
-}
+
+    public function bulkDelete(Request $request)
+    {
+        // Validate that productIds is an array of valid IDs
+        $request->validate([
+            'productIds' => 'required|array',
+            'productIds.*' => 'exists:products,id',
+        ]);
+
+        $productIds = $request->input('productIds');
+
+        // Fetch the products owned by the authenticated user
+        $products = Product::with('images')
+            ->whereIn('id', $productIds)
+            ->where('user_id', Auth::id()) // Authorization: only delete your own
+            ->get();
+
+        if ($products->isEmpty()) {
+            return response()->json(['message' => 'No valid or authorized products found.'], 404);
+        }
+        // it is the comment which i need for pushing
+        // Delete image files and product entries
+        foreach ($products as $product) {
+            foreach ($product->images as $image) {
+                if ($image->image_path && Storage::disk('public')->exists($image->image_path)) {
+                    Storage::disk('public')->delete($image->image_path);
+                }
+            }
+
+            $product->images()->delete();
+            $product->delete();
+        }
+
+        return response()->noContent(); // 204 No Content
+    }
 }

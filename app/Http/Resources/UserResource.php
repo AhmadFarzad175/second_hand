@@ -15,10 +15,9 @@ class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            "id"=> $this->id,
+            "id" => $this->id,
             'name' => $this->name,
-            'email'=> $this->email,
-            'password' => $this->password,
+            'email' => $this->email,
             'phone' => $this->phone,
             'location' => $this->location,
             'description' => $this->description,
@@ -26,7 +25,7 @@ class UserResource extends JsonResource
             'rating' => $this->rating ?? 0, // Default to 0 if no rating
             'role' => $this->role,
             'is_active' => $this->is_active,
-
+            'total_product' => $this->products()->count(), // 👈 this line
 
         ];
     }
