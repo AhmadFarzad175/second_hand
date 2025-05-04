@@ -20,11 +20,11 @@ class ProductResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'category' => [
-                'id' => $this->category->id,
-                'name' => $this->category->name
+                'id' => $this->category?->id,
+                'name' => $this->category?->name
             ],
             'category_id' => $this->category_id,
-            'user' => $this->user->name,
+            'user' => $this->user?->name,
             'net_price' => $this->net_price,
             'discount' => $this->discount,
             'quantity' => $this->quantity,
@@ -37,8 +37,10 @@ class ProductResource extends JsonResource
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'attributes' => $this->attributes,
-            'image' => asset('storage/' .$this->images[0]?->image_url),
-
+            // 'image' => asset('storage/' .$this->images[0]?->image_url),
+'image' => $this->images->first()
+    ? asset('storage/' . $this->images->first()->image_url)
+    : asset('storage/default.jpg'),
             'WhatsApp' => $this->user && $this->user->phone
                 ? 'https://wa.me/' . $this->user->phone . '?text=' . urlencode("Hello, I'm interested in your product '{$this->name}' listed for {$this->price}")
                 : null,

@@ -23,10 +23,9 @@ class ProductFactory extends Factory
             'category_id' => Category::factory(), // Assuming a Category factory exists
             'net_price' => $this->faker->randomFloat(2, 10, 1000),
             'discount' => $this->faker->randomFloat(2, 0, 100),
-            'color' => $this->faker->colorName,
             'quantity' => $this->faker->numberBetween(1, 100),
+            'user_id' => rand(1, 10),
             'condition' => $this->faker->boolean,
-            // 'location' => $this->faker->city,
             'description' => $this->faker->sentence,
             'latitude' => $this->faker->latitude(34.0, 35.0), // Example latitude range for Kabul, Afghanistan
             'longitude' => $this->faker->longitude(69.0, 70.0), // Example longitude range for Kabul
@@ -34,7 +33,7 @@ class ProductFactory extends Factory
                 'size' => $this->faker->word,
                 'color' => $this->faker->colorName,
             ]),
-            'date' => $this->faker->date,
+            // 'date' => $this->faker->date,
         ];
     }
 }
