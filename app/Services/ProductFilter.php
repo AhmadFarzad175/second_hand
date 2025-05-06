@@ -53,9 +53,9 @@ class ProductFilter
     }
 
     protected function condition(Builder $query, $condition)
-{
-    $query->where('condition', $condition);
-}
+    {
+        $query->where('condition', $condition);
+    }
 
 
     protected function date(Builder $query, $date)
@@ -67,7 +67,7 @@ class ProductFilter
     {
         $query->where(function ($q) use ($term) {
             $q->where('name', 'like', "%{$term}%")
-              ->orWhere('description', 'like', "%{$term}%");
+                ->orWhere('description', 'like', "%{$term}%");
         });
     }
 
