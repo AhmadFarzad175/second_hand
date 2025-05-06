@@ -24,40 +24,36 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $filters = $request->only(['category', 'price', 'location', 'condition', 'date']);
+        $filters = $request->only([
+            'category', 'price', 'location', 'condition', 'date', 'attributes'
+        ]);
+
         $perPage = $request->input('perPage', 10);
         $search = $request->input('search');
 
-        // Get the authenticated user's latitude and longitude
         $user = Auth::user();
         $userLat = $user->latitude ?? null;
         $userLng = $user->longitude ?? null;
 
-        // Start the product query with the necessary relationships
         $query = Product::with(['category', 'user', 'images', 'reviews'])
             ->orderBy('id', 'DESC')
             ->search($search);
 
-        // If the user’s latitude and longitude are available, add the distance calculation to the query
+        // Distance filtering and ordering
         if ($userLat && $userLng) {
-            $query->select('*')
-                ->selectRaw("(
-                6371 * acos(cos(radians($userLat))
-                * cos(radians(latitude))
-                * cos(radians(longitude) - radians($userLng))
-                + sin(radians($userLat))
+            $query->select('*')->selectRaw("(
+                6371 * acos(cos(radians(?)) * cos(radians(latitude))
+                * cos(radians(longitude) - radians(?)) + sin(radians(?))
                 * sin(radians(latitude)))
-            ) AS distance")
-                ->orderBy('distance', 'asc'); // Order products by distance (ascending)
+            ) AS distance", [$userLat, $userLng, $userLat])
+            ->orderBy('distance', 'asc');
         }
 
-        // Apply additional filters if provided
+        // Apply all filters, including attributes
         $filteredQuery = ProductFilter::apply($query, $filters);
 
-        // Paginate or get all products
         $products = $perPage ? $filteredQuery->paginate($perPage) : $filteredQuery->get();
 
-        // Return the filtered products in the ProductResource format
         return ProductResource::collection($products);
     }
 

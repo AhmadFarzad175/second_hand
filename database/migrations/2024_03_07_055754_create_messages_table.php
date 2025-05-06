@@ -21,6 +21,10 @@ return new class extends Migration
             $table->string('reason');
             $table->date('date');
             $table->timestamps();
+
+            $table->index(['sender_id', 'receiver_id']);
+            $table->index('product_id');
+            $table->index('created_at');
         });
     }
 
