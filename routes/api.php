@@ -49,13 +49,13 @@ Route::delete('/products/{product}/favorite', [FavoriteController::class, 'destr
 
 Route::apiResource('users', UserController::class);
 Route::apiResource('products', ProductController::class);
+Route::Post('products/update/{product}',[ProductController::class, 'update']);
+Route::get('productImages/{id}',[ProductController::class, 'allImages']);
 Route::apiResource('categories', CategoryController::class);
 Route::Post('categories/update/{category}',[CategoryController::class, 'update']);
 Route::apiResource('messages', MessageController::class);
 Route::apiResource('reports', ReportController::class);
 Route::apiResource('reviews', ReviewController::class);
-Route::put('images/update/{id}',[ImageController::class, 'update']);
-Route::apiResource('images' ,ImageController::class);
 Route::apiResource('product-attributes', ProductAttributeController::class);
 Route::apiResource('product-attribute-values', ProductAttributeValueController::class);
 Route::put('users/{user}/status', [UserController::class, 'Status']);

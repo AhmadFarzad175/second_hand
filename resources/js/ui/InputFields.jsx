@@ -11,7 +11,7 @@ import {
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 
 import { OpenStreetMapProvider } from "leaflet-geosearch";
-import 'leaflet-geosearch/dist/geosearch.css';
+import "leaflet-geosearch/dist/geosearch.css";
 
 export const TextField = ({
     label,
@@ -94,9 +94,6 @@ export const TextArea = ({
     );
 };
 
-
-
-
 export const LocationField = ({
     label,
     register,
@@ -108,7 +105,7 @@ export const LocationField = ({
     setValue,
     ...props
 }) => {
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState("");
     const [suggestions, setSuggestions] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
     const [geolocationError, setGeolocationError] = useState(null);
@@ -121,7 +118,7 @@ export const LocationField = ({
         const value = e.target.value;
         setSearchQuery(value);
         setGeolocationError(null);
-        
+
         // Clear previous timeout
         if (typingTimeoutRef.current) {
             clearTimeout(typingTimeoutRef.current);
@@ -133,21 +130,31 @@ export const LocationField = ({
         }, 1000);
     };
 
-    const performSearch = async (value) => {
-        if (value.length > 2) {
+    const performSearch = async (query) => {
+        if (query.length > 2) {
             setIsSearching(true);
             try {
-                const results = await providerRef.current.search({ query: value });
+                const language = "en"; // You can dynamically get this from context or user preference
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+                    query
+                )}&addressdetails=1&limit=5&countrycodes=af&lang=${language}`;
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                const results = data.map((item) => ({
+                    label: item.display_name,
+                    x: item.lon,
+                    y: item.lat,
+                }));
+
                 setSuggestions(results);
             } catch (error) {
-                console.error("Geocoding error:", error);
+                console.error("Search error:", error);
                 setSuggestions([]);
             } finally {
                 setIsSearching(false);
-                // Restore focus after search completes
-                if (inputRef.current) {
-                    inputRef.current.focus();
-                }
+                if (inputRef.current) inputRef.current.focus();
             }
         } else {
             setSuggestions([]);
@@ -179,7 +186,7 @@ export const LocationField = ({
     // Handle geolocation button click
     const handleFindLocation = () => {
         setGeolocationError(null);
-        
+
         if (navigator.geolocation) {
             setIsSearching(true);
             navigator.geolocation.getCurrentPosition(
@@ -196,17 +203,21 @@ export const LocationField = ({
                 },
                 (error) => {
                     console.error("Geolocation error:", error);
-                    setGeolocationError("Could not get your location. Please try again or search manually.");
+                    setGeolocationError(
+                        "Could not get your location. Please try again or search manually."
+                    );
                     setIsSearching(false);
                 }
             );
         } else {
-            setGeolocationError("Geolocation is not supported by your browser.");
+            setGeolocationError(
+                "Geolocation is not supported by your browser."
+            );
         }
     };
 
     return (
-        <Box sx={{ position: 'relative' }}>
+        <Box sx={{ position: "relative" }}>
             <MuiTextField
                 fullWidth
                 label={label}
@@ -218,13 +229,15 @@ export const LocationField = ({
                 disabled={disabled || isSearching}
                 error={!!errors[name] || !!geolocationError}
                 helperText={
-                    errors[name]?.message || 
-                    geolocationError || 
+                    errors[name]?.message ||
+                    geolocationError ||
                     (isSearching ? "Searching..." : "")
                 }
                 inputRef={(el) => {
                     inputRef.current = el;
-                    register(name, { required: `${label} is required` }).ref(el);
+                    register(name, { required: `${label} is required` }).ref(
+                        el
+                    );
                 }}
                 InputProps={{
                     endAdornment: showButton && (
@@ -246,20 +259,20 @@ export const LocationField = ({
                 }}
                 {...props}
             />
-            
+
             {/* Suggestions dropdown */}
             {suggestions.length > 0 && (
-                <Paper 
+                <Paper
                     sx={{
-                        position: 'absolute',
+                        position: "absolute",
                         zIndex: 1,
-                        width: '100%',
+                        width: "100%",
                         maxHeight: 200,
-                        overflow: 'auto',
+                        overflow: "auto",
                         mt: 0.5,
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        boxShadow: 3
+                        border: "1px solid",
+                        borderColor: "divider",
+                        boxShadow: 3,
                     }}
                 >
                     {suggestions.map((result, index) => (
@@ -267,10 +280,10 @@ export const LocationField = ({
                             key={index}
                             onClick={() => handleSelectLocation(result)}
                             sx={{
-                                cursor: 'pointer',
-                                '&:hover': {
-                                    backgroundColor: 'action.hover'
-                                }
+                                cursor: "pointer",
+                                "&:hover": {
+                                    backgroundColor: "action.hover",
+                                },
                             }}
                         >
                             {result.label}

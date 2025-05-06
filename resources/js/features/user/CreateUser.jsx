@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import CloseIcon from "@mui/icons-material/Close";
-import { TextField, Select, TextArea } from "../../ui/InputFields"; // Import reusable components
+import { TextField, Select, TextArea, LocationField } from "../../ui/InputFields"; // Import reusable components
 import { useCreateUser } from "./useCreateUser";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUpdateUser } from "./useUpdateUser";
@@ -37,6 +37,7 @@ export default function CreateUser() {
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors },
     } = useForm({
         defaultValues: isEditSession ? editValues : {},
@@ -58,6 +59,14 @@ export default function CreateUser() {
 
     const onSubmit = (data) => {
         const formData = new FormData();
+        const [latitude, longitude] = data.userLocation.split(",").map(Number);
+
+        const location = {
+            latitude: latitude,
+            longitude: longitude,
+        };
+        formData.append("location", JSON.stringify(location));
+
         for (const key in data) {
             formData.append(key, data[key]);
         }
@@ -151,12 +160,16 @@ export default function CreateUser() {
                             type="email"
                             disabled={isWorking}
                         />
-                        <TextField
+
+                        {/* Location */}
+                        <LocationField
                             label="Location"
                             register={register}
                             errors={errors}
-                            name="location"
+                            name="userLocation"
                             disabled={isWorking}
+                            showButton={true}
+                            setValue={setValue}
                         />
                         <TextField
                             label="Phone"

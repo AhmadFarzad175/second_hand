@@ -14,16 +14,17 @@ import {
     TextField,
     Select,
     TextArea,
-    LocationField,
 } from "../../ui/InputFields";
 import ImageUploader from "../../ui/ImageUploader";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useUpdateProduct } from "./useUpdateProduct";
 
 export default function CreateProduct() {
     const theme = useTheme();
     const navigate = useNavigate();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const { isCreating, createProduct } = useCreateProduct();
+    const { isUpdating, updateProduct } = useUpdateProduct(); // Assume this hook exists
 
     const [images, setImages] = useState(Array(6).fill(null));
     const [imageFiles, setImageFiles] = useState(Array(6).fill(null));
@@ -35,13 +36,12 @@ export default function CreateProduct() {
 
     const isEditSession = Boolean(editId);
 
-    const isWorking = isCreating;
+    const isWorking = isCreating || isUpdating;
 
     const {
         register,
         handleSubmit,
-        setValue,
-        formState: { errors, isSubmitting },
+        formState: { errors },
     } = useForm({
         defaultValues: isEditSession ? editValues : {},
     });
@@ -60,6 +60,32 @@ export default function CreateProduct() {
 
         fetchCategories();
     }, []);
+
+    // fetching images for update
+    useEffect(() => {
+        const fetchProductImages = async () => {
+            if (!isEditSession) return;
+
+            try {
+                const response = await fetch(`/api/productImages/${editId}`);
+                const data = await response.json();
+
+                // Fix: Extract URL from each image object
+                const fetchedImages = Array(6).fill(null);
+                data.data.forEach((imgObj, index) => {
+                    if (index < 6 && imgObj.images) {
+                        fetchedImages[index] = imgObj.images;
+                    }
+                });
+
+                setImages(fetchedImages);
+            } catch (error) {
+                console.error("Error fetching product images:", error);
+            }
+        };
+
+        fetchProductImages();
+    }, [isEditSession, editId]);
 
     const handleAddImage = (event, index) => {
         if (event.target.files && event.target.files[0]) {
@@ -87,16 +113,12 @@ export default function CreateProduct() {
 
     const onSubmit = (data) => {
         const formData = new FormData();
-        const [latitude, longitude] = data.useByLocation.split(",").map(Number);
         // adding attributes
         const attributes = {
             color: data.color,
             brand: data.brand,
         };
-
-        //! temporary
-        formData.append("latitude", latitude);
-        formData.append("longitude", longitude);
+        
 
         // Append as a JSON string
         formData.append("attributes", JSON.stringify(attributes));
@@ -119,15 +141,31 @@ export default function CreateProduct() {
         //         images[`image${i + 1}`] = file;
         //     }
         // });
-        createProduct(formData, {
-            onSuccess: () => {
-                navigate(
-                    window.location.pathname.includes("/admin")
-                        ? "/admin/products"
-                        : "/"
-                );
-            },
-        });
+
+        if (isEditSession) {
+            updateProduct(
+                { formData, id: editId },
+                {
+                    onSuccess: () => {
+                        navigate(
+                            window.location.pathname.includes("/admin")
+                                ? "/admin/products"
+                                : "/"
+                        );
+                    },
+                }
+            );
+        } else {
+            createProduct(formData, {
+                onSuccess: () => {
+                    navigate(
+                        window.location.pathname.includes("/admin")
+                            ? "/admin/products"
+                            : "/"
+                    );
+                },
+            });
+        }
     };
 
     // Prepare options for select components
@@ -252,17 +290,7 @@ export default function CreateProduct() {
                                 />
                             </Box>
 
-                            {/* Location */}
-
-                            <LocationField
-                                label="Use by Location"
-                                register={register}
-                                errors={errors}
-                                name="useByLocation"
-                                disabled={isSubmitting}
-                                showButton={true}
-                                setValue={setValue}
-                            />
+                            
 
                             {/* Description */}
                             <TextArea

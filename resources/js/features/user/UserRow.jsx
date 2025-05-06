@@ -104,10 +104,9 @@ const UserRow = ({ user, isSelected, handleClick }) => {
             </TableCell>
             <TableCell>{user.name}</TableCell>
             <TableCell align="left">{user.phone}</TableCell>
-            <TableCell align="left">{user.location}</TableCell>
             <TableCell align="left">
                 <Chip
-                    label={user.total_product}
+                    label={user.total_products}
                     color="primary"
                     size="small"
                     variant="outlined"

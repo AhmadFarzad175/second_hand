@@ -16,7 +16,7 @@ export async function getProducts() {
 export async function createUpdateProduct(formData, id = null) {
 
   const url = id
-      ? `http://127.0.0.1:8000/api/products/${id}`
+      ? `http://127.0.0.1:8000/api/products/update/${id}`
       : `http://127.0.0.1:8000/api/products`;
 
   const response = await fetch(url, {

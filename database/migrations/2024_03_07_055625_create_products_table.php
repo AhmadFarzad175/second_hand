@@ -25,9 +25,6 @@ return new class extends Migration
             $table->integer('quantity')->default(1); // New field
             $table->boolean('condition')->default(false); // 0 = new 1 = used
             $table->text('description');
-            $table->decimal('latitude', 10, 7)->nullable(); // Store latitude
-            $table->decimal('longitude', 10, 7)->nullable();
-            $table->string('location')->nullable();
             $table->json('attributes');
             $table->timestamps();
         });

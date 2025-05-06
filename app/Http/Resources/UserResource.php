@@ -25,7 +25,7 @@ class UserResource extends JsonResource
             'rating' => $this->rating ?? 0, // Default to 0 if no rating
             'role' => $this->role,
             'is_active' => $this->is_active,
-            'total_product' => $this->products()->count(), // 👈 this line
+            'total_products' => $this->products()->count(), // 👈 this line
 
         ];
     }

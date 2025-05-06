@@ -22,7 +22,7 @@ function Product() {
           ]
       };
   return (
-    <ProductDetails product={product} />
+    <ProductDetails dashboard={false} />
 
   );
 }

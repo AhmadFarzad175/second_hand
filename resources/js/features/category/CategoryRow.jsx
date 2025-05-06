@@ -88,7 +88,7 @@ const CategoryRow = ({ category, handleOpen, isSelected, handleClick }) => {
             <TableCell align="left">{category.name}</TableCell>
             <TableCell align="left">
                 <Chip
-                    label={category.total_products}
+                    label={category.total_productss}
                     color="primary"
                     size="small"
                     variant="outlined"

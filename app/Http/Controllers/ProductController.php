@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ShowProductResource;
+use App\Models\Image;
 use App\Models\Product;
 use App\Traits\ImageManipulation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ProductRequest;
+use App\Http\Resources\ImageResource;
 use App\Http\Resources\ProductResource;
 use Illuminate\Support\Facades\Storage;
 use App\Services\ProductFilter; // Import the ProductFilter service
@@ -63,9 +66,9 @@ class ProductController extends Controller
      * Store a newly created resource in storage.
      */
 
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        $validated = $request->input();
+        $validated = $request->validated();
         $validated['user_id'] = Auth::user()?->id || 1;
 
         // CREATE PRODUCT
@@ -92,7 +95,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        return ProductResource::make($product->load(['images', 'category', 'user', 'attribute',]));
+        return ShowProductResource::make($product->load(['images', 'category', 'user',]));
     }
 
     /**
@@ -187,4 +190,12 @@ class ProductController extends Controller
 
         return response()->noContent(); // 204 No Content
     }
+
+
+    public function allImages($id)
+{
+    $images = Image::where('product_id', $id)->get();
+    return ImageResource::collection($images);
+}
+
 }

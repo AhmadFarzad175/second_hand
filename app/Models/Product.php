@@ -17,25 +17,22 @@ class Product extends Model
         'discount',
         'quantity',
         'condition',
-        'location',
-        'latitude',
-        'longitude',
         'attributes',
         'description',
     ];
 
 
-    public function getWhatsappLinkAttribute()
-    {
-        // Ensure user relationship is loaded and phone is not null
-        if (!$this->user || !$this->user->phone) {
-            return null; // Return null if user or phone is missing
-        }
+    // public function getWhatsappLinkAttribute()
+    // {
+    //     // Ensure user relationship is loaded and phone is not null
+    //     if (!$this->user || !$this->user->phone) {
+    //         return null; // Return null if user or phone is missing
+    //     }
 
-        $phone = $this->user->phone; // Access the user's phone
-        $message = "Hello, I'm interested in your product '{$this->name}' listed for {$this->price}.";
-        return "https://wa.me/{$phone}?text=" . urlencode($message);
-    }
+    //     $phone = $this->user->phone; // Access the user's phone
+    //     $message = "Hello, I'm interested in your product '{$this->name}' listed for {$this->price}.";
+    //     return "https://wa.me/{$phone}?text=" . urlencode($message);
+    // }
 
     public function user()
     {
@@ -83,8 +80,7 @@ class Product extends Model
         if (!$search) {
             return $query;
         }
-        return $query->where('name', 'LIKE', '%' . $search . '%')
-            ->orWhere('location', 'LIKE', '%' . $search . '%');
+        return $query->where('name', 'LIKE', '%' . $search . '%');
     }
 
     public function scopeNearby($query, $userLatitude, $userLongitude, $distance = 10)

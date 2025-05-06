@@ -17,15 +17,12 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->string('location')->nullable(); // province
+            $table->json('location');
             $table->string('phone')->nullable();
             $table->string('description')->nullable();
             $table->string('rating')->nullable();
-            $table->enum('role', ['admin', 'user', 'manager']);
+            $table->enum('role', ['admin', 'user']);
             $table->boolean('is_active')->default(true);
-
-            $table->decimal('latitude', 10, 7)->nullable(); // Store latitude
-            $table->decimal('longitude', 10, 7)->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

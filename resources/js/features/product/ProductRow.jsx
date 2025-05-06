@@ -101,7 +101,7 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
                             fontSize:"14px"
                         }}
                     >
-                        {row.user}
+                        {row.user?.name}
                     </Typography>
                 </Box>
             </TableCell>
@@ -126,8 +126,8 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
             </TableCell>
             <TableCell align="left">
                 <Chip
-                    label={row.condition ? "New" : "Used"}
-                    color={row.condition ? "primary" : "secondary"}
+                    label={row.condition === 0 ? "New" : "Used"}
+                    color={row.condition === 0 ? "primary" : "secondary"}
                     size="small"
                     variant="outlined"
                 />

@@ -23,7 +23,7 @@ class UserRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email',
             // 'password' => 'required|min:6',
-            'location' => 'required|string|max:255',
+            'location' => 'required',
             'phone' => 'required|string|max:20',
             'description' => 'nullable|string',
             'role' => 'required|in:admin,user',

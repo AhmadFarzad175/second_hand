@@ -7,12 +7,11 @@ const TableHeader = ({ onSelectAllClick, numSelected, rowCount }) => {
         { id: 1, numeric: false, label: "Image" },
         { id: 2, numeric: false, label: "User Name" },
         { id: 3, numeric: true, label: "Phone" },
-        { id: 4, numeric: false, label: "Province" },
-        { id: 5, numeric: true, label: "Products" },
-        { id: 6, numeric: true, label: "Rating" },
-        { id: 7, numeric: false, label: "Role" },
-        { id: 8, numeric: false, label: "Active" },
-        { id: 9, numeric: false, label: "Actions" },
+        { id: 4, numeric: true, label: "Products" },
+        { id: 5, numeric: true, label: "Rating" },
+        { id: 6, numeric: false, label: "Role" },
+        { id: 7, numeric: false, label: "Active" },
+        { id: 8, numeric: false, label: "Actions" },
     ];
 
     return (
