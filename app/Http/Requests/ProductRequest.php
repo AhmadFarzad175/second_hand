@@ -23,7 +23,7 @@ class ProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        dd(Request()->file('images'));
+        // dd(Request()->file('images'));
         $rules = [
             'name' => 'required|string|max:255',
             // 'images' => 'required',

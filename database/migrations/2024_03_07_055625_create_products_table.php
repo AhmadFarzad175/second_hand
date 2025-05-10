@@ -25,7 +25,7 @@ return new class extends Migration
             $table->integer('quantity')->default(1); // New field
             $table->boolean('condition')->default(false); // 0 = new 1 = used
             $table->text('description');
-            $table->json('attributes');
+            $table->json('attributes')->nullable();
             $table->timestamps();
         });
     }
