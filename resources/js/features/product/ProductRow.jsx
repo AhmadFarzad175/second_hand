@@ -17,33 +17,33 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useDeleteProduct } from "./useDeleteProduct";
 import { useNavigate } from "react-router-dom";
 
-const ProductRow = ({ row, isSelected, handleClick }) => {
+const ProductRow = ({ product, isSelected, handleClick }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const navigate = useNavigate();
     const { isDeleting, deletePro } = useDeleteProduct();
 
     const handleMenuClick = (event) => {
-        event.stopPropagation(); // Stop row selection when clicking on the menu button
+        event.stopPropagation(); // Stop product selection when clicking on the menu button
         setAnchorEl(event.currentTarget);
     };
 
     const handleMenuClose = (event) => {
-        event.stopPropagation(); // Stop row selection when closing the menu
+        event.stopPropagation(); // Stop product selection when closing the menu
         setAnchorEl(null);
     };
 
     const handleDelete = async (event) => {
-        event.stopPropagation(); // Prevent row selection when clicking delete
-        deletePro(row.id);
+        event.stopPropagation(); // Prevent product selection when clicking delete
+        deletePro(product.id);
         handleMenuClose(event);
     };
 
     const handleRowClick = (event) => {
-        // Prevent row selection when clicking on the menu or its items
+        // Prevent product selection when clicking on the menu or its items
         if (anchorEl && anchorEl.contains(event.target)) {
             return;
         }
-        handleClick(event, row.id);
+        handleClick(event, product.id);
     };
 
     return (
@@ -53,15 +53,16 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
             role="checkbox"
             aria-checked={isSelected}
             selected={isSelected}
+            sx={{ cursor: "pointer" }} // 👈 Add this line
         >
             <TableCell padding="checkbox">
                 <Checkbox checked={isSelected} />
             </TableCell>
             <TableCell align="left" sx={{ width: 80, height: 80 }}>
-                {row.image?.length > 0 ? (
+                {product.images?.length > 0 ? (
                     <Box
                         component="img"
-                        src={row.image}
+                        src={product.images}
                         alt="Product"
                         sx={{
                             width: "100%",
@@ -91,7 +92,7 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
             <TableCell align="left">
                 <Box display="flex" flexDirection="column">
                     <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                        {row.name}
+                        {product.name}
                     </Typography>
 
                     <Typography
@@ -101,17 +102,17 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
                             fontSize:"14px"
                         }}
                     >
-                        {row.user?.name}
+                        {product.user?.name}
                     </Typography>
                 </Box>
             </TableCell>
-            <TableCell align="left">{row.category?.name}</TableCell>
+            <TableCell align="left">{product.category?.name}</TableCell>
             <TableCell align="left">
                 <Box display="flex" flexDirection="column">
                     <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                        {row.net_price - row.discount}
+                        {product.net_price - product.discount}
                     </Typography>
-                    {Number(row.discount) > 0 && (
+                    {Number(product.discount) > 0 && (
                         <Typography
                             variant="body2"
                             sx={{
@@ -119,21 +120,21 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
                                 textDecoration: "line-through",
                             }}
                         >
-                            {row.net_price}
+                            {product.net_price}
                         </Typography>
                     )}
                 </Box>
             </TableCell>
             <TableCell align="left">
                 <Chip
-                    label={row.condition === 0 ? "New" : "Used"}
-                    color={row.condition === 0 ? "primary" : "secondary"}
+                    label={product.condition === 0 ? "New" : "Used"}
+                    color={product.condition === 0 ? "primary" : "secondary"}
                     size="small"
                     variant="outlined"
                 />
             </TableCell>
-            <TableCell>{row.date}</TableCell>
-            <TableCell align="left">{row.favorites_count}</TableCell>
+            <TableCell>{product.date}</TableCell>
+            <TableCell align="left">{product.favorites_count}</TableCell>
             <TableCell align="center">
                 <IconButton
                     className="menu-button"
@@ -152,7 +153,7 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
                         onClick={(event) => {
                             event.stopPropagation();
                             handleMenuClose(event);
-                            navigate(`/admin/product/${row.id}`);
+                            navigate(`/admin/product/${product.id}`);
                         }}
                     >
                         <VisibilityIcon sx={{ mr: 1 }} />
@@ -162,8 +163,8 @@ const ProductRow = ({ row, isSelected, handleClick }) => {
                         onClick={(event) => {
                             event.stopPropagation();
                             handleMenuClose(event);
-                            navigate(`/admin/edit-product/${row.id}`, {
-                                state: { row }, // Pass the entire user object
+                            navigate(`/admin/edit-product/${product.id}`, {
+                                state: { product }, // Pass the entire user object
                             });
                         }}
                     >

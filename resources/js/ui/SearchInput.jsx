@@ -1,25 +1,63 @@
-import { TextField, InputAdornment } from "@mui/material";
+import { TextField, InputAdornment, IconButton } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import CloseIcon from "@mui/icons-material/Close";
+import { useState } from "react";
 
-const SearchInput = () => {
+const SearchInput = ({ onSearch }) => {
+  const [searchValue, setSearchValue] = useState("");
+
+  const handleClear = () => {
+    setSearchValue("");
+    if (onSearch) onSearch("");
+  };
+
   return (
     <TextField
-      variant="outlined"
+      variant="standard"
       placeholder="Search..."
+      value={searchValue}
+      onChange={(e) => {
+        setSearchValue(e.target.value);
+        if (onSearch) onSearch(e.target.value);
+      }}
       fullWidth
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
-            <SearchIcon />
+            <SearchIcon sx={{ color: "text.secondary" }} />
           </InputAdornment>
         ),
+        endAdornment: searchValue && (
+          <InputAdornment position="end">
+            <IconButton
+              onClick={handleClear}
+              size="small"
+              sx={{ color: "text.secondary" }}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </InputAdornment>
+        ),
+        disableUnderline: false,
+        sx: {
+          "&:before": {
+            borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
+          },
+          "&:hover:not(.Mui-disabled):before": {
+            borderBottom: "2px solid rgba(0, 0, 0, 0.6)",
+          },
+          "&:after": {
+            borderBottom: "2px solid primary.main",
+          },
+        },
       }}
       sx={{
-        bgcolor: "rgba(0, 0, 0, 0.05)",
-        borderRadius: 2,
-        "& .MuiOutlinedInput-root": {
-          py: 1.5,
-          px: 2,
+        "& .MuiInputBase-input": {
+          py: 1,
+          fontSize: "0.95rem",
+          "&::placeholder": {
+            opacity: 0.8,
+          },
         },
       }}
     />
@@ -27,6 +65,3 @@ const SearchInput = () => {
 };
 
 export default SearchInput;
-
-
-

@@ -1,4 +1,4 @@
-import Carousel from "../ui/carousel";
+import Carousel from "../ui/Carousel";
 import ProductCards from "../ui/ProductCards";
 
 function Home() {

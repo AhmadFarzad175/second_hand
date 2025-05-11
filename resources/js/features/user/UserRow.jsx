@@ -67,16 +67,17 @@ const UserRow = ({ user, isSelected, handleClick }) => {
             role="checkbox"
             aria-checked={isSelected}
             selected={isSelected}
+            sx={{ cursor: "pointer" }} // 👈 Add this line
         >
             <TableCell padding="checkbox">
                 <Checkbox checked={isSelected} />
             </TableCell>
             <TableCell align="left" sx={{ width: 80, height: 80 }}>
-                {user.image?.length > 0 ? (
+                {user.user_image?.length > 0 ? (
                     <Box
                         component="img"
-                        src={user.image}
-                        alt="User Image"
+                        src={user.user_image}
+                        alt="User user_image"
                         sx={{
                             width: "100%",
                             height: "100%",
@@ -141,6 +142,7 @@ const UserRow = ({ user, isSelected, handleClick }) => {
                         onClick={(event) => {
                             event.stopPropagation();
                             handleMenuClose(event);
+                            navigate(`/admin/user/${user.id}`);
                         }}
                     >
                         <VisibilityIcon sx={{ mr: 1 }} />

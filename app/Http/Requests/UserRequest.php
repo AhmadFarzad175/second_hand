@@ -19,7 +19,7 @@ class UserRequest extends FormRequest
     {
         // dd('es');
         $rules = [
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'required',
             'name' => 'required|string|max:255',
             'email' => 'required|email',
             // 'password' => 'required|min:6',

@@ -15,6 +15,7 @@ import Categories from "./features/category/Categories";
 import Users from "./features/user/Users";
 import CreateUser from "./features/user/CreateUser";
 import ShowProduct from "./features/product/showProduct";
+import ShowUser from "./features/user/ShowUser";
 
 function App() {
     return (
@@ -40,6 +41,7 @@ function App() {
 
                 {/* User Menu */}
                 <Route path="users" element={<Users />} />
+                <Route path="user/:id" element={<ShowUser />} />
                 <Route path="create-user" element={<CreateUser />} />
                 <Route path="edit-user/:id" element={<CreateUser />} />
             </Route>

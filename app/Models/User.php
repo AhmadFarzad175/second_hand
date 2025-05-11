@@ -30,6 +30,8 @@ class User extends Authenticatable
         'is_active',
     ];
 
+  
+
     public function reviews()
     {
         return $this->hasMany(Review::class);
@@ -63,6 +65,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'location' => 'array',
+
     ];
 
     /**

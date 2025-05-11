@@ -6,6 +6,7 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
+  Box,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
@@ -18,14 +19,15 @@ import LanguageIcon from "@mui/icons-material/Language";
 function AppDrawer({ open, toggleDrawer }) {
   return (
     <Drawer anchor="left" open={open} onClose={() => toggleDrawer(false)}>
-      <div className="w-64" role="presentation">
-        <div className="p-4">
-          <img
+      <Box sx={{ width: 260 }} role="presentation">
+        <Box sx={{ p: 2, textAlign: "center" }}>
+          <Box
+            component="img"
             src="/images/eliteValley.png"
             alt="EliteValley"
-            className="h-auto w-32 mx-auto mb-4"
+            sx={{ width: 128, height: "auto", mb: 2 }}
           />
-        </div>
+        </Box>
         <Divider />
         <List>
           <ListItem
@@ -40,56 +42,61 @@ function AppDrawer({ open, toggleDrawer }) {
             </ListItemIcon>
             <ListItemText primary="Home" />
           </ListItem>
+
           <ListItem
             key="favorite"
-            button
             component={Link}
             to="/favorite"
             onClick={() => toggleDrawer(false)}
+            button
           >
             <ListItemIcon>
               <FavoriteIcon />
             </ListItemIcon>
             <ListItemText primary="Favorites" />
           </ListItem>
+
           <ListItem
             key="add-business"
-            button
             component={Link}
             to="/add-business"
             onClick={() => toggleDrawer(false)}
+            button
           >
             <ListItemIcon>
               <AddBusinessIcon />
             </ListItemIcon>
             <ListItemText primary="Add Business" />
           </ListItem>
+
           <ListItem
             key="profile"
-            button
             component={Link}
             to="/profile"
             onClick={() => toggleDrawer(false)}
+            button
           >
             <ListItemIcon>
               <AccountCircleIcon />
             </ListItemIcon>
             <ListItemText primary="Profile" />
           </ListItem>
-          <ListItem key="dark-mode" button onClick={() => toggleDrawer(false)}>
+
+          <ListItem key="dark-mode" onClick={() => toggleDrawer(false)} button>
             <ListItemIcon>
               <Brightness4Icon />
             </ListItemIcon>
             <ListItemText primary="Dark Mode" />
           </ListItem>
-          <ListItem key="language" button onClick={() => toggleDrawer(false)}>
+
+          <ListItem key="language" onClick={() => toggleDrawer(false)} button>
             <ListItemIcon>
               <LanguageIcon />
             </ListItemIcon>
             <ListItemText primary="Language" />
           </ListItem>
         </List>
-      </div>
+      </Box>
     </Drawer>
   );
 }

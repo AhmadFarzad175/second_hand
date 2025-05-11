@@ -19,14 +19,13 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone,
-            'location' => $this->location,
+            'user_location' => $this->location,
             'description' => $this->description,
-            'image' => $this->image ? url('storage/' . $this->image) : null, // Image URL if available
+            'user_image' => $this->image ? url('storage/' . $this->image) : null, // Image URL if available
             'rating' => $this->rating ?? 0, // Default to 0 if no rating
             'role' => $this->role,
             'is_active' => $this->is_active,
             'total_products' => $this->products()->count(), // 👈 this line
-
         ];
     }
 }

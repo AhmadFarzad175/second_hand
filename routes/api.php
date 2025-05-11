@@ -50,6 +50,7 @@ Route::delete('/products/{product}/favorite', [FavoriteController::class, 'destr
 Route::apiResource('users', UserController::class);
 Route::apiResource('products', ProductController::class);
 Route::Post('products/update/{product}',[ProductController::class, 'update']);
+Route::get('websiteProducts',[ProductController::class, 'websiteProducts']);
 Route::get('productImages/{id}',[ProductController::class, 'allImages']);
 Route::apiResource('categories', CategoryController::class);
 Route::Post('categories/update/{category}',[CategoryController::class, 'update']);

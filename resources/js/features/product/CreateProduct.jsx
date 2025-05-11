@@ -6,42 +6,44 @@ import {
     Typography,
     Button,
     Paper,
-    useTheme,
-    useMediaQuery,
+    Grid,
+    Stack,
+    CircularProgress,
+    //   Avatar,
+    IconButton,
 } from "@mui/material";
 import { useCreateProduct } from "./useCreateProduct";
-import {
-    TextField,
-    Select,
-    TextArea,
-} from "../../ui/InputFields";
-import ImageUploader from "../../ui/ImageUploader";
+import { TextField, Select, TextArea } from "../../ui/InputFields";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUpdateProduct } from "./useUpdateProduct";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 export default function CreateProduct() {
-    const theme = useTheme();
+    //   const theme = useTheme();
     const navigate = useNavigate();
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    //   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
     const { isCreating, createProduct } = useCreateProduct();
-    const { isUpdating, updateProduct } = useUpdateProduct(); // Assume this hook exists
+    const { isUpdating, updateProduct } = useUpdateProduct();
 
     const [images, setImages] = useState(Array(6).fill(null));
     const [imageFiles, setImageFiles] = useState(Array(6).fill(null));
     const [categories, setCategories] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const { state } = useLocation();
-    console.log(state);
-    const { id: editId, ...editValues } = state?.row || {};
+    const isEditSession = Boolean(state?.product?.id);
 
-    const isEditSession = Boolean(editId);
-
-    const isWorking = isCreating || isUpdating;
+    const editId = state?.product?.id;
+    const editValues = React.useMemo(() => state?.product || {}, [state]);
+    const isWorking = isCreating || isUpdating || isLoading;
 
     const {
         register,
         handleSubmit,
+        control,
         formState: { errors },
+        reset,
     } = useForm({
         defaultValues: isEditSession ? editValues : {},
     });
@@ -61,16 +63,16 @@ export default function CreateProduct() {
         fetchCategories();
     }, []);
 
-    // fetching images for update
+    // Fetch images for update
     useEffect(() => {
         const fetchProductImages = async () => {
             if (!isEditSession) return;
+            setIsLoading(true);
 
             try {
                 const response = await fetch(`/api/productImages/${editId}`);
                 const data = await response.json();
 
-                // Fix: Extract URL from each image object
                 const fetchedImages = Array(6).fill(null);
                 data.data.forEach((imgObj, index) => {
                     if (index < 6 && imgObj.images) {
@@ -79,13 +81,16 @@ export default function CreateProduct() {
                 });
 
                 setImages(fetchedImages);
+                reset(editValues);
             } catch (error) {
                 console.error("Error fetching product images:", error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
         fetchProductImages();
-    }, [isEditSession, editId]);
+    }, [isEditSession, editId, reset]);
 
     const handleAddImage = (event, index) => {
         if (event.target.files && event.target.files[0]) {
@@ -113,34 +118,24 @@ export default function CreateProduct() {
 
     const onSubmit = (data) => {
         const formData = new FormData();
-        // adding attributes
         const attributes = {
             color: data.color,
             brand: data.brand,
         };
-        
 
-        // Append as a JSON string
         formData.append("attributes", JSON.stringify(attributes));
 
-        // Append other form fields
         for (const key in data) {
-            formData.append(key, data[key]);
+            if (key !== "color" && key !== "brand") {
+                formData.append(key, data[key]);
+            }
         }
 
-        // Append all images under the same key: 'images[]'
         imageFiles.forEach((file) => {
             if (file) {
                 formData.append("images[]", file);
             }
         });
-
-        // Append all images under the same key: 'images[]'
-        // imageFiles.forEach((file, i) => {
-        //     if (file) {
-        //         images[`image${i + 1}`] = file;
-        //     }
-        // });
 
         if (isEditSession) {
             updateProduct(
@@ -168,16 +163,15 @@ export default function CreateProduct() {
         }
     };
 
-    // Prepare options for select components
+    // Options for select components
     const colorOptions = [
         { value: "red", label: "Red" },
         { value: "blue", label: "Blue" },
         { value: "green", label: "Green" },
     ];
 
-    // Prepare options for select components
     const brandOptions = [
-        { value: "iphone", label: "Iphone" },
+        { value: "iphone", label: "iPhone" },
         { value: "galaxy", label: "Galaxy" },
         { value: "nokia", label: "Nokia" },
         { value: "huawei", label: "Huawei" },
@@ -194,219 +188,394 @@ export default function CreateProduct() {
     }));
 
     return (
-        <Box sx={{ padding: { lg: 2 }, maxWidth: 1200, margin: "auto" }}>
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold" }}>
-                {isEditSession ? "Update" : "Create"} Product
-            </Typography>
-            <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: isMobile ? "column" : "row",
-                    gap: 4,
-                }}
-            >
-                {/* Left Side - Form Fields */}
-                <Box sx={{ flex: 1 }}>
-                    <Paper
+        <Box
+            sx={{
+                padding: { xs: 2, md: 4 },
+                maxWidth: "1400px",
+                margin: "0 auto",
+            }}
+        >
+            <Stack spacing={4}>
+                {/* Header Section */}
+                <Box>
+                    <Typography
+                        variant="h4"
                         sx={{
-                            p: 3,
-                            borderRadius: 2,
-                            boxShadow: 3,
-                            backgroundColor: "background.paper",
+                            fontWeight: 600,
+                            color: "text.primary",
+                            mb: 1,
                         }}
                     >
-                        <Typography
-                            variant="h6"
-                            gutterBottom
-                            sx={{ fontWeight: "bold", mb: 2 }}
-                        >
-                            Product Details
-                        </Typography>
-                        <Box
-                            sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: 2,
-                            }}
-                        >
-                            {/* Name */}
-                            <TextField
-                                label="Name"
-                                register={register}
-                                errors={errors}
-                                name="name"
-                                disabled={isWorking}
-                            />
-
-                            {/* Categories */}
-                            <Select
-                                label="Categories"
-                                defaultValue={editValues?.category_id}
-                                register={register}
-                                name="category_id"
-                                errors={errors}
-                                options={categoryOptions}
-                                disabled={isWorking}
-                            />
-
-                            {/* Net Price and Discount */}
-                            <Box sx={{ display: "flex", gap: 2 }}>
-                                <TextField
-                                    label="Net Price"
-                                    register={register}
-                                    errors={errors}
-                                    name="net_price"
-                                    type="number"
-                                    disabled={isWorking}
-                                />
-                                <TextField
-                                    label="Discount"
-                                    register={register}
-                                    errors={errors}
-                                    name="discount"
-                                    type="number"
-                                    disabled={isWorking}
-                                />
-                            </Box>
-
-                            {/* Quantity and Condition */}
-                            <Box sx={{ display: "flex", gap: 2 }}>
-                                <TextField
-                                    label="Quantity"
-                                    register={register}
-                                    errors={errors}
-                                    name="quantity"
-                                    type="number"
-                                    disabled={isWorking}
-                                />
-                                <Select
-                                    label="Condition"
-                                    defaultValue={editValues?.condition}
-                                    register={register}
-                                    name="condition"
-                                    errors={errors}
-                                    options={conditionOptions}
-                                    disabled={isWorking}
-                                />
-                            </Box>
-
-                            
-
-                            {/* Description */}
-                            <TextArea
-                                label="Description"
-                                register={register}
-                                errors={errors}
-                                name="description"
-                                disabled={isWorking}
-                                rows={4}
-                            />
-                        </Box>
-                    </Paper>
+                        {isEditSession ? "Edit Product" : "Create New Product"}
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                        {isEditSession
+                            ? "Update product details and images"
+                            : "Fill in all required information to add a new product"}
+                    </Typography>
                 </Box>
 
-                {/* Right Side - Image Upload Section */}
-                <Box sx={{ flex: 1 }}>
-                    {/* images */}
-                    <Paper
-                        sx={{
-                            p: 3,
-                            borderRadius: 2,
-                            boxShadow: 3,
-                            backgroundColor: "background.paper",
-                        }}
-                    >
-                        <Typography
-                            variant="h6"
-                            gutterBottom
-                            sx={{ fontWeight: "bold", mb: 2 }}
-                        >
-                            Product Images
-                        </Typography>
-                        <Box
+                <Grid container spacing={4}>
+                    {/* Left Column - Product Details */}
+                    <Grid item xs={12} md={7}>
+                        <Paper
                             sx={{
-                                display: "grid",
-                                gridTemplateColumns: {
-                                    xs: "repeat(2, 1fr)",
-                                    sm: "repeat(3, 1fr)",
-                                },
-                                gap: 2,
+                                p: { xs: 2, md: 3 },
+                                borderRadius: 2,
+                                boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.05)",
+                                border: "1px solid",
+                                borderColor: "divider",
                             }}
                         >
-                            {images.map((image, index) => (
-                                <Box key={index}>
-                                    <ImageUploader
-                                        image={image}
-                                        onAddImage={handleAddImage}
-                                        onRemoveImage={handleRemoveImage}
-                                        index={index}
-                                        size="100%"
+                            <Stack spacing={3}>
+                                <Typography
+                                    variant="h6"
+                                    sx={{ fontWeight: 600 }}
+                                >
+                                    Product Information
+                                </Typography>
+
+                                <TextField
+                                    label="Product Name"
+                                    register={register}
+                                    control={control} // This is required
+                                    errors={errors}
+                                    name="name"
+                                    disabled={isWorking}
+                                    fullWidth
+                                    required
+                                />
+
+                                <Select
+                                    label="Category"
+                                    defaultValue={editValues?.category_id}
+                                    control={control} // This is required
+                                    register={register}
+                                    name="category_id"
+                                    errors={errors}
+                                    options={categoryOptions}
+                                    disabled={isWorking}
+                                    fullWidth
+                                    required
+                                />
+
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            label="Net Price ($)"
+                                            register={register}
+                                            control={control} // This is required
+                                            errors={errors}
+                                            name="net_price"
+                                            type="number"
+                                            disabled={isWorking}
+                                            fullWidth
+                                            required
+                                            inputProps={{
+                                                step: "0.01",
+                                                min: "0",
+                                            }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            label="Discount (%)"
+                                            register={register}
+                                            control={control} // This is required
+                                            errors={errors}
+                                            name="discount"
+                                            type="number"
+                                            disabled={isWorking}
+                                            fullWidth
+                                            inputProps={{
+                                                min: "0",
+                                                max: "100",
+                                            }}
+                                        />
+                                    </Grid>
+                                </Grid>
+
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            label="Stock Quantity"
+                                            register={register}
+                                            control={control} // This is required
+                                            errors={errors}
+                                            name="quantity"
+                                            type="number"
+                                            disabled={isWorking}
+                                            fullWidth
+                                            required
+                                            inputProps={{ min: "0" }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <Select
+                                            label="Condition"
+                                            defaultValue={editValues?.condition}
+                                            control={control} // This is required
+                                            register={register}
+                                            name="condition"
+                                            errors={errors}
+                                            options={conditionOptions}
+                                            disabled={isWorking}
+                                            fullWidth
+                                            required
+                                        />
+                                    </Grid>
+                                </Grid>
+
+                                <Box>
+                                    <Typography
+                                        variant="subtitle1"
+                                        sx={{ fontWeight: 500, mb: 1 }}
+                                    >
+                                        Product Description
+                                    </Typography>
+                                    <TextArea
+                                        label="Detailed product description"
+                                        register={register}
+                                        control={control} // This is required
+                                        errors={errors}
+                                        name="description"
+                                        disabled={isWorking}
+                                        rows={6}
+                                        fullWidth
                                     />
                                 </Box>
-                            ))}
-                        </Box>
-                    </Paper>
+                            </Stack>
+                        </Paper>
+                    </Grid>
 
-                    {/* attributes */}
-                    <Paper
+                    {/* Right Column - Images and Attributes */}
+                    <Grid item xs={12} md={5}>
+                        <Stack spacing={3}>
+                            {/* Image Upload Section */}
+                            <Paper
+                                sx={{
+                                    p: { xs: 2, md: 3 },
+                                    borderRadius: 2,
+                                    boxShadow:
+                                        "0px 2px 8px rgba(0, 0, 0, 0.05)",
+                                    border: "1px solid",
+                                    borderColor: "divider",
+                                }}
+                            >
+                                <Stack spacing={2}>
+                                    <Typography
+                                        variant="h6"
+                                        sx={{ fontWeight: 600 }}
+                                    >
+                                        Product Images
+                                    </Typography>
+                                    <Typography
+                                        variant="body2"
+                                        color="text.secondary"
+                                    >
+                                        Upload high-quality product images (max
+                                        6)
+                                    </Typography>
+
+                                    <Grid container spacing={2}>
+                                        {images.map((image, index) => (
+                                            <Grid
+                                                item
+                                                xs={6}
+                                                sm={4}
+                                                key={index}
+                                            >
+                                                <Box
+                                                    sx={{
+                                                        position: "relative",
+                                                        height: 120,
+                                                        borderRadius: 1,
+                                                        overflow: "hidden",
+                                                        border: "1px dashed",
+                                                        borderColor: image
+                                                            ? "transparent"
+                                                            : "divider",
+                                                        backgroundColor: image
+                                                            ? "transparent"
+                                                            : "action.hover",
+                                                    }}
+                                                >
+                                                    {image ? (
+                                                        <>
+                                                            <Box
+                                                                component="img"
+                                                                src={image}
+                                                                alt={`Product preview ${
+                                                                    index + 1
+                                                                }`}
+                                                                sx={{
+                                                                    width: "100%",
+                                                                    height: "100%",
+                                                                    objectFit:
+                                                                        "cover",
+                                                                }}
+                                                            />
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() =>
+                                                                    handleRemoveImage(
+                                                                        index
+                                                                    )
+                                                                }
+                                                                sx={{
+                                                                    position:
+                                                                        "absolute",
+                                                                    top: 4,
+                                                                    right: 4,
+                                                                    backgroundColor:
+                                                                        "error.main",
+                                                                    color: "common.white",
+                                                                    "&:hover": {
+                                                                        backgroundColor:
+                                                                            "error.dark",
+                                                                    },
+                                                                }}
+                                                            >
+                                                                <DeleteOutlineIcon fontSize="small" />
+                                                            </IconButton>
+                                                        </>
+                                                    ) : (
+                                                        <Button
+                                                            component="label"
+                                                            fullWidth
+                                                            sx={{
+                                                                height: "100%",
+                                                                display: "flex",
+                                                                flexDirection:
+                                                                    "column",
+                                                                alignItems:
+                                                                    "center",
+                                                                justifyContent:
+                                                                    "center",
+                                                                color: "text.secondary",
+                                                            }}
+                                                        >
+                                                            <CloudUploadIcon fontSize="small" />
+                                                            <Typography
+                                                                variant="caption"
+                                                                display="block"
+                                                            >
+                                                                Add Image
+                                                            </Typography>
+                                                            <input
+                                                                type="file"
+                                                                accept="image/*"
+                                                                hidden
+                                                                onChange={(e) =>
+                                                                    handleAddImage(
+                                                                        e,
+                                                                        index
+                                                                    )
+                                                                }
+                                                            />
+                                                        </Button>
+                                                    )}
+                                                </Box>
+                                            </Grid>
+                                        ))}
+                                    </Grid>
+                                </Stack>
+                            </Paper>
+
+                            {/* Attributes Section */}
+                            <Paper
+                                sx={{
+                                    p: { xs: 2, md: 3 },
+                                    borderRadius: 2,
+                                    boxShadow:
+                                        "0px 2px 8px rgba(0, 0, 0, 0.05)",
+                                    border: "1px solid",
+                                    borderColor: "divider",
+                                }}
+                            >
+                                <Stack spacing={2}>
+                                    <Typography
+                                        variant="h6"
+                                        sx={{ fontWeight: 600 }}
+                                    >
+                                        Product Attributes
+                                    </Typography>
+
+                                    <Select
+                                        label="Brand"
+                                        register={register}
+                                        control={control} // This is required
+                                        name="brand"
+                                        errors={errors}
+                                        options={brandOptions}
+                                        disabled={isWorking}
+                                        fullWidth
+                                    />
+
+                                    <Select
+                                        label="Color"
+                                        register={register}
+                                        control={control} // This is required
+                                        name="color"
+                                        errors={errors}
+                                        options={colorOptions}
+                                        disabled={isWorking}
+                                        fullWidth
+                                    />
+                                </Stack>
+                            </Paper>
+                        </Stack>
+                    </Grid>
+                </Grid>
+
+                {/* Form Actions */}
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        gap: 2,
+                        pt: 3,
+                    }}
+                >
+                    <Button
+                        variant="outlined"
+                        color="inherit"
+                        size="large"
+                        onClick={() => navigate(-1)}
                         sx={{
-                            my: 3,
-                            p: 3,
-                            borderRadius: 2,
-                            boxShadow: 3,
-                            backgroundColor: "background.paper",
+                            px: 4,
+                            borderRadius: 1,
+                            fontWeight: 500,
                         }}
                     >
-                        <Box
-                            sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: 2,
-                            }}
-                        >
-                            {/* Color */}
-                            <Select
-                                label="Color"
-                                register={register}
-                                name="color"
-                                errors={errors}
-                                options={colorOptions}
-                                disabled={isWorking}
-                            />
-
-                            {/* Brand */}
-                            <Select
-                                label="Brand"
-                                register={register}
-                                name="brand"
-                                errors={errors}
-                                options={brandOptions}
-                                disabled={isWorking}
-                            />
-                        </Box>
-                    </Paper>
+                        Cancel
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        disabled={isWorking}
+                        onClick={handleSubmit(onSubmit)}
+                        sx={{
+                            px: 4,
+                            borderRadius: 1,
+                            fontWeight: 500,
+                            minWidth: 180,
+                        }}
+                        startIcon={
+                            isWorking ? (
+                                <CircularProgress size={20} color="inherit" />
+                            ) : null
+                        }
+                    >
+                        {isWorking
+                            ? "Processing..."
+                            : isEditSession
+                            ? "Save Changes"
+                            : "Create Product"}
+                    </Button>
                 </Box>
-            </Box>
-
-            {/* Submit Button */}
-            <Box sx={{ mt: 3 }}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    disabled={isWorking}
-                    sx={{
-                        py: 1.5,
-                        fontSize: "1rem",
-                        fontWeight: "bold",
-                        borderRadius: 2,
-                        boxShadow: 3,
-                    }}
-                    onClick={handleSubmit(onSubmit)}
-                >
-                    Save Product
-                </Button>
-            </Box>
+            </Stack>
         </Box>
     );
 }
