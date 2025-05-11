@@ -32,8 +32,8 @@ class ProductResource extends JsonResource
             'date' => Carbon::parse($this->created_at)->format('Y-m-d'), // Parse and format the date
             'favorites_count' => $this->favorites->count(),
             'description' => $this->description,
-            'attributes' => $this->attributes,
-            // 'image' => asset('storage/' .$this->images[0]?->image_url),
+            'state' => $this->state,
+            'attributes' => ProductAttributeResource::collection($this->attributes),
             'image' => $this->images->first()
                 ? asset('storage/' . $this->images->first()->image_url)
                 : asset('storage/default.jpg'),

@@ -14,10 +14,10 @@ use Illuminate\Support\Facades\File;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
-Route::get('/{any}', function () {
-    return view('welcome'); // Serve React app
-})->where('any', '.*');
+// Route::get('/{any}', function () {
+//     return view('welcome'); // Serve React app
+// })->where('any', '.*');

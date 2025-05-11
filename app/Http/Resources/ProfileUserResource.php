@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
+class ProfileUserResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -21,15 +21,15 @@ class UserResource extends JsonResource
             'phone' => $this->phone,
             'location' => $this->location,
             'description' => $this->description,
+            'state' => $this->state,
             'image' => $this->image ? url('storage/' . $this->image) : null, // Image URL if available
             'rating' => (float) $this->rating ?? 0, // Default to 0 if no rating
             'role' => $this->role,
             'is_active' => $this->is_active,
             'total_products' => $this->products()->count(), // 👈 this line
-            // 'products' => [
-            //     $this->products
-            // ],
-
+            'products' => [
+                $this->products
+            ],
         ];
     }
 }

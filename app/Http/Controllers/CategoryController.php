@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use Illuminate\Http\Request;
+use App\Traits\ImageManipulation;
+use Illuminate\Http\JsonResponse;
 use App\Http\Requests\CategoryRequest;
 use App\Http\Resources\CategoryResource;
-use App\Models\Category;
-use App\Traits\ImageManipulation;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
+use App\Http\Resources\CategoryAttributesResource;
 
 class CategoryController extends Controller
 {
@@ -70,4 +71,17 @@ class CategoryController extends Controller
         $category->delete();
         return response()->json(['success' => 'Category deleted successfully']);
     }
+//     public function getAttributes(Category $category)
+// {
+//     $category->load('attributes', 'parent.attributes');
+
+//     $attributes = $category->attributes;
+
+//     if ($category->parent) {
+//         $attributes = $attributes->merge($category->parent->attributes);
+//     }
+
+//     return CategoryAttributesResource::collection($attributes);
+// }
+
 }

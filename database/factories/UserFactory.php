@@ -26,7 +26,9 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'rating' => $this->faker->randomFloat(1, 1, 5),
             'image' =>$this->faker->filePath(),
-            'location' => $this->faker->city(),
+            // 'location' => $this->faker->city(),
+            'location' => json_encode(['city' => $this->faker->city()]),
+
             'phone' => $this->faker->phoneNumber(),
             'description' => $this->faker->sentence(),
             'role' => $this->faker->randomElement(['admin', 'user', 'manager']),

@@ -23,19 +23,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(5)->create();
-        // Category::factory(5)->create();
-        // Product::factory(5)->create();
-        // ProductAttributeValue::factory(5)->create();
-        // Attribute::factory(5)->create();
-        // Message::factory(5)->create();
-        // Favorite::factory(5)->create();
-        // Review::factory(5)->create();
-        // Report::factory(5)->create();
 
-        $users = User::factory(5)->create();
-        $categories = Category::factory(5)->create();
-        $products = Product::factory(5)->create();
+        $users = User::factory(20)->create();
+        $category = Category::factory(20)->create();
+        $products = Product::factory(20)->create();
 
         // Create favorites by randomly associating users with products
         foreach ($users as $user) {

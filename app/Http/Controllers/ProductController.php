@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CategoryAttributesResource;
 use App\Http\Resources\ShowProductResource;
+use App\Models\Category;
 use App\Models\Image;
 use App\Models\Product;
 use App\Traits\ImageManipulation;
@@ -25,7 +27,13 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $filters = $request->only([
-            'category', 'price', 'location', 'condition', 'date', 'attributes'
+            'category',
+            'price',
+            'location',
+            'condition',
+            'date',
+            'attributes',
+            'state'
         ]);
 
         $perPage = $request->input('perPage', 10);
@@ -46,7 +54,7 @@ class ProductController extends Controller
                 * cos(radians(longitude) - radians(?)) + sin(radians(?))
                 * sin(radians(latitude)))
             ) AS distance", [$userLat, $userLng, $userLat])
-            ->orderBy('distance', 'asc');
+                ->orderBy('distance', 'asc');
         }
 
         // Apply all filters, including attributes
@@ -79,6 +87,10 @@ class ProductController extends Controller
                 $product->images()->create(['image_url' => $path]);
             }
         }
+        if ($request->has('attributes')) {
+            $product->attributes = $request->input('attributes'); // Store as JSON
+            $product->save();
+        }
 
         return response()->json([
             'message' => 'Product created successfully',
@@ -93,6 +105,18 @@ class ProductController extends Controller
     {
         return ShowProductResource::make($product->load(['images', 'category', 'user',]));
     }
+
+    public function StateOfProduct(ProductRequest $request, $id)
+    {
+        $product = Product::where('user_id', Auth::id())->findOrFail($id);
+        $product->update(['state' => $request->state]);
+
+        return response()->json([
+            'message' => "Product state updated to {$request->state}.",
+            'product' => new ProductResource($product),
+        ]);
+    }
+
 
     /**
      * Update the specified resource in storage.
@@ -189,9 +213,22 @@ class ProductController extends Controller
 
 
     public function allImages($id)
-{
-    $images = Image::where('product_id', $id)->get();
-    return ImageResource::collection($images);
-}
+    {
+        $images = Image::where('product_id', $id)->get();
+        return ImageResource::collection($images);
+    }
 
+    public function getAttributesByCategory($categoryId)
+    {
+        $category = Category::with('attributes', 'parent.attributes')->findOrFail($categoryId);
+
+        // Combine child and parent attributes
+        $attributes = $category->attributes;
+
+        if ($category->parent) {
+            $attributes = $attributes->merge($category->parent->attributes);
+        }
+
+        return CategoryAttributesResource::collection($attributes);
+    }
 }

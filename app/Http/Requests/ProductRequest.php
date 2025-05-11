@@ -32,8 +32,9 @@ class ProductRequest extends FormRequest
             'discount' => 'nullable|numeric|gte:0',
             'quantity' => 'required|integer|min:1',
             'condition' => 'nullable|boolean',
-            'attributes' => 'nullable',
+            'attributes' => 'nullable|array',
             'description' => 'required|string|min:10',
+            'state' =>'in:availavle, soled'
         ];
 
         $this->isMethod('PUT') && $this->validate($rules);

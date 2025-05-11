@@ -19,6 +19,7 @@ class Product extends Model
         'condition',
         'attributes',
         'description',
+        'state',
     ];
 
 

@@ -46,6 +46,13 @@ class ProductFilter
             $query->where('net_price', '=', (float)$range);
         }
     }
+    protected function state(Builder $query, $state)
+    {
+        if (in_array($state, ['available', 'sold'])) {
+            $query->where('state', $state);
+        }
+    }
+
 
     protected function location(Builder $query, $location)
     {

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class,'sender_id');
             $table->foreignIdFor(User::class,'receiver_id');
-            $table->foreignIdFor(Product::class,);
+            $table->foreignIdFor(Product::class,)->constrained()->onDelete('cascade');
             $table->string('reason');
             $table->date('date');
             $table->timestamps();
