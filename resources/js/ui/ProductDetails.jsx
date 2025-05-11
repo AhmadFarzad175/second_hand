@@ -17,7 +17,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ShareIcon from "@mui/icons-material/Share";
 import MessageIcon from "@mui/icons-material/Message";
@@ -25,11 +25,16 @@ import MessageIcon from "@mui/icons-material/Message";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import { useDeleteProduct } from "../features/product/useDeleteProduct";
 
 function ProductDetails({ dashboard = false }) {
     const { id } = useParams(); // 👈 get the ID from the URL
     const [product, setProduct] = useState(null);
     const [copied, setCopied] = useState(false);
+    const navigate = useNavigate();
+        const { isDeleting, deletePro } = useDeleteProduct();
+    
+
 
     // Fix for default icon issue
     delete L.Icon.Default.prototype._getIconUrl;
@@ -65,6 +70,13 @@ function ProductDetails({ dashboard = false }) {
                 .catch((err) => console.error("Failed to fetch product:", err));
         }
     }, [id]);
+
+    //delete the product
+    const handleDelete = async (event) => {
+        event.stopPropagation(); // Prevent row selection when clicking delete
+        deletePro(id);
+        navigate('/admin/products')
+    };
 
     // Optional fallback for loading state
     if (!product) {
@@ -473,10 +485,17 @@ function ProductDetails({ dashboard = false }) {
                     {dashboard ? (
                         <Box sx={{ mt: 3 }}>
                             <Stack direction="row" spacing={2}>
-                                <Button variant="outlined" color="primary">
+                                <Button variant="outlined" color="primary"
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    navigate(`/admin/edit-product/${product.id}`, {
+                                        state: { product }, // Pass the entire user object
+                                    });
+                                }}>
                                     Edit Product
                                 </Button>
-                                <Button variant="outlined" color="error">
+                                <Button variant="outlined" color="error"
+                                onClick={handleDelete} disabled={isDeleting}>
                                     Delete Product
                                 </Button>
                             </Stack>

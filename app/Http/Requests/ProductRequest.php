@@ -26,7 +26,7 @@ class ProductRequest extends FormRequest
         // dd(Request()->file('images'));
         $rules = [
             'name' => 'required|string|max:255',
-            // 'images' => 'required',
+            'images' => 'required',
             'category_id' => 'required',
             'net_price' => 'required|numeric|gte:0',
             'discount' => 'nullable|numeric|gte:0',

@@ -9,6 +9,7 @@ import {
     ListItemText,
     Box,
     Container,
+    Collapse,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -16,6 +17,10 @@ import AddBusinessIcon from "@mui/icons-material/AddBusiness";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import LanguageIcon from "@mui/icons-material/Language";
+import SearchIcon from "@mui/icons-material/Search";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+
+
 import { Link } from "react-router-dom";
 import { Logout } from "@mui/icons-material";
 import SearchInput from "./SearchInput";
@@ -24,6 +29,7 @@ import AppDrawer from "../../../public/images/Drawer";
 function NavBar() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
+    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -37,14 +43,19 @@ function NavBar() {
         setDrawerOpen(open);
     }
 
+    const toggleMobileSearch = () => {
+        setMobileSearchOpen(!mobileSearchOpen);
+    };
+
     return (
         <AppBar
             position="sticky"
-            color="default"
-            elevation={1}
+            // color="default"
+            // elevation={1}
             sx={{
-                bgcolor: "rgba(255, 255, 255, 0.7)",
-                backdropFilter: "blur(10px)",
+                bgcolor: "#eee",
+                boxShadow:"none"
+                // backdropFilter: "blur(10px)",
             }}
         >
             <Container maxWidth="xl">
@@ -83,10 +94,22 @@ function NavBar() {
 
                     {/* Right Section */}
                     <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <IconButton>
+                        {/* Mobile Search Icon */}
+                        <IconButton
+                            onClick={toggleMobileSearch}
+                            sx={{ display: { sm: "none" } }}
+                        >
+                            <SearchIcon />
+                        </IconButton>
+
+                        <IconButton
+                            sx={{ display: { xs: "none", sm: "flex" } }}
+                        >
                             <AddBusinessIcon />
                         </IconButton>
-                        <IconButton>
+                        <IconButton
+                            sx={{ display: { xs: "none", sm: "flex" } }}
+                        >
                             <FavoriteIcon />
                         </IconButton>
                         <IconButton
@@ -106,6 +129,13 @@ function NavBar() {
                 </Toolbar>
             </Container>
 
+            {/* Mobile Search Expansion */}
+            <Collapse in={mobileSearchOpen}>
+                <Box sx={{ px: 2, pb: 2, display: { sm: "none" } }}>
+                    <SearchInput />
+                </Box>
+            </Collapse>
+
             {/* Drawer */}
             <AppDrawer open={drawerOpen} toggleDrawer={toggleDrawer} />
 
@@ -121,6 +151,20 @@ function NavBar() {
                     </ListItemIcon>
                     <ListItemText>Profile</ListItemText>
                 </MenuItem>
+
+                <MenuItem
+                    onClick={() => {
+                        handleMenuClose();
+                        window.location.href =
+                            "http://127.0.0.1:8000/admin/dashboard";
+                    }}
+                >
+                    <ListItemIcon>
+                        <DashboardIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Admin Panel</ListItemText>
+                </MenuItem>
+
                 <MenuItem onClick={handleMenuClose}>
                     <ListItemIcon>
                         <Logout fontSize="small" />
@@ -128,11 +172,6 @@ function NavBar() {
                     <ListItemText>Logout</ListItemText>
                 </MenuItem>
             </Menu>
-
-            {/* Search Input in Mobile View */}
-            <Box sx={{ display: { sm: "none" }, px: 2, pb: 2 }}>
-                <SearchInput />
-            </Box>
         </AppBar>
     );
 }

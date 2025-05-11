@@ -50,6 +50,7 @@ const CategoryRow = ({ category, handleOpen, isSelected, handleClick }) => {
             role="checkbox"
             aria-checked={isSelected}
             selected={isSelected}
+            sx={{ cursor: "pointer" }} // 👈 Add this line
         >
             <TableCell padding="checkbox">
                 <Checkbox checked={isSelected} />

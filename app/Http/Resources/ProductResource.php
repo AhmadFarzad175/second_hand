@@ -32,14 +32,10 @@ class ProductResource extends JsonResource
             'date' => Carbon::parse($this->created_at)->format('Y-m-d'), // Parse and format the date
             'favorites_count' => $this->favorites->count(),
             'description' => $this->description,
-            'state' => $this->state,
-            'attributes' => ProductAttributeResource::collection($this->attributes),
-            'image' => $this->images->first()
-                ? asset('storage/' . $this->images->first()->image_url)
-                : asset('storage/default.jpg'),
-            'WhatsApp' => $this->user && $this->user->phone
-                ? 'https://wa.me/' . $this->user->phone . '?text=' . urlencode("Hello, I'm interested in your product '{$this->name}' listed for {$this->price}")
-                : null,
+            'attributes' => $this->attributes,
+            'state' =>  $this->state,
+            // 'image' => asset('storage/' .$this->images[0]?->image_url),
+            'images' => asset('storage/' . $this->images->first()->image_url),
         ];
     }
 

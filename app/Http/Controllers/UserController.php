@@ -67,7 +67,7 @@ class UserController extends Controller
     {
         // $user = User::find($id);
         $validated = $request->validated();
-        // dd($validated);
+        // dd($request->input());
         $this->updateImage($user, $request, $validated, 'images/users', "image");
 
         $user->update($validated);

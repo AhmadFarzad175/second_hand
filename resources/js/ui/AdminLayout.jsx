@@ -36,7 +36,7 @@ function AdminLayout() {
                 <Card
                     sx={{
                         padding: { xs: "20px 10px", sm: 1, md: 2, lg: 3 },
-                        borderRadius: "20px",
+                        borderRadius: "10px",
                         minHeight: "calc(100vh - 100px)",
                         maxWidth: "100%", // <-- important
                         overflowX: "hidden", // <-- optional but safer

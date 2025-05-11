@@ -102,11 +102,11 @@ const Products = () => {
                             rowCount={products.length}
                         />
                         <TableBody>
-                            {paginatedRows.map((row) => (
+                            {paginatedRows.map((product) => (
                                 <ProductRow
-                                    key={row.id}
-                                    row={row}
-                                    isSelected={selected.includes(row.id)}
+                                    key={product.id}
+                                    product={product}
+                                    isSelected={selected.includes(product.id)}
                                     handleClick={handleClick}
                                 />
                             ))}

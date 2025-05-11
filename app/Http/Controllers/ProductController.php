@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ImageResource;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\WebsiteProductsResource;
+use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use App\Services\ProductFilter; // Import the ProductFilter service
 use Illuminate\Support\Facades\File;
@@ -43,7 +45,7 @@ class ProductController extends Controller
         $userLat = $user->latitude ?? null;
         $userLng = $user->longitude ?? null;
 
-        $query = Product::with(['category', 'user', 'images', 'reviews'])
+        $query = Product::with(['category', 'user', 'images', 'favorites'])
             ->orderBy('id', 'DESC')
             ->search($search);
 
@@ -230,5 +232,43 @@ class ProductController extends Controller
         }
 
         return CategoryAttributesResource::collection($attributes);
+    }
+    public function websiteProducts(Request $request)
+    {
+        $filters = $request->only([
+            'category', 'price', 'location', 'condition', 'date', 'attributes'
+        ]);
+
+        $perPage = $request->input('perPage', 10);
+        $search = $request->input('search');
+
+        $user = Auth::user();
+        $user= User::find(1);
+
+        $location = json_decode($user->location);
+        $userLat = $location->latitude ?? null;
+        $userLng = $location->longitude ?? null;
+// dd($user->location);
+// dd($userLat);
+        $query = Product::with(['images', 'favorites'])
+            ->orderBy('id', 'DESC')
+            ->search($search);
+
+        // Distance filtering and ordering
+        if ($userLat && $userLng) {
+            $query->select('*')->selectRaw("(
+                6371 * acos(cos(radians(?)) * cos(radians(latitude))
+                * cos(radians(longitude) - radians(?)) + sin(radians(?))
+                * sin(radians(latitude)))
+            ) AS distance", [$userLat, $userLng, $userLat])
+            ->orderBy('distance', 'asc');
+        }
+
+        // Apply all filters, including attributes
+        $filteredQuery = ProductFilter::apply($query, $filters);
+
+        $products = $perPage ? $filteredQuery->paginate($perPage) : $filteredQuery->get();
+
+        return WebsiteProductsResource::collection($products);
     }
 }
