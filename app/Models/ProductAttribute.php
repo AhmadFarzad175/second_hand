@@ -8,20 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class ProductAttribute extends Model
 {
     use HasFactory;
-
-    protected $fillable = [
-        'name',
-    ];
-
+    protected $fillable = ['name', 'type', 'options'];
+    protected $casts = ['options' => 'array',];
     public function categories()
     {
-        return $this->belongsToMany(Category::class, 'attribute_category', 'attribute_id', 'category_id');
+        return $this->belongsToMany(Category::class, 'attribute_category');
     }
-
-   // An Attribute has many ProductAttributeValues
-   public function productValues()
-   {
-       return $this->hasMany(ProductAttributeValue::class);
-   }
-
 }

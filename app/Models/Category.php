@@ -8,31 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 class Category extends Model
 {
     use HasFactory;
-    protected $fillable = [
-        'name',
-        'image'
-    ];
+    protected $fillable = ['name', 'image', 'parent_id'];
     public function products()
     {
         return $this->hasMany(Product::class);
-        // Define a hasMany relationship
     }
-
-    // public function attributes()
-    // {
-    //     return $this->hasMany(Attribute::class);
-    // }
     public function attributes()
     {
         return $this->belongsToMany(ProductAttribute::class, 'attribute_category');
     }
-
-    public function scopeSearch($query, $search)
+    public function children()
     {
-        if (!empty($search)) {
-            return $query->where('name', 'like', '%' . $search . '%');
-        }
-
-        return $query;
+        return $this->hasMany(Category::class, 'parent_id');
+    }
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
     }
 }
