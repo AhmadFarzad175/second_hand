@@ -30,7 +30,7 @@ class User extends Authenticatable
         'is_active',
     ];
 
-  
+
 
     public function reviews()
     {
@@ -44,7 +44,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Report::class);
     }
- 
+
 
     public function products()
 {
@@ -75,7 +75,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-
+///it is work correctely 
     public function scopeSearch($query, $search)
     {
         if (!$search) {
