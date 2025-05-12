@@ -35,7 +35,7 @@ class CategorySeeder extends Seeder
         foreach ($categories as $index => $name) {
             Category::create([
                 'name' => $name,
-                'image' => 'image-' . ($index + 1) . '.jpg',
+                'image' => 'images/image-' . ($index + 1) . '.jpg',
             ]);
         }
     }
