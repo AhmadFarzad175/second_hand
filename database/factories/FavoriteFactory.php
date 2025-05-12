@@ -17,8 +17,8 @@ class FavoriteFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' =>rand(1,10),
-            'product_id'=>rand(1,10),
+            'user_id' =>rand(1,5),
+            'product_id'=>rand(1,5),
 
         ];
     }
