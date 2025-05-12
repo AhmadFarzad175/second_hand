@@ -236,32 +236,41 @@ class ProductController extends Controller
     public function websiteProducts(Request $request)
     {
         $filters = $request->only([
-            'category', 'price', 'location', 'condition', 'date', 'attributes'
+            'category',
+            'price',
+            'location',
+            'condition',
+            'date',
+            'attributes'
         ]);
 
         $perPage = $request->input('perPage', 10);
         $search = $request->input('search');
 
         $user = Auth::user();
-        $user= User::find(1);
+        $user = User::find(1);
 
         $location = json_decode($user->location);
         $userLat = $location->latitude ?? null;
         $userLng = $location->longitude ?? null;
-// dd($user->location);
-// dd($userLat);
-        $query = Product::with(['images', 'favorites'])
+        // dd($user->location);
+        // dd($userLat);
+        $query = Product::with(['images', 'favorites', 'user']) // <-- add 'user'
             ->orderBy('id', 'DESC')
             ->search($search);
 
+
         // Distance filtering and ordering
         if ($userLat && $userLng) {
-            $query->select('*')->selectRaw("(
-                6371 * acos(cos(radians(?)) * cos(radians(latitude))
-                * cos(radians(longitude) - radians(?)) + sin(radians(?))
-                * sin(radians(latitude)))
+            $query->select('products.*')->selectRaw("(
+                6371 * acos(
+                    cos(radians(?)) * cos(radians(CAST(JSON_UNQUOTE(JSON_EXTRACT(users.location, '$.latitude')) AS DECIMAL(10,7)))) *
+                    cos(radians(CAST(JSON_UNQUOTE(JSON_EXTRACT(users.location, '$.longitude')) AS DECIMAL(10,7)) - ?)) +
+                    sin(radians(?)) * sin(radians(CAST(JSON_UNQUOTE(JSON_EXTRACT(users.location, '$.latitude')) AS DECIMAL(10,7))))
+                )
             ) AS distance", [$userLat, $userLng, $userLat])
-            ->orderBy('distance', 'asc');
+                ->join('users', 'products.user_id', '=', 'users.id')
+                ->orderBy('distance', 'asc');
         }
 
         // Apply all filters, including attributes
