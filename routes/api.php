@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CurrencyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -84,6 +85,11 @@ Route::apiResource('users', UserController::class);
 Route::put('users/{user}/status', [UserController::class, 'Status']);
 Route::post('users/update/{user}', [UserController::class, 'update']);
 Route::delete('bulk-delte-user', [UserController::class, 'bulkDelete']);
+
+///////////////////  CURRENCIES  ///////////////////
+
+Route::apiResource('currency',CurrencyController::class);
+
 
 
 

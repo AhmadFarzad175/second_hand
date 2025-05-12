@@ -35,7 +35,8 @@ class ProductController extends Controller
             'condition',
             'date',
             'attributes',
-            'state'
+            'state',
+            'currency'
         ]);
 
         $perPage = $request->input('perPage', 10);
@@ -45,7 +46,7 @@ class ProductController extends Controller
         $userLat = $user->latitude ?? null;
         $userLng = $user->longitude ?? null;
 
-        $query = Product::with(['category', 'user', 'images', 'favorites'])
+        $query = Product::with(['category', 'user', 'images', 'favorites','currency'])
             ->orderBy('id', 'DESC')
             ->search($search);
 
@@ -101,7 +102,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        return ShowProductResource::make($product->load(['images', 'category', 'user',]));
+        return ShowProductResource::make($product->load(['images', 'category', 'user','currency']));
     }
 
     public function StateOfProduct(ProductRequest $request, $id)
@@ -251,7 +252,7 @@ class ProductController extends Controller
         $userLng = $location->longitude ?? null;
         // dd($user->location);
         // dd($userLat);
-        $query = Product::with(['images', 'favorites', 'user']) // <-- add 'user'
+        $query = Product::with(['images', 'favorites', 'user','currency']) // <-- add 'user'
             ->orderBy('id', 'DESC')
             ->search($search);
 
