@@ -18,7 +18,7 @@ class CategoryResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'image' => $this->image ? url('storage/' . $this->image) : null,
-            'total_productss' => $this->products_count ?? $this->products()->count(), // Number of products
+            'total_products' => $this->products_count ?? $this->products()->count(), // Number of products
         ];
     }
 }

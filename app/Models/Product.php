@@ -48,14 +48,18 @@ class Product extends Model
         return $this->hasMany(Review::class); // Define a hasMany relationship
     }
 
+    // public function favorites()
+    // {
+    //     return $this->hasMany(Favorite::class); // Define a hasMany relationship
+    // }
     public function favorites()
     {
-        return $this->hasMany(Favorite::class); // Define a hasMany relationship
+        return $this->belongsToMany(User::class, 'favorites');
     }
-        public function images()
-        {
-            return $this->hasMany(Image::class); // Define a hasMany relationship
-        }
+    public function images()
+    {
+        return $this->hasMany(Image::class); // Define a hasMany relationship
+    }
     public function attributeValues()
     {
         return $this->hasMany(ProductAttributeValue::class);
@@ -97,17 +101,17 @@ class Product extends Model
         'attributes' => 'array', // Ensures JSON data is treated as an array
     ];
     protected static function booted()
-{
-    static::deleting(function ($product) {
-        foreach ($product->images as $image) {
-            if ($image->image_path && Storage::disk('public')->exists($image->image_path)) {
-                Storage::disk('public')->delete($image->image_path);
+    {
+        static::deleting(function ($product) {
+            foreach ($product->images as $image) {
+                if ($image->image_path && Storage::disk('public')->exists($image->image_path)) {
+                    Storage::disk('public')->delete($image->image_path);
+                }
             }
-        }
 
-        $product->images()->delete();
-    });
-}
+            $product->images()->delete();
+        });
+    }
 }
 
 
