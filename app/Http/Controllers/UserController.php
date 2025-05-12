@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProfileUserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Traits\ImageManipulation;
@@ -51,9 +52,10 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show($id)
     {
-        return UserResource::make($user);
+        $user = User::with('products')->findOrFail($id);
+        return ProfileUserResource::make($user);
     }
 
 
@@ -113,4 +115,4 @@ class UserController extends Controller
 
 // Developed By: Fahim Rahimi
 // Reach Me: fahimrahimi305@gmail.com
-//
+

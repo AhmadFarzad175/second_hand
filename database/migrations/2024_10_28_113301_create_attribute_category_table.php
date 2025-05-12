@@ -1,10 +1,8 @@
 <?php
 
-use App\Models\Category;
-use App\Models\ProductAttribute;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -15,9 +13,17 @@ return new class extends Migration
     {
         Schema::create('attribute_category', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(ProductAttribute::class,'attribute_id');
-            $table->foreignIdFor(Category::class);
+            $table->unsignedBigInteger('attribute_id');
+            $table->unsignedBigInteger('category_id');
             $table->timestamps();
+
+            $table->foreign('attribute_id')
+                ->references('id')->on('product_attributes')
+                ->onDelete('cascade');
+
+            $table->foreign('category_id')
+                ->references('id')->on('categories')
+                ->onDelete('cascade');
         });
     }
 

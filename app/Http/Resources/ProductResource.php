@@ -33,8 +33,9 @@ class ProductResource extends JsonResource
             'favorites_count' => $this->favorites->count(),
             'description' => $this->description,
             'attributes' => $this->attributes,
+            'state' =>  $this->state,
             // 'image' => asset('storage/' .$this->images[0]?->image_url),
-            'images' => asset('storage/' . $this->images->first()->image_url),
+            'images' => asset('storage/' . $this->images->first() ?->image_url),
         ];
     }
 

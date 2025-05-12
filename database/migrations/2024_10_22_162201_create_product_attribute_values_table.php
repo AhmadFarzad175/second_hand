@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\Product;
-use App\Models\ProductAttribute;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,10 +13,17 @@ return new class extends Migration
     {
         Schema::create('product_attribute_values', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Product::class, 'product_id');
-            $table->foreignIdFor(ProductAttribute::class,'attribute_id');
-            $table->string('value'); // e.g., Red for color, 3 for rooms
+
+            // Add correct foreign keys
+            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('attribute_id');
+
+            $table->string('value'); // Example: Red for color, 3 for rooms
             $table->timestamps();
+
+            // Set foreign key constraints
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            $table->foreign('attribute_id')->references('id')->on('product_attributes')->onDelete('cascade');
         });
     }
 

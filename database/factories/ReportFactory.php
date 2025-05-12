@@ -18,7 +18,7 @@ class ReportFactory extends Factory
     {
         return [
             'user_id' =>rand(1,10),
-            'product_id'=>rand(1,10),
+            'product_id'=>rand(1,5),
             'reason' => $this->faker->sentence,
         ];
     }

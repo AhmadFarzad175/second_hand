@@ -15,10 +15,10 @@ return new class extends Migration
     {
         Schema::create('favorites', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->constrained();
-            $table->foreignIdFor(Product::class)->constrained();
+            $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
+            $table->foreignIdFor(Product::class)->constrained()->onDelete('cascade');
             $table->unique(['user_id', 'product_id']);
-            // $table->date('date')->nullable();
+            // $table->date('date')->nullable(); // optional field
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('favorite');
+        Schema::dropIfExists('favorites'); // Corrected table name
     }
 };

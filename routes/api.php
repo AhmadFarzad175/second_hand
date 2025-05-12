@@ -43,28 +43,51 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // });
 
 
-Route::post('/products/{product}/favorite', [FavoriteController::class, 'store'])->name('favorites.store');
-Route::delete('/products/{product}/favorite', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
+///////////////////  FAVORITES  ///////////////////
 
+// Route::post('/products/{product}/favorite', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
+// Route for toggling the favorite status (add or remove from favorites)
+Route::post('/products/{productId}/favorite', [FavoriteController::class, 'toggle'])
+    ->name('favorites.toggle');
+// Route for listing all favorite products of the authenticated user
+Route::get('/favorites', [FavoriteController::class, 'index'])
+    ->name('favorites.index');
+// Route::post('/products/{product}/favorite', [FavoriteController::class, 'store'])->name('favorites.store');
+// Route::delete('/products/{product}/favorite', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
 
-Route::apiResource('users', UserController::class);
+///////////////// PRODUCTS///////////////////////
+
 Route::apiResource('products', ProductController::class);
-Route::Post('products/update/{product}',[ProductController::class, 'update']);
-Route::get('websiteProducts',[ProductController::class, 'websiteProducts']);
-Route::get('productImages/{id}',[ProductController::class, 'allImages']);
+Route::get('categories/{id}/attributes', [ProductController::class, 'getAttributesByCategory']);
+Route::patch('/products/{id}/state', [ProductController::class, 'StateOfProduct']);
+Route::Post('products/update/{product}', [ProductController::class, 'update']);
+Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
+Route::get('productImages/{id}', [ProductController::class, 'allImages']);
+Route::apiResource('product-attributes', ProductAttributeController::class);
+Route::apiResource('product-attribute-values', ProductAttributeValueController::class);
+
+
+///////////////////  CATEGORY  ///////////////////
+
 Route::apiResource('categories', CategoryController::class);
-Route::Post('categories/update/{category}',[CategoryController::class, 'update']);
+Route::Post('categories/update/{category}', [CategoryController::class, 'update']);
+
+///////////////////  MESSAGE  ///////////////////
+
 Route::apiResource('messages', MessageController::class);
 Route::apiResource('reports', ReportController::class);
 Route::apiResource('reviews', ReviewController::class);
-Route::apiResource('product-attributes', ProductAttributeController::class);
-Route::apiResource('product-attribute-values', ProductAttributeValueController::class);
+
+///////////////////  USERS  ///////////////////
+
+Route::apiResource('users', UserController::class);
 Route::put('users/{user}/status', [UserController::class, 'Status']);
 Route::post('users/update/{user}', [UserController::class, 'update']);
-Route::delete('bulk-delte-user',[UserController::class, 'bulkDelete']);
+Route::delete('bulk-delte-user', [UserController::class, 'bulkDelete']);
 
 
 
+// Route::get('/categories/{category}/attributes', [CategoryController::class, 'getAttributes']);
 
 
 
@@ -74,6 +97,8 @@ Route::prefix('v1/mobile')->group(function () {
     // Public routes (unauthenticated mobile access)
     Route::get('/products', [ProductController::class, 'index']); // With filters
     Route::get('/products/{product}', [ProductController::class, 'show']);
+    Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
+
 
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::get('/categories/{category}', [CategoryController::class, 'show']);
@@ -113,9 +138,8 @@ Route::prefix('v1/mobile')->group(function () {
         Route::apiResource('/messages', MessageController::class);
 
         // Image updates
-        Route::post('/images', [ImageController::class, 'store']);
-        Route::put('/images/update/{id}', [ImageController::class, 'update']);
-        Route::delete('/images/{id}', [ImageController::class, 'destroy']);
+        // Route::post('/images', [ImageController::class, 'store']);
+        // Route::put('/images/update/{id}', [ImageController::class, 'update']);
+        // Route::delete('/images/{id}', [ImageController::class, 'destroy']);
     });
 });
-

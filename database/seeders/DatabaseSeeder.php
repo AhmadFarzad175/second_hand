@@ -2,18 +2,15 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
-use App\Models\Attribute;
 use App\Models\Category;
 use App\Models\Favorite;
-use App\Models\Message;
 use App\Models\Product;
-use App\Models\ProductAttribute;
-use App\Models\ProductAttributeValue;
-use App\Models\Report;
-use App\Models\Review;
 use App\Models\User;
+use App\Models\ProductAttributeValue;
+use App\Models\ProductAttribute;
+use App\Models\Message;
+use App\Models\Review;
+use App\Models\Report;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -23,29 +20,38 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(5)->create();
-        // Category::factory(5)->create();
-        // Product::factory(5)->create();
-        // ProductAttributeValue::factory(5)->create();
-        // Attribute::factory(5)->create();
-        // Message::factory(5)->create();
-        // Favorite::factory(5)->create();
-        // Review::factory(5)->create();
-        // Report::factory(5)->create();
+        // Create users and categories
+        $users = User::factory(20)->create();
+ $this->call(CategorySeeder::class);
+        // Create 20 products ensuring they don't get deleted on fresh migrations
+        // for ($i = 1; $i <= 20; $i++) {
+        //     Product::firstOrCreate(
+        //         ['name' => 'Product ' . $i], // Ensure uniqueness based on 'name'
+        //         [
+        //             'category_id' => $categories->random()->id, // Random category from the created categories
+        //             'user_id' => $users->random()->id, // Random user from the created users
+        //             'net_price' => rand(100, 500), // Random net price
+        //             'discount' => rand(0, 50), // Random discount
+        //             'quantity' => rand(1, 10), // Random quantity
+        //             'condition' => rand(0, 1), // Random condition (new or used)
+        //             'state' => 'available', // Set state as available
+        //             'description' => 'This is a description for product ' . $i, // Example description
+        //             'attributes' => json_encode(['color' => 'red', 'size' => 'L']), // Example attributes
+        //         ]
+        //     );
+        // }
 
-        $users = User::factory(5)->create();
-        $categories = Category::factory(5)->create();
-        $products = Product::factory(5)->create();
-
-        // Create favorites by randomly associating users with products
-        foreach ($users as $user) {
-            foreach ($products as $product) {
-                Favorite::create([
-                    'user_id' => $user->id,
-                    'product_id' => $product->id,
-                ]);
-            }
-        }
+        // // Create favorites by randomly associating users with products
+        // foreach ($users as $user) {
+        //     foreach ($categories as $category) {
+        //         // Create a random number of favorites per user
+        //         $product = Product::inRandomOrder()->first();
+        //         Favorite::firstOrCreate([
+        //             'user_id' => $user->id,
+        //             'product_id' => $product->id,
+        //         ]);
+        //     }
+        // }
 
         // Create other entities as needed
         ProductAttributeValue::factory(5)->create();
@@ -53,18 +59,5 @@ class DatabaseSeeder extends Seeder
         Message::factory(5)->create();
         Review::factory(5)->create();
         Report::factory(5)->create();
-
-
-
-
-
-
-        // Call other factories as needed
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
     }
 }

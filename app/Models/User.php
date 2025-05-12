@@ -30,25 +30,22 @@ class User extends Authenticatable
         'is_active',
     ];
 
-  
+
 
     public function reviews()
     {
         return $this->hasMany(Review::class);
     }
-    public function favorites()
-    {
-        return $this->hasMany(Favorite::class);
+   public function favorites()
+{
+    return $this->belongsToMany(Product::class, 'favorites');
     }
     public function reports()
     {
         return $this->hasMany(Report::class);
     }
-    public function product()
-    {
-        return $this->belongsToMany(Product::class, 'favorites')->withTimestamps();
-    }
-    
+
+
     public function products()
 {
     return $this->hasMany(Product::class);
@@ -78,7 +75,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-
     public function scopeSearch($query, $search)
     {
         if (!$search) {
