@@ -16,13 +16,15 @@ class ProductSeeder extends Seeder
      */
     public function run()
     {
+        $user = User::find(3);
         // Loop to create 20 products
         for ($i = 1; $i <= 20; $i++) {
             Product::firstOrCreate(
                 ['name' => 'Product ' . $i], // Unique column to check
                 [
                     'category_id' => Category::inRandomOrder()->first()->id, // Random category
-                    'user_id' => User::inRandomOrder()->first()->id, // Random user
+                    // 'user_id' => User::inRandomOrder()->first()->id, // Random user
+                     'user_id' => $i <= 5 ? $user->id : User::inRandomOrder()->first()->id,
                     'net_price' => rand(100, 500), // Random net price
                     'discount' => rand(0, 50), // Random discount
                     'quantity' => rand(1, 10), // Random quantity
