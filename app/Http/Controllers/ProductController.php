@@ -89,10 +89,6 @@ class ProductController extends Controller
                 $product->images()->create(['image_url' => $path]);
             }
         }
-        if ($request->has('attributes')) {
-            $product->attributes = $request->input('attributes'); // Store as JSON
-            $product->save();
-        }
 
         return response()->json([
             'message' => 'Product created successfully',
