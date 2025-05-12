@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
     {
         // Create users and categories
         $users = User::factory(20)->create();
- $this->call(CategorySeeder::class);
+        $this->call([CategorySeeder::class, ProductSeeder::class]);
         // Create 20 products ensuring they don't get deleted on fresh migrations
         // for ($i = 1; $i <= 20; $i++) {
         //     Product::firstOrCreate(

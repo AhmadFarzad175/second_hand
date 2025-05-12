@@ -9,62 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class FavoriteController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('auth:sanctum'); // or 'auth:api' if using tokens
-    // }
-
-    // Toggle favorite status
-
-
-
-    // Toggle favorite status
-    // public function toggle(Request $request, $productId)
-    // {
-    //     // $user = Auth::user();
-    //     $userId = $request->input('user_id'); // Or you can pass user_id as part of the URL, depending on your structure
-
-    //     if (!$userId) {
-    //         return response()->json(['message' => 'User ID is required'], 400); // If no user_id is provided
-    //     }
-
-    //     $product = Product::find($productId);
-
-    //     if (!$product) {
-    //         return response()->json(['message' => 'Product not found'], 404); // Product doesn't exist
-    //     }
-    //     // $product = Product::findOrFail($productId);
-
-    //     // Manually check if the product is already favorited
-    //     $favoriteExists = DB::table('favorites')
-    //         // ->where('user_id', $user->id)
-    //         ->where('user_id', $userId)
-    //         ->where('product_id', $productId)
-    //         ->exists();
-
-    //     if ($favoriteExists) {
-    //         // Remove from favorites (detach)
-    //         DB::table('favorites')
-    //             // ->where('user_id', $user->id)
-    //             ->where('user_id', $userId)
-    //             ->where('product_id', $productId)
-    //             ->delete();
-
-    //         return response()->json(['message' => 'Product removed from favorites', 'status' => 'removed']);
-    //     } else {
-    //         // Add to favorites (attach)
-    //         DB::table('favorites')->insert([
-    //             // 'user_id' => $user->id,
-    //             'user_id' => $userId,
-    //             'product_id' => $productId,
-    //             'created_at' => now(),
-    //             'updated_at' => now(),
-    //         ]);
-
-    //         return response()->json(['message' => 'Product added to favorites', 'status' => 'added']);
-    //     }
-    // }
-    // Example method to toggle a favorite
+  
 public function toggle(Request $request, $productId)
 {
     $userId = $request->input('user_id'); // Or pass user_id through headers/query params
