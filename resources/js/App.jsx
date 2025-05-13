@@ -2,7 +2,6 @@ import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Product from "./pages/Product";
 import Favorite from "./pages/Favorite";
-import AddProduct from "./pages/AddProduct";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
@@ -10,12 +9,13 @@ import AppLayout from "./ui/AppLayout";
 import Dashboard from "./features/dashboard/dashboard";
 import Products from "./features/product/Products";
 import AdminLayout from "./ui/AdminLayout";
-import CreateProduct from "./features/product/CreateProduct";
 import Categories from "./features/category/Categories";
 import Users from "./features/user/Users";
 import CreateUser from "./features/user/CreateUser";
 import ShowProduct from "./features/product/showProduct";
 import ShowUser from "./features/user/ShowUser";
+import AdminCreateProduct from "./features/product/AdminCreateProduct";
+import WebsiteCreateProduct from "./pages/WebsiteCreateProduct";
 
 function App() {
     return (
@@ -25,7 +25,7 @@ function App() {
                 <Route index element={<Home />} />
                 <Route path="product/:id" element={<Product />} />
                 <Route path="favorite" element={<Favorite />} />
-                <Route path="add-product" element={<AddProduct />} />
+                <Route path="add-product" element={<WebsiteCreateProduct />} />
             </Route>
 
             {/* Admin Panel routes */}
@@ -35,8 +35,8 @@ function App() {
                 {/* Product Menu */}
                 <Route path="products" element={<Products />} />
                 <Route path="product/:id" element={<ShowProduct />} />
-                <Route path="create-product" element={<CreateProduct />} />
-                <Route path="edit-product/:id" element={<CreateProduct />} />
+                <Route path="create-product" element={<AdminCreateProduct />} />
+                <Route path="edit-product/:id" element={<AdminCreateProduct />} />
                 <Route path="categories" element={<Categories />} />
 
                 {/* User Menu */}

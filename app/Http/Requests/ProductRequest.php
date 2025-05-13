@@ -23,7 +23,6 @@ class ProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        // dd(Request()->file('images'));
         $rules = [
             'name' => 'required|string|max:255',
             'images' => 'required',
@@ -32,7 +31,7 @@ class ProductRequest extends FormRequest
             'discount' => 'nullable|numeric|gte:0',
             'quantity' => 'required|integer|min:1',
             'condition' => 'nullable|boolean',
-            'attributes' => 'nullable|array',
+            'attributes' => 'nullable|json',
             'description' => 'required|string|min:10',
             'currency_id' => 'required|exists:currencies,id'
         ];

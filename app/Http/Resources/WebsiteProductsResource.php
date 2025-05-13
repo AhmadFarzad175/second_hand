@@ -17,7 +17,7 @@ class WebsiteProductsResource extends JsonResource
      */
     public function toArray($request)
     {
-        $userId = $request->query('user_id');
+        $userId = $request->query('user_id') || 1;
 
         return [
             'id'         => $this->id,

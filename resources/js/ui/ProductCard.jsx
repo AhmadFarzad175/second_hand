@@ -3,14 +3,21 @@ import {
     CardContent,
     CardMedia,
     Typography,
-    IconButton,
     Box,
 } from "@mui/material";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import FavoriteIcon from "@mui/icons-material/Favorite";
 import { Link } from "react-router-dom";
+// import { useToggleFavorite } from "./useToggleFavorite";
+import FavoriteButton from "./FavoriteButton";
 
 function ProductCard({ product }) {
+    // const { ToggleFavorite, isLoadingFav } = useToggleFavorite();
+
+    // const handleToggleFavorite = (e) => {
+    //     e.preventDefault();
+    //     e.stopPropagation(); // Prevent event bubbling
+    //     ToggleFavorite({ productId: product.id });
+    // };
+
     return (
         <Card
             component={Link}
@@ -19,27 +26,13 @@ function ProductCard({ product }) {
                 height: "100%",
                 position: "relative",
                 textDecoration: "none", // remove underline from link
-                color: "inherit",        // inherit text color
+                color: "inherit", // inherit text color
                 "&:hover": {
                     boxShadow: 6,
                 },
             }}
         >
-            <IconButton
-                sx={{
-                    position: "absolute",
-                    top: 8,
-                    right: 8,
-                    zIndex: 1,
-                }}
-                onClick={(e) => e.preventDefault()} // prevent icon click from triggering link
-            >
-                {product.isFavorite ? (
-                    <FavoriteIcon sx={{ color: "red" }} />
-                ) : (
-                    <FavoriteBorderIcon sx={{ color: "#010101" }} />
-                )}
-            </IconButton>
+            <FavoriteButton id={product.id} isFavorited={product.isFavorite} />
 
             <CardMedia
                 component="img"
@@ -49,7 +42,7 @@ function ProductCard({ product }) {
                     aspectRatio: "1",
                     objectFit: "cover",
                 }}
-                image={product.images || `/images/img-${product.id % 9}.jpg`}
+                image={product.images}
                 alt={product.name}
             />
 
@@ -58,7 +51,14 @@ function ProductCard({ product }) {
                     {product.name}
                 </Typography>
 
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 1,
+                    }}
+                >
                     <Typography variant="body1" fontWeight="bold">
                         ${product.net_price}
                     </Typography>
@@ -69,7 +69,7 @@ function ProductCard({ product }) {
                     )}
                 </Box>
 
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                     {product.howFar && (
                         <Typography variant="body2" color="text.secondary">
                             {product.howFar} away

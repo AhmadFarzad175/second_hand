@@ -9,34 +9,25 @@ import {
     Grid,
     Stack,
     CircularProgress,
-    //   Avatar,
     IconButton,
 } from "@mui/material";
-import { useCreateProduct } from "./useCreateProduct";
-import { TextField, Select, TextArea } from "../../ui/InputFields";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useUpdateProduct } from "./useUpdateProduct";
+import { TextField, Select, TextArea } from "../ui/InputFields";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { useNavigate } from "react-router-dom";
 
-export default function CreateProduct() {
-    //   const theme = useTheme();
-    const navigate = useNavigate();
-    //   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-    const { isCreating, createProduct } = useCreateProduct();
-    const { isUpdating, updateProduct } = useUpdateProduct();
-
+export default function ProductForm({
+    onSubmit,
+    isWorking = false,
+    isEditSession = false,
+    editValues = {},
+    navigateBackPath = "/",
+}) {
     const [images, setImages] = useState(Array(6).fill(null));
     const [imageFiles, setImageFiles] = useState(Array(6).fill(null));
     const [categories, setCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-
-    const { state } = useLocation();
-    const isEditSession = Boolean(state?.product?.id);
-
-    const editId = state?.product?.id;
-    const editValues = React.useMemo(() => state?.product || {}, [state]);
-    const isWorking = isCreating || isUpdating || isLoading;
+    const navigate = useNavigate();
 
     const {
         register,
@@ -63,14 +54,14 @@ export default function CreateProduct() {
         fetchCategories();
     }, []);
 
-    // Fetch images for update
+    // Initialize form with edit values and fetch images if in edit mode
     useEffect(() => {
-        const fetchProductImages = async () => {
-            if (!isEditSession) return;
-            setIsLoading(true);
+        if (!isEditSession) return;
+        setIsLoading(true);
 
+        const fetchProductImages = async () => {
             try {
-                const response = await fetch(`/api/productImages/${editId}`);
+                const response = await fetch(`/api/productImages/${editValues.id}`);
                 const data = await response.json();
 
                 const fetchedImages = Array(6).fill(null);
@@ -90,7 +81,7 @@ export default function CreateProduct() {
         };
 
         fetchProductImages();
-    }, [isEditSession, editId, reset]);
+    }, [isEditSession, editValues, reset]);
 
     const handleAddImage = (event, index) => {
         if (event.target.files && event.target.files[0]) {
@@ -116,7 +107,7 @@ export default function CreateProduct() {
         setImageFiles(newImageFiles);
     };
 
-    const onSubmit = (data) => {
+    const onFormSubmit = (data) => {
         const formData = new FormData();
         const attributes = {
             color: data.color,
@@ -137,30 +128,7 @@ export default function CreateProduct() {
             }
         });
 
-        if (isEditSession) {
-            updateProduct(
-                { formData, id: editId },
-                {
-                    onSuccess: () => {
-                        navigate(
-                            window.location.pathname.includes("/admin")
-                                ? "/admin/products"
-                                : "/"
-                        );
-                    },
-                }
-            );
-        } else {
-            createProduct(formData, {
-                onSuccess: () => {
-                    navigate(
-                        window.location.pathname.includes("/admin")
-                            ? "/admin/products"
-                            : "/"
-                    );
-                },
-            });
-        }
+        onSubmit(formData);
     };
 
     // Options for select components
@@ -238,7 +206,7 @@ export default function CreateProduct() {
                                 <TextField
                                     label="Product Name"
                                     register={register}
-                                    control={control} // This is required
+                                    control={control}
                                     errors={errors}
                                     name="name"
                                     disabled={isWorking}
@@ -249,7 +217,7 @@ export default function CreateProduct() {
                                 <Select
                                     label="Category"
                                     defaultValue={editValues?.category_id}
-                                    control={control} // This is required
+                                    control={control}
                                     register={register}
                                     name="category_id"
                                     errors={errors}
@@ -264,7 +232,7 @@ export default function CreateProduct() {
                                         <TextField
                                             label="Net Price ($)"
                                             register={register}
-                                            control={control} // This is required
+                                            control={control}
                                             errors={errors}
                                             name="net_price"
                                             type="number"
@@ -281,7 +249,7 @@ export default function CreateProduct() {
                                         <TextField
                                             label="Discount (%)"
                                             register={register}
-                                            control={control} // This is required
+                                            control={control}
                                             errors={errors}
                                             name="discount"
                                             type="number"
@@ -300,7 +268,7 @@ export default function CreateProduct() {
                                         <TextField
                                             label="Stock Quantity"
                                             register={register}
-                                            control={control} // This is required
+                                            control={control}
                                             errors={errors}
                                             name="quantity"
                                             type="number"
@@ -314,7 +282,7 @@ export default function CreateProduct() {
                                         <Select
                                             label="Condition"
                                             defaultValue={editValues?.condition}
-                                            control={control} // This is required
+                                            control={control}
                                             register={register}
                                             name="condition"
                                             errors={errors}
@@ -336,7 +304,7 @@ export default function CreateProduct() {
                                     <TextArea
                                         label="Detailed product description"
                                         register={register}
-                                        control={control} // This is required
+                                        control={control}
                                         errors={errors}
                                         name="description"
                                         disabled={isWorking}
@@ -373,8 +341,7 @@ export default function CreateProduct() {
                                         variant="body2"
                                         color="text.secondary"
                                     >
-                                        Upload high-quality product images (max
-                                        6)
+                                        Upload high-quality product images (max 6)
                                     </Typography>
 
                                     <Grid container spacing={2}>
@@ -504,7 +471,7 @@ export default function CreateProduct() {
                                     <Select
                                         label="Brand"
                                         register={register}
-                                        control={control} // This is required
+                                        control={control}
                                         name="brand"
                                         errors={errors}
                                         options={brandOptions}
@@ -515,7 +482,7 @@ export default function CreateProduct() {
                                     <Select
                                         label="Color"
                                         register={register}
-                                        control={control} // This is required
+                                        control={control}
                                         name="color"
                                         errors={errors}
                                         options={colorOptions}
@@ -541,7 +508,7 @@ export default function CreateProduct() {
                         variant="outlined"
                         color="inherit"
                         size="large"
-                        onClick={() => navigate(-1)}
+                        onClick={() => navigate(navigateBackPath)}
                         sx={{
                             px: 4,
                             borderRadius: 1,
@@ -555,7 +522,7 @@ export default function CreateProduct() {
                         color="primary"
                         size="large"
                         disabled={isWorking}
-                        onClick={handleSubmit(onSubmit)}
+                        onClick={handleSubmit(onFormSubmit)}
                         sx={{
                             px: 4,
                             borderRadius: 1,

@@ -21,7 +21,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Logout } from "@mui/icons-material";
 import SearchInput from "./SearchInput";
 import AppDrawer from "../../../public/images/Drawer";
@@ -30,6 +30,7 @@ function NavBar() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+    const navigate = useNavigate();
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -104,6 +105,7 @@ function NavBar() {
 
                         <IconButton
                             sx={{ display: { xs: "none", sm: "flex" } }}
+                            onClick={()=> navigate('add-product')}
                         >
                             <AddBusinessIcon />
                         </IconButton>

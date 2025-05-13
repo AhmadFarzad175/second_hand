@@ -46,3 +46,34 @@ export async function deleteProduct(id) {
 
   // return data;
 }
+
+export async function updateUserStatus(id, isActive) {
+  const response = await fetch(`http://127.0.0.1:8000/api/users/${id}/status`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ is_active: isActive }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update user status");
+  }
+
+  return response.json();
+}
+
+export async function toggleFavorite(productId) {
+  const response = await fetch(`http://127.0.0.1:8000/api/products/${productId}/favorite`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to toggle favorite");
+  }
+
+  return response.json();
+}
