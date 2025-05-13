@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class FavoriteController extends Controller
 {
-  
+
 public function toggle(Request $request, $productId)
 {
     $userId = $request->input('user_id'); // Or pass user_id through headers/query params

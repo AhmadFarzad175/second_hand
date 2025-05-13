@@ -21,25 +21,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-
-    // Create categories
-    $this->call([
-        CategorySeeder::class,
-    ]);
-
-    // ✅ Seed currencies before products
-    Currency::factory(5)->create();
-    User::factory(5)->create();
-
-    // ✅ Now seed products
-    $this->call([
-        ProductSeeder::class,
-    ]);
+        // Create users and categories
+        $users = User::factory(20)->create();
+        $this->call([
+            CategorySeeder::class,
+            ProductSeeder::class,
+        ]);
 
         ProductAttributeValue::factory(5)->create();
         ProductAttribute::factory(5)->create();
         Message::factory(5)->create();
-        Review::factory(15)->create();
+        Review::factory(5)->create();
+        Favorite::factory(5)->create();
+
         Report::factory(5)->create();
 
     }
