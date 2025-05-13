@@ -32,7 +32,15 @@ function ProductCard({ product }) {
                 },
             }}
         >
+            <Box sx={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                zIndex: 1,
+            }}>
+
             <FavoriteButton id={product.id} isFavorited={product.isFavorite} />
+            </Box>
 
             <CardMedia
                 component="img"

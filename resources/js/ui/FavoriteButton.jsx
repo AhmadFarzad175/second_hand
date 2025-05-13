@@ -29,12 +29,6 @@ function FavoriteButton({ id, isFavorited }) {
 
     return (
         <IconButton
-            sx={{
-                position: "absolute",
-                top: 8,
-                right: 8,
-                zIndex: 1,
-            }}
             onClick={handleFavoriteClick}
             disabled={isLoadingFav}
             aria-label={
