@@ -3,59 +3,46 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class FavoriteController extends Controller
 {
-  
-public function toggle(Request $request, $productId)
-{
-    $userId = $request->input('user_id'); // Or pass user_id through headers/query params
 
-    // Check if user_id and product exist
-    if (!$userId) {
-        return response()->json(['message' => 'User ID is required'], 400);
+    public function toggle(Request $request, $productId)
+    {
+        // Get the authenticated user
+        $user = Auth::user();
+        $user = User::find(1);
+
+        // Check if the user already has this product favorite
+        $isFavorite = $user->favorites()->where('product_id', $productId)->exists();
+
+        if ($isFavorite) {
+            // Remove from favorites
+            $user->favorites()->detach($productId);
+            return response()->json([
+                'message' => 'Product removed from favorites',
+                'isFavorite' => false
+            ]);
+        } else {
+            // Add to favorites
+            $user->favorites()->attach($productId);
+            return response()->json([
+                'message' => 'Product added to favorites',
+                'isFavorite' => true
+            ]);
+        }
     }
-
-    $product = Product::find($productId);
-    if (!$product) {
-        return response()->json(['message' => 'Product not found'], 404);
-    }
-
-    // Check if the favorite exists in the database
-    $favoriteExists = DB::table('favorites')
-        ->where('user_id', $userId)
-        ->where('product_id', $productId)
-        ->exists();
-
-    if ($favoriteExists) {
-        // Remove from favorites
-        DB::table('favorites')
-            ->where('user_id', $userId)
-            ->where('product_id', $productId)
-            ->delete();
-
-        return response()->json(['message' => 'Product removed from favorites', 'status' => 'removed']);
-    } else {
-        // Add to favorites
-        DB::table('favorites')->insert([
-            'user_id' => $userId,
-            'product_id' => $productId,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        return response()->json(['message' => 'Product added to favorites', 'status' => 'added']);
-    }
-}
 
 
     // List all favorites of authenticated user
     public function index()
     {
         $user = Auth::user();
+        $user = User::find(1);
 
         // Get all products the user has favorited
         $favorites = DB::table('favorites')

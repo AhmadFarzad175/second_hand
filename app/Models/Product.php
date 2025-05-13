@@ -48,13 +48,10 @@ class Product extends Model
         return $this->hasMany(Review::class); // Define a hasMany relationship
     }
 
-    // public function favorites()
-    // {
-    //     return $this->hasMany(Favorite::class); // Define a hasMany relationship
-    // }
     public function favorites()
     {
-        return $this->belongsToMany(User::class, 'favorites');
+        return $this->belongsToMany(User::class, 'favorites')
+                    ->withTimestamps();
     }
     public function images()
     {

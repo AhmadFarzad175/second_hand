@@ -62,3 +62,18 @@ export async function updateUserStatus(id, isActive) {
 
   return response.json();
 }
+
+export async function toggleFavorite(productId) {
+  const response = await fetch(`http://127.0.0.1:8000/api/products/${productId}/favorite`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to toggle favorite");
+  }
+
+  return response.json();
+}

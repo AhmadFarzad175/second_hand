@@ -26,6 +26,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useDeleteProduct } from "../features/product/useDeleteProduct";
+import FavoriteButton from "./FavoriteButton";
 
 function ProductDetails({ dashboard = false }) {
     const { id } = useParams(); // 👈 get the ID from the URL
@@ -165,14 +166,9 @@ function ProductDetails({ dashboard = false }) {
                                     }}
                                 >
                                     <>
-                                        <Tooltip title="Like">
-                                            <IconButton
-                                                sx={{ cursor: "pointer" }}
-                                            >
-                                                <FavoriteBorderIcon />
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Typography variant="body2">
+                                    <FavoriteButton id={product.id} isFavorited={product.isFavorite} />
+                                    
+                                    <Typography variant="body2">
                                             123
                                         </Typography>
                                     </>
