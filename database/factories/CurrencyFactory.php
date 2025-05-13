@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Favorite>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Currency>
  */
-class FavoriteFactory extends Factory
+class CurrencyFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,9 +17,9 @@ class FavoriteFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' =>rand(1,5),
-            'product_id'=>rand(1,5),
-
+            'name' => $this->faker->name(),
+            'code' => $this->faker->currencyCode(),
+            'symbol' => $this->faker->currencyCode(),
         ];
     }
 }

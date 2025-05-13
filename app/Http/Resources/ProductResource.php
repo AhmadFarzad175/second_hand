@@ -34,8 +34,11 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'attributes' => $this->attributes,
             'state' =>  $this->state,
+            'currency'    => new CurrencyResource($this->whenLoaded('currency')),
             // 'image' => asset('storage/' .$this->images[0]?->image_url),
-            'images' => asset('storage/' . $this->images->first() ?->image_url),
+            'images' => $this->images->map(function ($image) {
+                return asset('storage/' . $image->image_url);
+            }),
         ];
     }
 

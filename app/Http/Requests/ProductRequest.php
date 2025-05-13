@@ -33,6 +33,7 @@ class ProductRequest extends FormRequest
             'condition' => 'nullable|boolean',
             'attributes' => 'nullable|json',
             'description' => 'required|string|min:10',
+            'currency_id' => 'required|exists:currencies,id'
         ];
 
         $this->isMethod('PUT') && $this->validate($rules);

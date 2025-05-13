@@ -20,6 +20,7 @@ class Product extends Model
         'attributes',
         'description',
         'state',
+        'currency_id'
     ];
 
 
@@ -52,6 +53,11 @@ class Product extends Model
     {
         return $this->belongsToMany(User::class, 'favorites')
                     ->withTimestamps();
+    }
+
+    public function currency()
+    {
+        return $this->belongsTo(Currency::class);
     }
     public function images()
     {
