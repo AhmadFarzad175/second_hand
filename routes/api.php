@@ -12,11 +12,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\ProductAttributeController;
-use App\Http\Controllers\Mobile\UserMobileController;
-use App\Http\Controllers\Mobile\ReportMobileController;
-use App\Http\Controllers\Mobile\ReviewMobileController;
-use App\Http\Controllers\Mobile\MessageMobileController;
-use App\Http\Controllers\Mobile\FavoriteMobileController;
+
 use App\Http\Controllers\ProductAttributeValueController;
 
 
@@ -46,15 +42,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 ///////////////////  FAVORITES  ///////////////////
 
-// Route::post('/products/{product}/favorite', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
-// Route for toggling the favorite status (add or remove from favorites)
-Route::post('/products/{productId}/favorite', [FavoriteController::class, 'toggle'])
-    ->name('favorites.toggle');
-// Route for listing all favorite products of the authenticated user
-Route::get('/favorites', [FavoriteController::class, 'index'])
-    ->name('favorites.index');
-// Route::post('/products/{product}/favorite', [FavoriteController::class, 'store'])->name('favorites.store');
-// Route::delete('/products/{product}/favorite', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
+
+Route::post('/products/{productId}/favorite', [FavoriteController::class, 'toggle']);
+Route::get('/favorites', [FavoriteController::class, 'index']);
+
 
 ///////////////// PRODUCTS///////////////////////
 
@@ -88,26 +79,48 @@ Route::delete('bulk-delte-user', [UserController::class, 'bulkDelete']);
 
 ///////////////////  CURRENCIES  ///////////////////
 
-Route::apiResource('currency',CurrencyController::class);
+Route::apiResource('currency', CurrencyController::class);
 
 
 
 
-// Route::get('/categories/{category}/attributes', [CategoryController::class, 'getAttributes']);
 
 
-
+////////////////////  API FOR MOBILE   ////////////////////////////////
 
 Route::prefix('v1/mobile')->group(function () {
 
-    // Public routes (unauthenticated mobile access)
+    /////////////// PRODUCTS ///////////////////
+
     Route::get('/products', [ProductController::class, 'index']); // With filters
     Route::get('/products/{product}', [ProductController::class, 'show']);
     Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
 
 
-    Route::get('/categories', [CategoryController::class, 'index']);
-    Route::get('/categories/{category}', [CategoryController::class, 'show']);
+    /////////////// USERS ///////////////////
+
+    Route::apiResource('users', UserController::class);
+    Route::put('users/{user}/status', [UserController::class, 'Status']);
+    Route::post('users/update/{user}', [UserController::class, 'update']);
+    Route::delete('bulk-delte-user', [UserController::class, 'bulkDelete']);
+
+
+    /////////////// CATEGORIES ///////////////////
+
+    Route::apiResource('categories', CategoryController::class);
+    Route::Post('categories/update/{category}', [CategoryController::class, 'update']);
+
+
+
+    ///////////////////  FAVORITES  ///////////////////
+
+
+    Route::post('/products/{productId}/favorite', [FavoriteController::class, 'toggle']);
+    Route::get('/favorites', [FavoriteController::class, 'index']);
+
+
+
+
 
     Route::get('/reviews', [ReviewController::class, 'index']);
     Route::get('/reviews/{review}', [ReviewController::class, 'show']);
@@ -121,31 +134,5 @@ Route::prefix('v1/mobile')->group(function () {
     // Optional filter-specific route if needed
     Route::get('/products/filter', [ProductController::class, 'index']); // Uses request filters
 
-    // Authenticated routes (needs mobile login)
-    Route::middleware('auth:sanctum')->group(function () {
 
-        // User
-        // Route::get('/me', [AuthController::class, 'userProfile']);
-        // Route::post('/logout', [AuthController::class, 'logout']);
-
-        // User-specific products
-        Route::post('/products', [ProductController::class, 'store']);
-        Route::put('/products/{product}', [ProductController::class, 'update']);
-        Route::delete('/products/{product}', [ProductController::class, 'destroy']);
-
-        // Favorites
-        Route::post('/products/{product}/favorite', [FavoriteController::class, 'store']);
-        Route::delete('/products/{product}/favorite', [FavoriteController::class, 'destroy']);
-
-        // Reviews
-        Route::post('/reviews', [ReviewController::class, 'store']);
-
-        // Messaging
-        Route::apiResource('/messages', MessageController::class);
-
-        // Image updates
-        // Route::post('/images', [ImageController::class, 'store']);
-        // Route::put('/images/update/{id}', [ImageController::class, 'update']);
-        // Route::delete('/images/{id}', [ImageController::class, 'destroy']);
-    });
 });

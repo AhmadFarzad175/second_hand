@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
 
     // ✅ Seed currencies before products
     Currency::factory(5)->create();
+    User::factory(5)->create();
 
     // ✅ Now seed products
     $this->call([
@@ -38,7 +39,7 @@ class DatabaseSeeder extends Seeder
         ProductAttributeValue::factory(5)->create();
         ProductAttribute::factory(5)->create();
         Message::factory(5)->create();
-        Review::factory(5)->create();
+        Review::factory(15)->create();
         Report::factory(5)->create();
 
     }

@@ -27,7 +27,10 @@ class UserFactory extends Factory
             'rating' => $this->faker->randomFloat(1, 1, 5),
             'image' =>$this->faker->filePath(),
             // 'location' => $this->faker->city(),
-            'location' => json_encode(['city' => $this->faker->city()]),
+'location' => json_encode([
+    'latitude' => $this->faker->latitude(),
+    'longitude' => $this->faker->longitude(),
+]),
 
             'phone' => $this->faker->phoneNumber(),
             'description' => $this->faker->sentence(),

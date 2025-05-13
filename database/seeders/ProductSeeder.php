@@ -2,41 +2,39 @@
 
 namespace Database\Seeders;
 
-use App\Models\Category;
-use App\Models\Currency;
-use App\Models\User;
-use App\Models\Product;
 use Illuminate\Database\Seeder;
+use App\Models\Product;
+use App\Models\Image;
 
 class ProductSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+    public function run(): void
     {
-        $user = User::find(3);
-        // Loop to create 20 products
-        for ($i = 1; $i <= 20; $i++) {
-            Product::firstOrCreate(
-                ['name' => 'Product ' . $i], // Unique column to check
-                [
-                    'category_id' => Category::inRandomOrder()->first()->id, // Random category
-                    // 'user_id' => User::inRandomOrder()->first()->id, // Random user
-                     'user_id' => $i <= 5 ? $user->id : User::inRandomOrder()->first()->id,
-                    'net_price' => rand(100, 500), // Random net price
-                    'discount' => rand(0, 50), // Random discount
-                    'quantity' => rand(1, 10), // Random quantity
-                    'condition' => rand(0, 1), // Random condition (new or used)
-                    'currency_id' => Currency::inRandomOrder()->first()->id,
+        for ($i = 1; $i <= 30; $i++) {
+            $product = Product::create([
+                'name' => "Dummy Product $i",
+                'category_id' => rand(1, 10), // assuming you have at least 10 categories
+                'user_id' => rand(1,5),               // or random user_id if needed
+                'currency_id' => 1,           // or random currency_id
+                'net_price' => rand(100, 1000),
+                'discount' => rand(0, 100),
+                'quantity' => rand(1, 20),
+                'condition' => rand(0, 1),
+                'state' => 'available',
+                'description' => "Description for Dummy Product $i",
+                'attributes' => json_encode([
+                    'color' => 'Color ' . $i,
+                    'size' => rand(1, 100) . 'cm'
+                ]),
+            ]);
 
-                    'state' => 'available', // Set state as available
-                    'description' => 'This is a description for product ' . $i, // Description
-                    'attributes' => json_encode(['color' => 'red', 'size' => 'L']), // Example attributes
-                ]
-            );
+            // Each product gets 2 images: imageX_1.jpg and imageX_2.jpg
+            for ($j = 1; $j <= 2; $j++) {
+                Image::create([
+                    'product_id' => $product->id,
+                    'image_url' => "images/products/image{$i}.jpg",
+                ]);
+            }
         }
     }
 }
