@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Create users and categories
-        $users = User::factory(20)->create();
+        $users = User::factory(10)->create();
         $this->call([
             CategorySeeder::class,
             ProductSeeder::class,
@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
         ProductAttribute::factory(5)->create();
         Message::factory(5)->create();
         Review::factory(5)->create();
-        Favorite::factory(5)->create();
+        Favorite::factory(10)->create();
 
         Report::factory(5)->create();
 
