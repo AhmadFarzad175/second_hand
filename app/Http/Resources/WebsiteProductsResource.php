@@ -19,6 +19,7 @@ class WebsiteProductsResource extends JsonResource
     {
         $userId = $request->query('user_id') || 1;
 
+        // dd($this);
         return [
             'id'         => $this->id,
             'name'       => $this->name,
@@ -51,7 +52,7 @@ class WebsiteProductsResource extends JsonResource
      */
     protected function getFirstImageUrl(): ?string
     {
-        if ($this->images->isNotEmpty()) {
+        if ($this->images?->isNotEmpty()) {
             return asset('storage/' . $this->images->first()->image_url);
         }
 
@@ -84,8 +85,8 @@ class WebsiteProductsResource extends JsonResource
         $lngDiff = deg2rad($productLng - $userLng);
 
         $a = sin($latDiff / 2) ** 2 +
-             cos(deg2rad($userLat)) * cos(deg2rad($productLat)) *
-             sin($lngDiff / 2) ** 2;
+            cos(deg2rad($userLat)) * cos(deg2rad($productLat)) *
+            sin($lngDiff / 2) ** 2;
 
         $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
         $distance = $earthRadius * $c;

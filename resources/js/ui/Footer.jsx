@@ -1,97 +1,180 @@
-import React from "react";
-import { Box, Typography, Grid, IconButton } from "@mui/material";
-import { Facebook, Twitter, YouTube, Instagram, Android, Apple } from "@mui/icons-material";
+import { 
+  Box, 
+  Container, 
+  Grid, 
+  Link, 
+  Typography, 
+  // Divider,
+  // Button,
+  // TextField
+} from '@mui/material';
+import { 
+  Facebook, 
+  Twitter, 
+  Instagram, 
+  LinkedIn,
+  LocalOffer, 
+  Security, 
+  Help, 
+  ContactMail 
+} from '@mui/icons-material';
 
 const Footer = () => {
   return (
     <Box
+      component="footer"
       sx={{
-        backgroundColor: "#f8f8f8",
-        padding: 4,
-        marginTop: 4,
+        // backgroundColor: 'custom.dark',
+        color: 'custom.#222',
+        py: 6,
+        mt:8,
+        fontFamily: '"Source Code Pro", monospace',
       }}
     >
-      <Grid container spacing={4}>
-        {/* Support Section */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Typography variant="h6" gutterBottom>
-            Support
-          </Typography>
-          <Box>
-            <Typography variant="body2">About Us</Typography>
-            <Typography variant="body2">Contact Us</Typography>
-            <Typography variant="body2">Help Center</Typography>
-            <Typography variant="body2">How to Sell</Typography>
-            <Typography variant="body2">How to Purchase</Typography>
-          </Box>
+      <Container maxWidth="xl">
+        <Grid container spacing={4}>
+          {/* Brand Section */}
+          <Grid item xs={12} md={4}>
+            <Typography 
+              variant="h5" 
+              gutterBottom 
+              sx={{ 
+                fontWeight: 'bold',
+                color: 'secondary.light'
+              }}
+            >
+              SecondHand Pro
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 2 }}>
+              Sustainable shopping through quality pre-owned items. 
+              Join our circular economy movement.
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Link href="#" color="inherit">
+                <Facebook fontSize="medium" />
+              </Link>
+              <Link href="#" color="inherit">
+                <Twitter fontSize="medium" />
+              </Link>
+              <Link href="#" color="inherit">
+                <Instagram fontSize="medium" />
+              </Link>
+              <Link href="#" color="inherit">
+                <LinkedIn fontSize="medium" />
+              </Link>
+              </Box>
+          </Grid>
+
+          {/* Quick Links */}
+          <Grid item xs={6} sm={3} md={2}>
+            <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
+              <LocalOffer fontSize="small" sx={{ mr: 1, color: 'secondary.light' }} />
+              Categories
+            </Typography>
+            <Link href="#" color="inherit" underline="hover" display="block" mb={1}>
+              Electronics
+            </Link>
+            <Link href="#" color="inherit" underline="hover" display="block" mb={1}>
+              Home & Garden
+            </Link>
+            <Link href="#" color="inherit" underline="hover" display="block" mb={1}>
+              Fashion
+            </Link>
+            <Link href="#" color="inherit" underline="hover" display="block" mb={1}>
+              Collectibles
+            </Link>
+          </Grid>
+
+          {/* Support */}
+          <Grid item xs={6} sm={3} md={2}>
+            <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
+              <Help fontSize="small" sx={{ mr: 1, color: 'secondary.light' }} />
+              Support
+            </Typography>
+            <Link href="#" color="inherit" underline="hover" display="block" mb={1}>
+              Safety Center
+            </Link>
+            <Link href="#" color="inherit" underline="hover" display="block" mb={1}>
+              Seller Guide
+            </Link>
+            <Link href="#" color="inherit" underline="hover" display="block" mb={1}>
+              Buyer Guide
+            </Link>
+            <Link href="#" color="inherit" underline="hover" display="block" mb={1}>
+              FAQs
+            </Link>
+          </Grid>
+
+          {/* Legal */}
+          <Grid item xs={6} sm={3} md={2}>
+            <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
+              <Security fontSize="small" sx={{ mr: 1, color: 'secondary.light' }} />
+              Legal
+            </Typography>
+            <Link href="#" color="inherit" underline="hover" display="block" mb={1}>
+              Terms
+            </Link>
+            <Link href="#" color="inherit" underline="hover" display="block" mb={1}>
+              Privacy
+            </Link>
+            <Link href="#" color="inherit" underline="hover" display="block" mb={1}>
+              Cookies
+            </Link>
+          </Grid>
+
+          {/* Contact */}
+          <Grid item xs={6} sm={3} md={2}>
+            <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
+              <ContactMail fontSize="small" sx={{ mr: 1, color: 'secondary.light' }} />
+              Contact
+            </Typography>
+            <Typography variant="body2" display="block" mb={1}>
+              support@secondhandpro.com
+            </Typography>
+            <Typography variant="body2" display="block" mb={1}>
+              +1 (555) 123-4567
+            </Typography>
+          </Grid>
         </Grid>
 
-        {/* We Accept Section */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Typography variant="h6" gutterBottom>
-            We Accept
-          </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              gap: 2,
-              flexWrap: "wrap",
-            }}
-          >
-            {/* Replace these icons with actual payment method icons */}
-            <img src="https://via.placeholder.com/40" alt="Payment Method 1" />
-            <img src="https://via.placeholder.com/40" alt="Payment Method 2" />
-            <img src="https://via.placeholder.com/40" alt="Payment Method 3" />
-            <img src="https://via.placeholder.com/40" alt="Payment Method 4" />
-          </Box>
-        </Grid>
+        {/* <Divider sx={{ 
+          my: 4, 
+          backgroundColor: 'secondary.main',
+          opacity: 0.5
+        }} />
 
-        {/* Find Us On Section */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Typography variant="h6" gutterBottom>
-            Find Us On
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: { xs: 'column', sm: 'row' }, 
+          justifyContent: 'space-between', 
+          alignItems: 'center'
+        }}>
+          <Typography variant="body2">
+            © {new Date().getFullYear()} SecondHand Pro. All rights reserved.
           </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              gap: 1,
-            }}
-          >
-            <IconButton href="https://facebook.com" target="_blank" color="primary">
-              <Facebook />
-            </IconButton>
-            <IconButton href="https://twitter.com" target="_blank" color="primary">
-              <Twitter />
-            </IconButton>
-            <IconButton href="https://youtube.com" target="_blank" color="primary">
-              <YouTube />
-            </IconButton>
-            <IconButton href="https://instagram.com" target="_blank" color="primary">
-              <Instagram />
-            </IconButton>
+          <Box sx={{ 
+            display: 'flex', 
+            gap: 2, 
+            mt: { xs: 2, sm: 0 },
+            '& .MuiLink-root': {
+              transition: 'color 0.3s',
+              '&:hover': {
+                color: 'secondary.light'
+              }
+            }
+          }}>
+            <Link href="#" color="inherit" variant="body2" underline="hover">
+              Accessibility
+            </Link>
+            <Link href="#" color="inherit" variant="body2" underline="hover">
+              Sitemap
+            </Link>
+            <Link href="#" color="inherit" variant="body2" underline="hover">
+              Careers
+            </Link>
           </Box>
-        </Grid>
-
-        {/* Get the App Section */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Typography variant="h6" gutterBottom>
-            Get the App
-          </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              gap: 2,
-            }}
-          >
-            <IconButton href="https://play.google.com" target="_blank" color="primary">
-              <Android />
-            </IconButton>
-            <IconButton href="https://www.apple.com/app-store/" target="_blank" color="primary">
-              <Apple />
-            </IconButton>
-          </Box>
-        </Grid>
-      </Grid>
+        </Box> */}
+      </Container>
     </Box>
   );
 };

@@ -79,9 +79,13 @@ class ProductFilter
 
     protected function search(Builder $query, $term)
     {
+        if (empty($term)) {
+            return;
+        }
+        
         $query->where(function ($q) use ($term) {
-            $q->where('name', 'like', "%{$term}%")
-                ->orWhere('description', 'like', "%{$term}%");
+            $q->where('products.name', 'like', "%{$term}%")
+              ->orWhere('products.description', 'like', "%{$term}%");
         });
     }
 

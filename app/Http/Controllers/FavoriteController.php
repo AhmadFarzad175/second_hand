@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\WebsiteProductsResource;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -39,18 +40,26 @@ class FavoriteController extends Controller
 
 
     // List all favorites of authenticated user
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $user = User::find(1);
+        $search = $request->input('search');
 
-        // Get all products the user has favorited
-        $favorites = DB::table('favorites')
-            ->join('products', 'favorites.product_id', '=', 'products.id')
-            ->where('favorites.user_id', $user->id)
-            ->select('products.*')  // You can select specific columns here
+        // Step 1: Get the product IDs that the user has favorited
+        $favoritedProductIds = DB::table('favorites')
+            ->where('user_id', $user->id)
+            ->pluck('product_id'); // Just get the product IDs
+
+        // Step 2: Fetch those products with all needed relationships
+        $favorites = Product::with(['images', 'favorites', 'user', 'currency'])
+            ->whereIn('id', $favoritedProductIds)
+            ->orderBy('id', 'DESC')
+            ->search($search)
             ->get();
 
-        return response()->json($favorites);
+
+
+        return WebsiteProductsResource::collection($favorites);
     }
 }

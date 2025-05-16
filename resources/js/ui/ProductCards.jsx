@@ -1,11 +1,7 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import ProductCard from "./ProductCard";
-import { useProducts } from "../features/product/useProducts";
 
-function ProductCards() {
-    const { isLoading, error, products } = useProducts();
-
-    // Show loading state while fetching data
+function ProductCards({ isLoading, error, products }) {
     if (isLoading) {
         return <p>Loading products...</p>;
     }
@@ -15,6 +11,18 @@ function ProductCards() {
         return <p>Error: {error.message}</p>;
     }
 
+    if (products.length === 0) {
+        return (
+            <Typography
+                variant="h6"
+                color="text.secondary"
+                align="center"
+                mt={4}
+            >
+                No products found.
+            </Typography>
+        );
+    }
 
     return (
         <Box

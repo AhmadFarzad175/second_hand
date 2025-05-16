@@ -42,23 +42,14 @@ class ProductController extends Controller
         $perPage = $request->input('perPage', 10);
         $search = $request->input('search');
 
-        $user = Auth::user();
-        $userLat = $user->latitude ?? null;
-        $userLng = $user->longitude ?? null;
+        $user = Auth::user() ?? User::find(1);
+
 
         $query = Product::with(['category', 'user', 'images', 'favorites','currency'])
             ->orderBy('id', 'DESC')
             ->search($search);
 
-        // Distance filtering and ordering
-        if ($userLat && $userLng) {
-            $query->select('*')->selectRaw("(
-                6371 * acos(cos(radians(?)) * cos(radians(latitude))
-                * cos(radians(longitude) - radians(?)) + sin(radians(?))
-                * sin(radians(latitude)))
-            ) AS distance", [$userLat, $userLng, $userLat])
-                ->orderBy('distance', 'asc');
-        }
+
 
         // Apply all filters, including attributes
         $filteredQuery = ProductFilter::apply($query, $filters);
@@ -253,7 +244,7 @@ class ProductController extends Controller
         // dd($user->location);
         // dd($userLat);
         $query = Product::with(['images', 'favorites', 'user','currency']) // <-- add 'user'
-            ->orderBy('id', 'DESC')
+            ->orderBy('products.id', 'DESC')
             ->search($search);
 
 

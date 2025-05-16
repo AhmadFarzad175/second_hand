@@ -88,7 +88,7 @@ class Product extends Model
         if (!$search) {
             return $query;
         }
-        return $query->where('name', 'LIKE', '%' . $search . '%');
+        return $query->where('products.name', 'LIKE', '%' . $search . '%');
     }
 
     public function scopeNearby($query, $userLatitude, $userLongitude, $distance = 10)
