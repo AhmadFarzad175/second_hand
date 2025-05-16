@@ -109,6 +109,7 @@ export default function ProductForm({
 
     const onFormSubmit = (data) => {
         const formData = new FormData();
+        formData.append('currency_id', '1')
         const attributes = {
             color: data.color,
             brand: data.brand,
@@ -165,24 +166,6 @@ export default function ProductForm({
         >
             <Stack spacing={4}>
                 {/* Header Section */}
-                <Box>
-                    <Typography
-                        variant="h4"
-                        sx={{
-                            fontWeight: 600,
-                            color: "text.primary",
-                            mb: 1,
-                        }}
-                    >
-                        {isEditSession ? "Edit Product" : "Create New Product"}
-                    </Typography>
-                    <Typography variant="body1" color="text.secondary">
-                        {isEditSession
-                            ? "Update product details and images"
-                            : "Fill in all required information to add a new product"}
-                    </Typography>
-                </Box>
-
                 <Grid container spacing={4}>
                     {/* Left Column - Product Details */}
                     <Grid item xs={12} md={7}>

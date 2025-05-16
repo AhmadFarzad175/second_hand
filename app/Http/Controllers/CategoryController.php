@@ -18,7 +18,7 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $perPage = $request->input('perPage');
+        $perPage = $request->input('perPage', 20);
         $search = $request->input('search');
 
         $category = Category::query()->withCount('products')->search($search);

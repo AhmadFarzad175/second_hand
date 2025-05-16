@@ -20,12 +20,11 @@ import TableToolbar from "./TableToolbar"; // Correct path
 import ProductRow from "./ProductRow";
 import FilterListIcon from "@mui/icons-material/FilterList";
 
-
 const Products = () => {
     const [selected, setSelected] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    const { isLoading, error, products=[] } = useProducts();
+    const { isLoading, error, products = [] } = useProducts();
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
@@ -44,7 +43,6 @@ const Products = () => {
                 ? prevSelected.filter((item) => item !== id)
                 : [...prevSelected, id]
         );
-        
     };
 
     const handleChangePage = (_, newPage) => setPage(newPage);
@@ -54,7 +52,10 @@ const Products = () => {
     };
 
     const paginatedRows = React.useMemo(() => {
-        return products.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+        return products.slice(
+            page * rowsPerPage,
+            page * rowsPerPage + rowsPerPage
+        );
     }, [products, page, rowsPerPage]);
 
     if (error) {
@@ -91,7 +92,9 @@ const Products = () => {
                 </Tooltip>
             </Box>
 
-            <Paper sx={{ width: "100%", mb: 2, elevation: 0, boxShadow: "none" }}>
+            <Paper
+                sx={{ width: "100%", mb: 2, elevation: 0, boxShadow: "none" }}
+            >
                 <TableToolbar numSelected={selected.length} />
                 {isLoading && <LinearProgress />}
                 <TableContainer>
@@ -116,7 +119,7 @@ const Products = () => {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 20, 30]}
                     component="div"
-                    count={products.length}
+                    count={paginatedRows.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}

@@ -4,6 +4,7 @@ import { createUpdateProduct } from "../../repositories/ProductRepository";
 
 export function useCreateProduct() {
   const queryClient = useQueryClient();
+  console.log(useMutation())
 
   const { mutate: createProduct, isLoading: isCreating } = useMutation({
     mutationFn: createUpdateProduct,

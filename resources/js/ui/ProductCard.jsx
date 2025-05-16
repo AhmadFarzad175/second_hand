@@ -1,23 +1,8 @@
-import {
-    Card,
-    CardContent,
-    CardMedia,
-    Typography,
-    Box,
-} from "@mui/material";
+import { Card, CardContent, CardMedia, Typography, Box } from "@mui/material";
 import { Link } from "react-router-dom";
-// import { useToggleFavorite } from "./useToggleFavorite";
 import FavoriteButton from "./FavoriteButton";
 
 function ProductCard({ product }) {
-    // const { ToggleFavorite, isLoadingFav } = useToggleFavorite();
-
-    // const handleToggleFavorite = (e) => {
-    //     e.preventDefault();
-    //     e.stopPropagation(); // Prevent event bubbling
-    //     ToggleFavorite({ productId: product.id });
-    // };
-
     return (
         <Card
             component={Link}
@@ -32,14 +17,18 @@ function ProductCard({ product }) {
                 },
             }}
         >
-            <Box sx={{
-                position: "absolute",
-                top: 8,
-                right: 8,
-                zIndex: 1,
-            }}>
-
-            <FavoriteButton id={product.id} isFavorited={product.isFavorite} />
+            <Box
+                sx={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    zIndex: 1,
+                }}
+            >
+                <FavoriteButton
+                    id={product.id}
+                    isFavorited={product.isFavorite}
+                />
             </Box>
 
             <CardMedia

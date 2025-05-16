@@ -23,6 +23,7 @@ class ProductRequest extends FormRequest
      */
     public function rules(): array
     {
+        // dd(Request()->input());
         $rules = [
             'name' => 'required|string|max:255',
             'images' => 'required',
@@ -33,7 +34,7 @@ class ProductRequest extends FormRequest
             'condition' => 'nullable|boolean',
             'attributes' => 'nullable|json',
             'description' => 'required|string|min:10',
-            'currency_id' => 'required|exists:currencies,id'
+            'currency_id' => 'required|integer'
         ];
 
         $this->isMethod('PUT') && $this->validate($rules);

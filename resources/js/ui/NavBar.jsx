@@ -20,17 +20,17 @@ import LanguageIcon from "@mui/icons-material/Language";
 import SearchIcon from "@mui/icons-material/Search";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 
-
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Logout } from "@mui/icons-material";
 import SearchInput from "./SearchInput";
 import AppDrawer from "../../../public/images/Drawer";
 
-function NavBar() {
+function NavBar({ onSearch }) {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -48,6 +48,17 @@ function NavBar() {
         setMobileSearchOpen(!mobileSearchOpen);
     };
 
+    const handleSearch = (term) => {
+        // Get current path without search params
+        const currentPath = location.pathname;
+
+        if (term) {
+            navigate(`${currentPath}?search=${encodeURIComponent(term)}`);
+        } else {
+            navigate(currentPath); // Clear search if term is empty
+        }
+    };
+
     return (
         <AppBar
             position="sticky"
@@ -55,7 +66,7 @@ function NavBar() {
             // elevation={1}
             sx={{
                 bgcolor: "#eee",
-                boxShadow:"none"
+                boxShadow: "none",
                 // backdropFilter: "blur(10px)",
             }}
         >
@@ -89,7 +100,7 @@ function NavBar() {
                                 ml: 2,
                             }}
                         >
-                            <SearchInput />
+                            <SearchInput onSearch={handleSearch} />
                         </Box>
                     </Box>
 
@@ -105,12 +116,14 @@ function NavBar() {
 
                         <IconButton
                             sx={{ display: { xs: "none", sm: "flex" } }}
-                            onClick={()=> navigate('add-product')}
+                            onClick={() => navigate("add-product")}
                         >
                             <AddBusinessIcon />
                         </IconButton>
                         <IconButton
                             sx={{ display: { xs: "none", sm: "flex" } }}
+                            onClick={() => navigate("favorite")}
+
                         >
                             <FavoriteIcon />
                         </IconButton>
@@ -134,7 +147,7 @@ function NavBar() {
             {/* Mobile Search Expansion */}
             <Collapse in={mobileSearchOpen}>
                 <Box sx={{ px: 2, pb: 2, display: { sm: "none" } }}>
-                    <SearchInput />
+                    <SearchInput onSearch={handleSearch} />
                 </Box>
             </Collapse>
 
