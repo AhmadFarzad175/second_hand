@@ -25,7 +25,7 @@ class ProductResource extends JsonResource
             ],
             'category_id' => $this->category_id,
             'user' => $this->user?->name,
-            'net_price' => $this->net_price,
+            'net_price' => $this->net_price . ' ' . $this->currency,
             'discount' => $this->discount,
             'quantity' => $this->quantity,
             'condition' => $this->condition,
@@ -34,7 +34,7 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'attributes' => $this->attributes,
             'state' =>  $this->state,
-            'currency'    => new CurrencyResource($this->whenLoaded('currency')),
+
             // 'image' => asset('storage/' .$this->images[0]?->image_url),
             'images' => $this->images->map(function ($image) {
                 return asset('storage/' . $image->image_url);

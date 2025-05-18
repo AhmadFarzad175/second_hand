@@ -20,7 +20,7 @@ class Product extends Model
         'attributes',
         'description',
         'state',
-        'currency_id'
+        'currency'
     ];
 
 
@@ -55,10 +55,10 @@ class Product extends Model
                     ->withTimestamps();
     }
 
-    public function currency()
-    {
-        return $this->belongsTo(Currency::class);
-    }
+    // public function currency()
+    // {
+    //     return $this->belongsTo(Currency::class);
+    // }
     public function images()
     {
         return $this->hasMany(Image::class); // Define a hasMany relationship

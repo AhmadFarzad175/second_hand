@@ -42,7 +42,7 @@ class User extends Authenticatable
         return $this->belongsToMany(Product::class, 'favorites')
             ->withTimestamps();
     }
-    
+
     public function reports()
     {
         return $this->hasMany(Report::class);
@@ -68,6 +68,8 @@ class User extends Authenticatable
         'location' => 'array',
 
     ];
+ 
+
 
     /**
      * The attributes that should be cast.
@@ -77,6 +79,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'location' => 'array',
     ];
     public function scopeSearch($query, $search)
     {

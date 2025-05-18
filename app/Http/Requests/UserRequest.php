@@ -26,7 +26,7 @@ class UserRequest extends FormRequest
             'location' => 'required',
             'phone' => 'required|string|max:20',
             'description' => 'nullable|string',
-            'role' => 'required|in:admin,user',
+            'role' => 'nullable|in:admin,user',
         ];
 
         $this->isMethod('put') ? $this->applyUpdateRules($rules) : null;

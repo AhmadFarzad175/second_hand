@@ -15,7 +15,7 @@ class ProductSeeder extends Seeder
                 'name' => "Dummy Product $i",
                 'category_id' => rand(1, 10), // assuming you have at least 10 categories
                 'user_id' => rand(1,5),               // or random user_id if needed
-                'currency_id' => 1,           // or random currency_id
+                'currency' => 'AFG',           // or random currency_id
                 'net_price' => rand(100, 1000),
                 'discount' => rand(0, 100),
                 'quantity' => rand(1, 20),

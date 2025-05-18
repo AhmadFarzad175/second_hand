@@ -22,7 +22,6 @@ return new class extends Migration
             $table->index('name');  // ✅ Now this makes sense
             $table->foreignIdFor(Category::class)->constrained()->onDelete('cascade');
             $table->foreignIdFor(User::class);
-            $table->foreignIdFor(Currency::class);
             $table->decimal('net_price', 10, 2);
             $table->decimal('discount', 10, 2)->default(0);
             $table->integer('quantity')->default(1);
@@ -31,6 +30,7 @@ return new class extends Migration
             $table->string('description');
             $table->index('description');
             $table->json('attributes')->nullable();
+            $table->string('currency')->default('USD');
             $table->timestamps();
         });
     }

@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
         Review::factory(5)->create();
         Favorite::factory(10)->create();
 
-        Report::factory(5)->create();
+        // Report::factory(15)->create();
 
     }
 }
