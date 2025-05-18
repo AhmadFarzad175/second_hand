@@ -1,18 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import { getProducts } from "../repositories/ProductRepository";
 
-export function useWebsiteProducts(search = "") {
-    const {
-        isLoading,
-        data: products,
-        error,
-    } = useQuery({
-        queryKey: ["products", { search, website: true }],
-        queryFn: ({ queryKey }) => {
-            const [, { search, website }] = queryKey;
-            return getProducts(search, website);
-        },
-    });
+export function useWebsiteProducts(filters = {}) {
+  const {
+    isLoading,
+    data: products,
+    error,
+  } = useQuery({
+    queryKey: ["products", { ...filters, website: true }],
+    queryFn: ({ queryKey }) => {
+      const [, params] = queryKey;
+      return getProducts(params);
+    },
+  });
 
-    return { isLoading, error, products };
+  return { isLoading, error, products };
 }

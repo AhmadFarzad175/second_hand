@@ -4,16 +4,21 @@ import { useSearchParams } from "react-router-dom";
 import { useWebsiteProducts } from "./useWebsiteProducts";
 
 function Home() {
-  const [searchParams] = useSearchParams();
-    const searchTerm = searchParams.get("search") || "";
-  const { isLoading, error, products } = useWebsiteProducts(searchTerm);
+    const [searchParams] = useSearchParams();
+    const filters = Object.fromEntries(searchParams.entries());
 
-  return (
-    <>
-    <Carousel />
-    <ProductCards isLoading={isLoading} error={error} products={products} />
-    </>
-  )
-};
+    const { isLoading, error, products } = useWebsiteProducts(filters);
+
+    return (
+        <>
+            <Carousel />
+            <ProductCards
+                isLoading={isLoading}
+                error={error}
+                products={products}
+            />
+        </>
+    );
+}
 
 export default Home;

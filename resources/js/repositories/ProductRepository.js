@@ -1,18 +1,26 @@
 // ProductRepository.js
-export async function getProducts(search = "", website=false) {
-  console.log(website)
-    let url = website
+import axios from "axios";
+
+export async function getProducts(params = {}) {
+    const { website = false, ...filters } = params;
+    const baseURL = website
         ? "http://127.0.0.1:8000/api/websiteProducts"
         : "http://127.0.0.1:8000/api/products";
-    if (search) {
-        url += `?search=${encodeURIComponent(search)}`;
+
+    try {
+        const response = await axios.get(baseURL, {
+            params: {
+                ...filters,
+                website, // if you still need this flag
+            },
+        });
+        console.log(response.data)
+        return response.data.data || [];
+    } catch (error) {
+        throw new Error(
+            error.response?.data?.message || "Failed to fetch products"
+        );
     }
-
-    const response = await fetch(url);
-    if (!response.ok) throw new Error("Failed to fetch products");
-
-    const data = await response.json();
-    return data.data || [];
 }
 export async function createUpdateProduct(formData, id = null) {
     const url = id
