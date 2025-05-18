@@ -243,7 +243,7 @@ class ProductController extends Controller
         $userLng = $location->longitude ?? null;
         // dd($user->location);
         // dd($userLat);
-        $query = Product::with(['images', 'favorites', 'user','currency']) // <-- add 'user'
+        $query = Product::with(['images', 'favorites', 'user']) // <-- add 'user'
             ->orderBy('products.id', 'DESC')
             ->search($search);
 
