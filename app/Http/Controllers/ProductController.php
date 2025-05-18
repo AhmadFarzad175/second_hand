@@ -231,6 +231,7 @@ class ProductController extends Controller
             'date',
             'attributes'
         ]);
+        // dd($request->all());
 
         $perPage = $request->input('perPage', 10);
         $search = $request->input('search');
