@@ -45,7 +45,7 @@ class ProductController extends Controller
         $user = Auth::user() ?? User::find(1);
 
 
-        $query = Product::with(['category', 'user', 'images', 'favorites','currency'])
+        $query = Product::with(['category', 'user', 'images', 'favorites'])
             ->orderBy('id', 'DESC')
             ->search($search);
 

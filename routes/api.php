@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\CurrencyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -9,10 +8,13 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\FavoriteController;
-use App\Http\Controllers\ProductAttributeController;
+use App\Http\Controllers\CurrencyController;
 
+use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\ProductAttributeController;
 use App\Http\Controllers\ProductAttributeValueController;
 
 
@@ -30,14 +32,28 @@ use App\Http\Controllers\ProductAttributeValueController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 
-// Route::post('/register', [AuthController::class, 'register']);
-// Route::post('/login', [AuthController::class, 'login']);
+Route::get('/auth/google/redirect', [AuthController::class, 'redirectToGoogle']);
 
-// Route::middleware('auth:sanctum')->group(function () {
-//     Route::get('/user', [AuthController::class, 'userProfile']);
-//     Route::post('/logout', [AuthController::class, 'logout']);
-// });
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user', fn(Request $request) => $request->user());
+});
+
+///////////////////  DASHBOARD  ///////////////////
+
+
+   Route::get('/stats', [DashboardController::class, 'getStats']);
+    Route::get('/recent-products', [DashboardController::class, 'getRecentProducts']);
+    Route::get('/recent-users', [DashboardController::class, 'getRecentUsers']);
+    Route::get('/reports', [DashboardController::class, 'getReports']);
+    Route::get('/reviews', [DashboardController::class, 'getReviews']);
+    Route::get('/top-rated-products', [DashboardController::class, 'getTopRatedProducts']);
+    Route::get('/top-rated-users', [DashboardController::class, 'getTopRatedUsers']);
 
 
 ///////////////////  FAVORITES  ///////////////////
@@ -79,7 +95,7 @@ Route::delete('bulk-delte-user', [UserController::class, 'bulkDelete']);
 
 ///////////////////  CURRENCIES  ///////////////////
 
-Route::apiResource('currency', CurrencyController::class);
+// Route::apiResource('currency', CurrencyController::class);
 
 
 
