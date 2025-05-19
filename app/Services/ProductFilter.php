@@ -26,26 +26,30 @@ class ProductFilter
         $query->where('category_id', $categoryId);
     }
 
-    protected function price(Builder $query, $range)
-    {
-        if (is_array($range)) {
-            $min = $range['min'] ?? null;
-            $max = $range['max'] ?? null;
+protected function price(Builder $query, $price)
+{
+    $price = trim($price);
 
-            if ($min !== null && $max !== null) {
-                $query->whereBetween('net_price', [(float)$min, (float)$max]);
-            } elseif ($min !== null) {
-                $query->where('net_price', '>=', (float)$min);
-            } elseif ($max !== null) {
-                $query->where('net_price', '<=', (float)$max);
-            }
-        } elseif (is_string($range) && strpos($range, ',') !== false) {
-            list($min, $max) = explode(',', $range);
+    if (strpos($price, '-') !== false) {
+        [$min, $max] = explode('-', $price);
+
+        $min = trim($min);
+        $max = trim($max);
+
+        if (is_numeric($min) && is_numeric($max)) {
             $query->whereBetween('net_price', [(float)$min, (float)$max]);
-        } elseif (is_numeric($range)) {
-            $query->where('net_price', '=', (float)$range);
+        } elseif (is_numeric($min)) {
+            $query->where('net_price', '>=', (float)$min);
+        } elseif (is_numeric($max)) {
+            $query->where('net_price', '<=', (float)$max);
         }
+    } elseif (is_numeric($price)) {
+        $query->where('net_price', '=', (float)$price);
     }
+}
+
+
+
     protected function state(Builder $query, $state)
     {
         if (in_array($state, ['available', 'sold'])) {
@@ -82,10 +86,10 @@ class ProductFilter
         if (empty($term)) {
             return;
         }
-        
+
         $query->where(function ($q) use ($term) {
             $q->where('products.name', 'like', "%{$term}%")
-              ->orWhere('products.description', 'like', "%{$term}%");
+                ->orWhere('products.description', 'like', "%{$term}%");
         });
     }
 

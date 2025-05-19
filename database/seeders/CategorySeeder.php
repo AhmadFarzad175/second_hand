@@ -16,7 +16,7 @@ class CategorySeeder extends Seeder
             ['name' => 'Furniture',                'image' => 'image4.jpg'],
             ['name' => 'Home Appliances',          'image' => 'image5.jpg'],
             ['name' => 'Clothing & Fashion',       'image' => 'image6.jpg'],
-            ['name' => 'Shoes',                    'image' => 'image7.jpg'],
+            ['name' => 'Shoes',                    'image' => 'shoes.jpg'],
             ['name' => 'Watches & Jewelry',        'image' => 'image8.jpg'],
             ['name' => 'Books & Education',        'image' => 'image9.jpg'],
             ['name' => 'Sports & Outdoors',        'image' => 'image10.jpg'],
