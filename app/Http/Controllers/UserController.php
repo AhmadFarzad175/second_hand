@@ -111,8 +111,19 @@ class UserController extends Controller
         User::whereIn('id', $request->userIds)->delete();
         return response()->noContent();
     }
+
+
+
+    public function userLocation($id)
+    {
+        $user = User::findOrFail($id);
+
+        // If 'location' is a normal column (string, object, etc.)
+        return response()->json([
+            'location' => $user->location,
+        ]);
+    }
 }
 
 // Developed By: Fahim Rahimi
 // Reach Me: fahimrahimi305@gmail.com
-

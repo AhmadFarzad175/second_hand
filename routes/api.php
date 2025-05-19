@@ -92,6 +92,7 @@ Route::apiResource('users', UserController::class);
 Route::put('users/{user}/status', [UserController::class, 'Status']);
 Route::post('users/update/{user}', [UserController::class, 'update']);
 Route::delete('bulk-delte-user', [UserController::class, 'bulkDelete']);
+Route::get('users/{user}/location', [UserController::class, 'userLocation']);
 
 ///////////////////  CURRENCIES  ///////////////////
 

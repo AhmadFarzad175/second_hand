@@ -63,12 +63,12 @@ class ProductFilter
     {
         $query->where('condition', $condition);
     }
-    protected function currency(Builder $query, $currencyId)
-{
-    if (is_numeric($currencyId)) {
-        $query->where('currency_id', $currencyId);
-    }
-}
+//     protected function currency(Builder $query, $currencyId)
+// {
+//     if (is_numeric($currencyId)) {
+//         $query->where('currency_id', $currencyId);
+//     }
+// }
 
 
 

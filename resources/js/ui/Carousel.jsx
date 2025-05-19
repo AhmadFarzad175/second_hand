@@ -7,30 +7,46 @@ import { useState } from "react";
 import { getCategories } from "../repositories/CategoryRepository";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import FilterDialog from "./FilterDialog";
 
-export default function CleanScrollableTabs() {
-    const [value, setValue] = useState(0);
+export default function Carousel() {
+    const [value, setValue] = useState(null);
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const [filterOpen, setFilterOpen] = useState(false);
 
+    const currentFilters = {
+        price: searchParams.get("price") || "",
+        location: searchParams.get("location") || "",
+        condition: searchParams.get("condition") || "",
+        date: searchParams.get("date") || "",
+    };
 
+    const handleApplyFilters = (newFilters) => {
+        const params = new URLSearchParams(searchParams);
+
+        // Update all filters
+        Object.entries(newFilters).forEach(([key, value]) => {
+            if (value) params.set(key, value);
+            else params.delete(key);
+        });
+
+        navigate(`?${params.toString()}`);
+    };
+
+    // when user click on the category
     const handleChange = (event, newValue) => {
         setValue(newValue);
         const selectedCategory = categories[newValue];
-        console.log('search param ')
-        console.log(searchParams)
-        if (selectedCategory?.id) {
-          // 1. Create a copy of current URL params
-          const params = new URLSearchParams(searchParams);
-          
-          // 2. Update the category param
-          params.set('category', selectedCategory.id);
-          
-          // 3. Update the URL
-          navigate(`?${params.toString()}`);
-        }
-      };
 
+        if (selectedCategory?.id) {
+            const params = new URLSearchParams(searchParams);
+            params.set("category", selectedCategory.id);
+            navigate(`?${params.toString()}`);
+        }
+    };
+
+    //fetching categories
     const {
         data: categories,
         isLoading,
@@ -105,14 +121,19 @@ export default function CleanScrollableTabs() {
             <Button
                 variant="contained"
                 startIcon={<TuneIcon />}
-                sx={{
-                    ml: 2,
-                    minWidth: 90,
-                    borderRadius: 1,
-                }}
+                onClick={() => setFilterOpen(true)}
+                sx={{ ml: 2, minWidth: 90, borderRadius: 1 }}
             >
                 Filter
             </Button>
+
+            <FilterDialog
+                open={filterOpen}
+                onClose={() => setFilterOpen(false)}
+                filters={currentFilters}
+                setFilters={handleApplyFilters}
+                onApply={handleApplyFilters}
+            />
         </Box>
     );
 }

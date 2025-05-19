@@ -93,7 +93,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        return ShowProductResource::make($product->load(['images', 'category', 'user','currency']));
+        return ShowProductResource::make($product->load(['images', 'category', 'user', 'currency']));
     }
 
     public function StateOfProduct(ProductRequest $request, $id)
@@ -221,6 +221,7 @@ class ProductController extends Controller
 
         return CategoryAttributesResource::collection($attributes);
     }
+
     public function websiteProducts(Request $request)
     {
         $filters = $request->only([
@@ -231,7 +232,6 @@ class ProductController extends Controller
             'date',
             'attributes'
         ]);
-        // dd($request->all());
 
         $perPage = $request->input('perPage', 10);
         $search = $request->input('search');
@@ -239,12 +239,13 @@ class ProductController extends Controller
         $user = Auth::user();
         $user = User::find(1);
 
-        $location = json_decode($user->location);
+        // dd(gettype($user->location));
+        $location = $user->location;
         $userLat = $location->latitude ?? null;
         $userLng = $location->longitude ?? null;
         // dd($user->location);
         // dd($userLat);
-        $query = Product::with(['images', 'favorites', 'user','currency']) // <-- add 'user'
+        $query = Product::with(['images', 'favorites', 'user']) // <-- add 'user'
             ->orderBy('products.id', 'DESC')
             ->search($search);
 
@@ -270,4 +271,3 @@ class ProductController extends Controller
         return WebsiteProductsResource::collection($products);
     }
 }
-
