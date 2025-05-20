@@ -70,8 +70,7 @@ Route::patch('/products/{id}/state', [ProductController::class, 'StateOfProduct'
 Route::Post('products/update/{product}', [ProductController::class, 'update']);
 Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
 Route::get('productImages/{id}', [ProductController::class, 'allImages']);
-Route::apiResource('product-attributes', ProductAttributeController::class);
-Route::apiResource('product-attribute-values', ProductAttributeValueController::class);
+
 
 Route::post('/products/{productId}/favorite', [FavoriteController::class, 'toggle']);
 
