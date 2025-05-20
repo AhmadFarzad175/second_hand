@@ -17,7 +17,7 @@ export default function Carousel() {
 
     const currentFilters = {
         price: searchParams.get("price") || "",
-        location: searchParams.get("location") || "",
+        distance: searchParams.get("distance") || "",
         condition: searchParams.get("condition") || "",
         date: searchParams.get("date") || "",
     };
@@ -38,13 +38,16 @@ export default function Carousel() {
     const handleChange = (event, newValue) => {
         setValue(newValue);
         const selectedCategory = categories[newValue];
-
+    
         if (selectedCategory?.id) {
-            const params = new URLSearchParams(searchParams);
+            // Create a NEW searchParams instance with only the category
+            const params = new URLSearchParams();
             params.set("category", selectedCategory.id);
+    
             navigate(`?${params.toString()}`);
         }
     };
+    
 
     //fetching categories
     const {
