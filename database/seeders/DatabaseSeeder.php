@@ -28,11 +28,11 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
         ]);
 
-        ProductAttributeValue::factory(5)->create();
+        // ProductAttributeValue::factory(5)->create();
         ProductAttribute::factory(5)->create();
         Message::factory(5)->create();
         Review::factory(5)->create();
-        Favorite::factory(10)->create();
+        // Favorite::factory(10)->create();
 
         // Report::factory(15)->create();
 

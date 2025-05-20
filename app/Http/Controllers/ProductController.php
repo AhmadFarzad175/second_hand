@@ -64,10 +64,11 @@ class ProductController extends Controller
      * Store a newly created resource in storage.
      */
 
-    public function store(ProductRequest $request)
+    public function store(Request $request)
     {
-        $validated = $request->validated();
+        $validated = $request->input();
         $validated['user_id'] = Auth::user()?->id || 1;
+        // dd($validated);
 
         // CREATE PRODUCT
         $product = Product::create($validated);

@@ -27,6 +27,9 @@ export async function createUpdateProduct(formData, id = null) {
         ? `http://127.0.0.1:8000/api/products/update/${id}`
         : `http://127.0.0.1:8000/api/products`;
 
+    console.log(url)
+    console.log(formData)
+
     const response = await fetch(url, {
         method: "POST",
         body: formData, // No Content-Type header, browser sets it for FormData
