@@ -109,7 +109,7 @@ export default function ProductForm({
 
     const onFormSubmit = (data) => {
         const formData = new FormData();
-        formData.append('currency_id', '1')
+        formData.append('currency', 'AFN')
         const attributes = {
             color: data.color,
             brand: data.brand,
@@ -129,6 +129,8 @@ export default function ProductForm({
             }
         });
 
+        console.log('form')
+        console.log(formData)
         onSubmit(formData);
     };
 

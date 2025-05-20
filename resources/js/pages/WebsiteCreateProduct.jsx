@@ -14,8 +14,6 @@ export default function WebsiteCreateProduct() {
     const { isCreating, createProduct } = useCreateProduct();
     const { isUpdating, updateProduct } = useUpdateProduct();
 
-    console.log(useCreateProduct())
-
     const handleSubmit = (formData) => {
         if (isEditSession) {
             updateProduct(
@@ -36,28 +34,26 @@ export default function WebsiteCreateProduct() {
     };
 
     return (
-<>
-
-
-        <WebsiteHeading
-              title="Create New Product"
-              subtitle="Fill in all required information to add a new product"
-              // Optional props (defaults shown):
-              // align="center"
-            //   gradient={true}
-              // divider={true}
-              // titleVariant="h2"
-              // subtitleVariant="subtitle1"
-              sx={{ py: 4 }} // Custom spacing
+        <>
+            <WebsiteHeading
+                title="Create New Product"
+                subtitle="Fill in all required information to add a new product"
+                // Optional props (defaults shown):
+                // align="center"
+                //   gradient={true}
+                // divider={true}
+                // titleVariant="h2"
+                // subtitleVariant="subtitle1"
+                sx={{ py: 4 }} // Custom spacing
             />
 
-        <ProductForm
-            onSubmit={handleSubmit}
-            isWorking={isCreating || isUpdating}
-            isEditSession={isEditSession}
-            editValues={editValues}
-            navigateBackPath="/products"
-        />
+            <ProductForm
+                onSubmit={handleSubmit}
+                isWorking={isCreating || isUpdating}
+                isEditSession={isEditSession}
+                editValues={editValues}
+                navigateBackPath="/products"
+            />
         </>
     );
 }
