@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Database\Eloquent\Builder;
+use App\Models\User;
 
 class ProductFilter
 {
@@ -26,29 +27,26 @@ class ProductFilter
         $query->where('category_id', $categoryId);
     }
 
-protected function price(Builder $query, $price)
-{
-    $price = trim($price);
+    protected function price(Builder $query, $price)
+    {
+        $price = trim($price);
 
-    if (strpos($price, '-') !== false) {
-        [$min, $max] = explode('-', $price);
+        if (strpos($price, '-') !== false) {
+            [$min, $max] = explode('-', $price);
+            $min = trim($min);
+            $max = trim($max);
 
-        $min = trim($min);
-        $max = trim($max);
-
-        if (is_numeric($min) && is_numeric($max)) {
-            $query->whereBetween('net_price', [(float)$min, (float)$max]);
-        } elseif (is_numeric($min)) {
-            $query->where('net_price', '>=', (float)$min);
-        } elseif (is_numeric($max)) {
-            $query->where('net_price', '<=', (float)$max);
+            if (is_numeric($min) && is_numeric($max)) {
+                $query->whereBetween('net_price', [(float)$min, (float)$max]);
+            } elseif (is_numeric($min)) {
+                $query->where('net_price', '>=', (float)$min);
+            } elseif (is_numeric($max)) {
+                $query->where('net_price', '<=', (float)$max);
+            }
+        } elseif (is_numeric($price)) {
+            $query->where('net_price', '=', (float)$price);
         }
-    } elseif (is_numeric($price)) {
-        $query->where('net_price', '=', (float)$price);
     }
-}
-
-
 
     protected function state(Builder $query, $state)
     {
@@ -56,7 +54,6 @@ protected function price(Builder $query, $price)
             $query->where('state', $state);
         }
     }
-
 
     protected function location(Builder $query, $location)
     {
@@ -67,19 +64,20 @@ protected function price(Builder $query, $price)
     {
         $query->where('condition', $condition);
     }
-//     protected function currency(Builder $query, $currencyId)
-// {
-//     if (is_numeric($currencyId)) {
-//         $query->where('currency_id', $currencyId);
-//     }
-// }
-
-
 
     protected function date(Builder $query, $date)
-    {
-        $query->whereDate('created_at', $date);
+{
+    // Ensure the date is in the correct format
+    try {
+        $startDate = \Carbon\Carbon::parse($date)->startOfDay();
+        $endDate = now()->endOfDay(); // Current date and time
+
+        $query->whereBetween('products.created_at', [$startDate, $endDate]);
+    } catch (\Exception $e) {
+        // Handle invalid date format
+        logger()->error("Invalid date format provided: " . $date);
     }
+}
 
     protected function search(Builder $query, $term)
     {
@@ -89,16 +87,14 @@ protected function price(Builder $query, $price)
 
         $query->where(function ($q) use ($term) {
             $q->where('products.name', 'like', "%{$term}%")
-                ->orWhere('products.description', 'like', "%{$term}%");
+              ->orWhere('products.description', 'like', "%{$term}%");
         });
     }
 
-    // 🔥 Dynamic JSON attribute filters: size, brand, color, status
     protected function attributes(Builder $query, array $attributes)
     {
         foreach ($attributes as $key => $value) {
             if (is_array($value)) {
-                // Multi-select (e.g., sizes = [S, M, L])
                 $query->where(function ($q) use ($key, $value) {
                     foreach ($value as $v) {
                         $q->orWhereJsonContains("attributes->$key", $v);
@@ -109,4 +105,31 @@ protected function price(Builder $query, $price)
             }
         }
     }
+
+    // 🔥 Distance filter added here
+protected function distance(Builder $query, $maxDistance)
+{
+    $user = auth()->user() ?? User::find(1);
+    if (!$user || !$user->location) return;
+
+    $userLat = $user->location["latitude"];
+    $userLng = $user->location["longitude"];
+
+    if (!is_numeric($maxDistance) || !is_numeric($userLat) || !is_numeric($userLng)) {
+        return;
+    }
+
+    $query->join('users', 'products.user_id', '=', 'users.id')
+        ->select('products.*') // Ensure we only select product columns
+        ->whereRaw("(
+            6371 * acos(
+                cos(radians(?)) *
+                cos(radians(CAST(JSON_UNQUOTE(JSON_EXTRACT(users.location, '$.latitude')) AS DECIMAL(10,7)))) *
+                cos(radians(CAST(JSON_UNQUOTE(JSON_EXTRACT(users.location, '$.longitude')) AS DECIMAL(10,7))) - radians(?)) +
+                sin(radians(?)) *
+                sin(radians(CAST(JSON_UNQUOTE(JSON_EXTRACT(users.location, '$.latitude')) AS DECIMAL(10,7))))
+            )
+        ) < ?", [$userLat, $userLng, $userLat, $maxDistance]);
+}
+
 }

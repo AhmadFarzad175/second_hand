@@ -19,7 +19,7 @@ import {
     Star,
     Report,
 } from "@mui/icons-material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid"
 import Grid from "@mui/material/Grid";
 
 // Styled components
