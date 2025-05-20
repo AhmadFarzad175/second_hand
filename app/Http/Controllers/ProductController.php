@@ -222,52 +222,24 @@ class ProductController extends Controller
         return CategoryAttributesResource::collection($attributes);
     }
 
-    public function websiteProducts(Request $request)
-    {
-        $filters = $request->only([
-            'category',
-            'price',
-            'location',
-            'condition',
-            'date',
-            'attributes'
-        ]);
+public function websiteProducts(Request $request)
+{
+    $filters = $request->only([
+        'category', 'price', 'condition', 'date', 'attributes', 'distance'
+    ]);
 
-        $perPage = $request->input('perPage', 10);
-        $search = $request->input('search');
+    $perPage = $request->input('perPage', 10);
+    $search = $request->input('search');
 
-        $user = Auth::user();
-        $user = User::find(1);
+    $query = Product::with(['images', 'favorites', 'user'])
+        ->orderBy('products.id', 'DESC')
+        ->search($search);
 
-        // dd(gettype($user->location));
-        $location = $user->location;
-        $userLat = $location->latitude ?? null;
-        $userLng = $location->longitude ?? null;
-        // dd($user->location);
-        // dd($userLat);
-        $query = Product::with(['images', 'favorites', 'user']) // <-- add 'user'
-            ->orderBy('products.id', 'DESC')
-            ->search($search);
+    $filteredQuery = ProductFilter::apply($query, $filters);
 
+    $products = $perPage ? $filteredQuery->paginate($perPage) : $filteredQuery->get();
 
-        // Distance filtering and ordering
-        if ($userLat && $userLng) {
-            $query->select('products.*')->selectRaw("(
-                6371 * acos(
-                    cos(radians(?)) * cos(radians(CAST(JSON_UNQUOTE(JSON_EXTRACT(users.location, '$.latitude')) AS DECIMAL(10,7)))) *
-                    cos(radians(CAST(JSON_UNQUOTE(JSON_EXTRACT(users.location, '$.longitude')) AS DECIMAL(10,7)) - ?)) +
-                    sin(radians(?)) * sin(radians(CAST(JSON_UNQUOTE(JSON_EXTRACT(users.location, '$.latitude')) AS DECIMAL(10,7))))
-                )
-            ) AS distance", [$userLat, $userLng, $userLat])
-                ->join('users', 'products.user_id', '=', 'users.id')
-                ->orderBy('distance', 'asc');
-        }
+    return WebsiteProductsResource::collection($products);
+}
 
-        // Apply all filters, including attributes
-        $filteredQuery = ProductFilter::apply($query, $filters);
-
-        $products = $perPage ? $filteredQuery->paginate($perPage) : $filteredQuery->get();
-
-        return WebsiteProductsResource::collection($products);
-    }
 }
