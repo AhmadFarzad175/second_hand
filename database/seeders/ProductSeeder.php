@@ -1,5 +1,4 @@
 <?php
-
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -11,28 +10,29 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         for ($i = 1; $i <= 30; $i++) {
+            $categoryId = rand(1, 10); // assumes at least 10 categories
             $product = Product::create([
                 'name' => "Dummy Product $i",
-                'category_id' => rand(1, 10), // assuming you have at least 10 categories
-                'user_id' => rand(1,5),               // or random user_id if needed
-                'currency' => 'AFG',           // or random currency_id
+                'category_id' => $categoryId,
+                'user_id' => rand(1, 5),
+                'currency' => 'AFN', // Use valid codes: AFN, USD, EUR
                 'net_price' => rand(100, 1000),
                 'discount' => rand(0, 100),
                 'quantity' => rand(1, 20),
-                'condition' => rand(0, 1),
+                'condition' => (bool)rand(0, 1),
                 'state' => 'available',
                 'description' => "Description for Dummy Product $i",
                 'attributes' => json_encode([
-                    'color' => 'Color ' . $i,
-                    'size' => rand(1, 100) . 'cm'
+                    'Color' => ['Red', 'Blue', 'Green'][array_rand(['Red', 'Blue', 'Green'])],
+                    'Size' => ['S', 'M', 'L', 'XL'][array_rand(['S', 'M', 'L', 'XL'])],
+                    'Material' => ['Cotton', 'Plastic', 'Leather'][array_rand(['Cotton', 'Plastic', 'Leather'])]
                 ]),
             ]);
 
-            // Each product gets 2 images: imageX_1.jpg and imageX_2.jpg
             for ($j = 1; $j <= 2; $j++) {
                 Image::create([
                     'product_id' => $product->id,
-                    'image_url' => "images/products/image{$i}.jpg",
+                    'image_url' => "images/products/image{$i}_{$j}.jpg",
                 ]);
             }
         }
