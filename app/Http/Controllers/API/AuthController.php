@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
+use App\Traits\ImageManipulation;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-//  use ImageManipulation;
+ use ImageManipulation;
 
     // ✅ Register new user using UserRequest and same logic as UserController
     public function register(UserRequest $request)
@@ -20,9 +21,9 @@ class AuthController extends Controller
         $validated = $request->validated();
 
         // Upload image
-        // if ($request->hasFile('image')) {
-        //     $this->storeImage($request, $validated, 'images/users', 'image');
-        // }
+        if ($request->hasFile('image')) {
+            $this->storeImage($request, $validated, 'images/users', 'image');
+        }
 
         // Hash password if present
         if ($request->filled('password')) {
