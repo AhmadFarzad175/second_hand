@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('rating')->nullable();
             $table->enum('role', ['admin', 'user','manager'])->nullable()->default('user');
             $table->boolean('is_active')->default(true);
+            $table->string('google_id')->nullable()->unique();
             $table->rememberToken();
             $table->timestamps();
         });
