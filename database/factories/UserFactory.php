@@ -25,12 +25,11 @@ class UserFactory extends Factory
             'email' => $this->faker->unique()->safeEmail(),
             'remember_token' => Str::random(10),
             'rating' => $this->faker->randomFloat(1, 1, 5),
-            'image' =>$this->faker->filePath(),
-            // 'location' => $this->faker->city(),
-'location' => [
-    'latitude' => $this->faker->latitude(),
-    'longitude' => $this->faker->longitude(),
-],
+            'image' => $this->faker->filePath(),
+            'location' => [
+                'latitude' => $this->faker->latitude(),
+                'longitude' => $this->faker->longitude(),
+            ],
 
 
             'phone' => $this->faker->phoneNumber(),
@@ -46,7 +45,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }

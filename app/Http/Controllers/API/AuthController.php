@@ -3,104 +3,71 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserRequest;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Socialite\Facades\Socialite;
-use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    // User Registration
-    public function register(Request $request)
+//  use ImageManipulation;
+
+    // ✅ Register new user using UserRequest and same logic as UserController
+    public function register(UserRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users',
-            'password' => 'required|string|min:6',
-            'location' => 'required|array',
-            'location.lat' => 'required|numeric',
-            'location.lng' => 'required|numeric',
-        ]);
+        $validated = $request->validated();
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'location' => $request->location,
-        ]);
+        // Upload image
+        // if ($request->hasFile('image')) {
+        //     $this->storeImage($request, $validated, 'images/users', 'image');
+        // }
 
-        return response()->json(['message' => 'User registered successfully!']);
+        // Hash password if present
+        if ($request->filled('password')) {
+            $validated['password'] = Hash::make($request->password);
+        }
+
+        // Save user
+        $user = User::create($validated);
+
+        return response()->json([
+            'message' => 'User registered successfully',
+            'user' => new UserResource($user),
+        ], 201);
     }
 
-    // User Login
+    // ✅ Login user (without Sanctum)
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
+            'email'    => 'required|email',
+            'password' => 'required|string',
         ]);
 
         if (!Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return response()->json(['message' => 'Invalid email or password'], 401);
         }
 
         $user = Auth::user();
-        $token = $user->createToken('MobileApp')->plainTextToken;
-
-        return response()->json(['user' => $user, 'token' => $token]);
-    }
-
-    // Google Login Redirect (optional - if you want to redirect user to Google)
-    public function redirectToGoogle()
-    {
-        return Socialite::driver('google')->stateless()->redirect()->getTargetUrl();
-    }
-
-    // Handle Google OAuth callback
-    public function handleGoogleCallback()
-    {
-        // Get Google user info (stateless for API)
-        $googleUser = Socialite::driver('google')->stateless()->user();
-
-
-        // Find or create user by email
-        $user = User::firstOrCreate(
-            ['email' => $googleUser->getEmail()],
-            [
-                'name' => $googleUser->getName() ?? 'Unknown User',
-                'password' => bcrypt(Str::random(16)), // random password since user logs in via Google
-                'image' => $googleUser->getAvatar(),
-                'location' => ['lat' => 0.0, 'lng' => 0.0], // default location if needed
-            ]
-        );
-
-        // Log user in
-        Auth::login($user);
-
-        // Create token for API
-        $token = $user->createToken('GoogleAuthToken')->plainTextToken;
 
         return response()->json([
-            'message' => 'Logged in via Google successfully.',
-            'user' => $user,
-            'token' => $token,
+            'message' => 'Login successful',
+            'user'    => $user,
         ]);
     }
 
-    // Get User Profile
-    public function userProfile(Request $request)
+    // ✅ Get Authenticated User Profile
+    public function profile(Request $request)
     {
         return response()->json($request->user());
     }
 
-    // Logout User
+    // ✅ Logout (Optional for session-based)
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
+        Auth::logout();
         return response()->json(['message' => 'Logged out successfully']);
     }
 }
-
-
