@@ -65,7 +65,7 @@ Route::get('/favorites', [FavoriteController::class, 'index']);
 ///////////////// PRODUCTS///////////////////////
 
 Route::apiResource('products', ProductController::class);
-Route::get('categories/{id}/attributes', [ProductController::class, 'getAttributesByCategory']);
+    Route::get('categories/{id}/attributes', [ProductController::class, 'getAttributesByCategory']);
 Route::patch('/products/{id}/state', [ProductController::class, 'StateOfProduct']);
 Route::Post('products/update/{product}', [ProductController::class, 'update']);
 Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
