@@ -3,6 +3,7 @@ import { Container, Box } from '@mui/material';
 import Navbar from "./NavBar";
 import Footer from "./Footer";
 import { useState } from "react";
+import ChatSystem from "./ChatSystem";
 
 function AppLayout() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -14,7 +15,7 @@ function AppLayout() {
           <Box component="main" sx={{padding: { xs: "20px 0", sm: 1, md: 2, xl: 3 }}}>
             <Outlet context={{ searchTerm }}/>
           </Box>
-      </Container>
+          <ChatSystem />      </Container>
       <Footer />
     </>
   );

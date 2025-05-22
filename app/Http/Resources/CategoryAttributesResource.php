@@ -15,10 +15,11 @@ class CategoryAttributesResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'     => $this->id,
-            'name'   => $this->name,
-            'type'   => $this->type,  
-            'options' => $this->options ?? [],
+            'id' => $this->id,
+            'name' => $this->name,
+            'type' => $this->type,
+            'options' => $this->options ? ($this->options) : [],
+            // 'category_id' => $request->input('id')
         ];
     }
 }

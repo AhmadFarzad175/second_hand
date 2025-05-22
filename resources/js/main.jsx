@@ -9,6 +9,7 @@ import MyTheme from "./theme/MyTheme.js"; // Import your custom theme
 import "./theme/MyTheme.js";
 import "./app.css";
 import { Toaster } from "react-hot-toast";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const queryClient = new QueryClient();
 
@@ -16,11 +17,14 @@ createRoot(document.getElementById("root")).render(
     <StrictMode>
         <QueryClientProvider client={queryClient}>
             <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+            <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com">
+
             <BrowserRouter>
                 <ThemeProvider theme={MyTheme}>
                     <App />
                 </ThemeProvider>
             </BrowserRouter>
+            </GoogleOAuthProvider>
         </QueryClientProvider>
 
         <Toaster
