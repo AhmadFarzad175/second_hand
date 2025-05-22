@@ -29,6 +29,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+
         $filters = $request->only([
             'category',
             'price',
