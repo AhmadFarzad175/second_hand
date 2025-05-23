@@ -14,6 +14,7 @@ use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ImageResource;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\WebsiteProductsResource;
+use App\Models\ProductAttribute;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use App\Services\ProductFilter; // Import the ProductFilter service
@@ -95,7 +96,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        return ShowProductResource::make($product->load(['images', 'category', 'user', 'currency']));
+        return ShowProductResource::make($product->load(['images', 'category', 'user']));
     }
 
     public function StateOfProduct(ProductRequest $request, $id)
@@ -212,36 +213,43 @@ class ProductController extends Controller
 
     public function getAttributesByCategory($categoryId)
     {
-        $category = Category::with('attributes', 'parent.attributes')->findOrFail($categoryId);
-
-        // Combine child and parent attributes
-        $attributes = $category->attributes;
-
-        if ($category->parent) {
-            $attributes = $attributes->merge($category->parent->attributes);
-        }
+        $attributes = ProductAttribute::where('category_id', $categoryId)->get();
+        // return response()->json(
+        //     $attributes->map(function ($attr) {
+        //         return [
+        //             'id' => $attr->id,
+        //             'name' => $attr->name,
+        //             'type' => $attr->type,
+        //             'options' => $attr->options ? json_decode($attr->options) : [],
+        //         ];
+        //     })
+        // );
 
         return CategoryAttributesResource::collection($attributes);
     }
 
-public function websiteProducts(Request $request)
-{
-    $filters = $request->only([
-        'category', 'price', 'condition', 'date', 'attributes', 'distance'
-    ]);
+    public function websiteProducts(Request $request)
+    {
+        $filters = $request->only([
+            'category',
+            'price',
+            'condition',
+            'date',
+            'attributes',
+            'distance'
+        ]);
 
-    $perPage = $request->input('perPage', 10);
-    $search = $request->input('search');
+        $perPage = $request->input('perPage', 10);
+        $search = $request->input('search');
 
-    $query = Product::with(['images', 'favorites', 'user'])
-        ->orderBy('products.id', 'DESC')
-        ->search($search);
+        $query = Product::with(['images', 'favorites', 'user'])
+            ->orderBy('products.id', 'DESC')
+            ->search($search);
 
-    $filteredQuery = ProductFilter::apply($query, $filters);
+        $filteredQuery = ProductFilter::apply($query, $filters);
 
-    $products = $perPage ? $filteredQuery->paginate($perPage) : $filteredQuery->get();
+        $products = $perPage ? $filteredQuery->paginate($perPage) : $filteredQuery->get();
 
-    return WebsiteProductsResource::collection($products);
-}
-
+        return WebsiteProductsResource::collection($products);
+    }
 }

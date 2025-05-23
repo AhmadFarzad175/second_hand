@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
         // Seed other related models
         Message::factory(5)->create();
         Review::factory(5)->create();
-        Favorite::factory(10)->create();
+        // Favorite::factory(10)->create();
         // Report::factory(15)->create(); // Uncomment when needed
     }
 }

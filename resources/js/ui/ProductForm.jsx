@@ -26,18 +26,25 @@ export default function ProductForm({
     const [images, setImages] = useState(Array(6).fill(null));
     const [imageFiles, setImageFiles] = useState(Array(6).fill(null));
     const [categories, setCategories] = useState([]);
+    const [categoryAttributes, setCategoryAttributes] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingAttributes, setIsLoadingAttributes] = useState(false);
     const navigate = useNavigate();
 
     const {
         register,
         handleSubmit,
         control,
+        watch,
+        getValues, // Add this
         formState: { errors },
         reset,
     } = useForm({
         defaultValues: isEditSession ? editValues : {},
     });
+
+    // Watch category changes
+    const watchedCategory = watch("category_id");
 
     // Fetch categories from API
     useEffect(() => {
@@ -54,6 +61,49 @@ export default function ProductForm({
         fetchCategories();
     }, []);
 
+    // Fetch attributes when category changes
+    // Fetch attributes when category changes
+    useEffect(() => {
+        if (!watchedCategory) {
+            setCategoryAttributes([]);
+            return;
+        }
+
+        const fetchAttributes = async () => {
+            setIsLoadingAttributes(true);
+            try {
+                const response = await fetch(
+                    `/api/categories/${watchedCategory}/attributes`
+                );
+                const { data } = await response.json();
+
+                if (Array.isArray(data)) {
+                    setCategoryAttributes(data);
+
+                    // Reset only attribute values when category changes
+                    const resetValues = {};
+                    data.forEach((attr) => {
+                        resetValues[attr.name] =
+                            attr.type === "select" ? "" : "";
+                    });
+
+                    // Preserve the current form values while resetting attributes
+                    reset({
+                        ...getValues(), // Keep all current form values
+                        ...resetValues, // Override just the attributes
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching attributes:", error);
+                setCategoryAttributes([]);
+            } finally {
+                setIsLoadingAttributes(false);
+            }
+        };
+
+        fetchAttributes();
+    }, [watchedCategory, reset, getValues]); // Add getValues to dependencies
+
     // Initialize form with edit values and fetch images if in edit mode
     useEffect(() => {
         if (!isEditSession) return;
@@ -61,7 +111,9 @@ export default function ProductForm({
 
         const fetchProductImages = async () => {
             try {
-                const response = await fetch(`/api/productImages/${editValues.id}`);
+                const response = await fetch(
+                    `/api/productImages/${editValues.id}`
+                );
                 const data = await response.json();
 
                 const fetchedImages = Array(6).fill(null);
@@ -109,44 +161,65 @@ export default function ProductForm({
 
     const onFormSubmit = (data) => {
         const formData = new FormData();
-        formData.append('currency', 'AFN')
-        const attributes = {
-            color: data.color,
-            brand: data.brand,
-        };
+        formData.append("currency", "AFN");
+
+        // Build attributes object dynamically
+        const attributes = {};
+        categoryAttributes.forEach((attr) => {
+            if (data[attr.name] !== undefined && data[attr.name] !== "") {
+                attributes[attr.name] = data[attr.name];
+            }
+        });
 
         formData.append("attributes", JSON.stringify(attributes));
 
+        // Append other form data
         for (const key in data) {
-            if (key !== "color" && key !== "brand") {
+            if (!categoryAttributes.some((attr) => attr.name === key)) {
                 formData.append(key, data[key]);
             }
         }
 
+        // Append images
         imageFiles.forEach((file) => {
             if (file) {
                 formData.append("images[]", file);
             }
         });
 
-        console.log('form')
-        console.log(formData)
         onSubmit(formData);
     };
 
-    // Options for select components
-    const colorOptions = [
-        { value: "red", label: "Red" },
-        { value: "blue", label: "Blue" },
-        { value: "green", label: "Green" },
-    ];
+    const renderAttributeFields = () => {
+        return categoryAttributes.map((attribute) => {
+            const commonProps = {
+                label: attribute.name,
+                control: control,
+                name: attribute.name,
+                errors: errors,
+                disabled: isWorking,
+                fullWidth: true,
+                register: register,
+            };
 
-    const brandOptions = [
-        { value: "iphone", label: "iPhone" },
-        { value: "galaxy", label: "Galaxy" },
-        { value: "nokia", label: "Nokia" },
-        { value: "huawei", label: "Huawei" },
-    ];
+            switch (attribute.type) {
+                case "select":
+                    return (
+                        <Select
+                            key={attribute.id}
+                            {...commonProps}
+                            options={attribute.options.map((option) => ({
+                                value: option,
+                                label: option,
+                            }))}
+                        />
+                    );
+                case "text":
+                default:
+                    return <TextField key={attribute.id} {...commonProps} />;
+            }
+        });
+    };
 
     const conditionOptions = [
         { value: "0", label: "New" },
@@ -167,7 +240,6 @@ export default function ProductForm({
             }}
         >
             <Stack spacing={4}>
-                {/* Header Section */}
                 <Grid container spacing={4}>
                     {/* Left Column - Product Details */}
                     <Grid item xs={12} md={7}>
@@ -201,13 +273,12 @@ export default function ProductForm({
 
                                 <Select
                                     label="Category"
-                                    defaultValue={editValues?.category_id}
                                     control={control}
                                     register={register}
                                     name="category_id"
                                     errors={errors}
                                     options={categoryOptions}
-                                    disabled={isWorking}
+                                    disabled={isWorking || isLoading}
                                     fullWidth
                                     required
                                 />
@@ -326,7 +397,8 @@ export default function ProductForm({
                                         variant="body2"
                                         color="text.secondary"
                                     >
-                                        Upload high-quality product images (max 6)
+                                        Upload high-quality product images (max
+                                        6)
                                     </Typography>
 
                                     <Grid container spacing={2}>
@@ -453,27 +525,25 @@ export default function ProductForm({
                                         Product Attributes
                                     </Typography>
 
-                                    <Select
-                                        label="Brand"
-                                        register={register}
-                                        control={control}
-                                        name="brand"
-                                        errors={errors}
-                                        options={brandOptions}
-                                        disabled={isWorking}
-                                        fullWidth
-                                    />
-
-                                    <Select
-                                        label="Color"
-                                        register={register}
-                                        control={control}
-                                        name="color"
-                                        errors={errors}
-                                        options={colorOptions}
-                                        disabled={isWorking}
-                                        fullWidth
-                                    />
+                                    {isLoadingAttributes ? (
+                                        <Box
+                                            display="flex"
+                                            justifyContent="center"
+                                        >
+                                            <CircularProgress size={24} />
+                                        </Box>
+                                    ) : categoryAttributes.length > 0 ? (
+                                        renderAttributeFields()
+                                    ) : (
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                        >
+                                            {watchedCategory
+                                                ? "No attributes defined for this category"
+                                                : "Select a category to see available attributes"}
+                                        </Typography>
+                                    )}
                                 </Stack>
                             </Paper>
                         </Stack>
@@ -494,11 +564,7 @@ export default function ProductForm({
                         color="inherit"
                         size="large"
                         onClick={() => navigate(navigateBackPath)}
-                        sx={{
-                            px: 4,
-                            borderRadius: 1,
-                            fontWeight: 500,
-                        }}
+                        sx={{ px: 4, borderRadius: 1, fontWeight: 500 }}
                     >
                         Cancel
                     </Button>

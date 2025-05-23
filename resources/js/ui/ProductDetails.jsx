@@ -83,15 +83,9 @@ function ProductDetails({ dashboard = false }) {
     if (!product) {
         return <Typography>Loading...</Typography>;
     } else {
-        console.log(product);
     }
 
-    let coordinates = null;
-    try {
-        coordinates = product.location ? JSON.parse(product.location) : null;
-    } catch (e) {
-        console.error("Invalid location format:", e);
-    }
+    let coordinates = product.location || null;
 
     return (
         <Box sx={{ width: "100%" }}>
@@ -415,19 +409,19 @@ function ProductDetails({ dashboard = false }) {
                     </Box>
 
                     {/* Location & Distance */}
-                    <Typography
+                    {/* <Typography
                         variant="body2"
                         color="text.secondary"
                         sx={{ fontSize: { xs: "0.8rem", md: "0.9rem" } }}
                     >
                         Location: {product.location}
-                    </Typography>
+                    </Typography> */}
                     <Typography
                         variant="body2"
                         color="text.secondary"
                         sx={{ fontSize: { xs: "0.8rem", md: "0.9rem" }, mb: 2 }}
                     >
-                        {product.distance}
+                        {product.distance ?? 'insert '}
                     </Typography>
 
                     <Divider sx={{ my: 2 }} />
