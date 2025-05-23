@@ -14,24 +14,31 @@ export async function loginWithEmail(credentials) {
     }
 
     const data = await response.json();
-    localStorage.setItem('authToken', data.token);
 
     return data;
 }
 
 export async function loginWithGoogle(googleData) {
-    const response = await fetch("http://your-laravel-app/api/login/google", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-        },
-        body: JSON.stringify({ token: googleData.token }),
-    });
+    console.log("ggole data");
+    console.log(googleData);
+    const response = await fetch(
+        "http://127.0.0.1:8000/api/auth/google/redirect",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+            body: JSON.stringify({ token: googleData.token }),
+        }
+    );
 
     if (!response.ok) {
         throw new Error("Google login failed");
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log("data");
+    console.log(data);
+    return data;
 }

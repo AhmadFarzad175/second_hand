@@ -21,6 +21,9 @@ import {
     VisibilityOff,
 } from "@mui/icons-material";
 import { useLogin } from "./useLogin";
+import { toast } from "react-hot-toast";
+import { useGoogleLogin } from "./useGoogleLogin";
+
 
 
 const LoginPage = () => {
@@ -29,19 +32,8 @@ const LoginPage = () => {
     const [showPassword, setShowPassword] = React.useState(false);
     const [emailError, setEmailError] = React.useState("");
     const [passwordError, setPasswordError] = React.useState("");
-    const {logIn, isChecking, EmailError} = useLogin()
-    
-      const googleMutation = useMutation({
-        // mutationFn: loginWithGoogle,
-        mutationFn: logIn,
-        onSuccess: (data) => {
-          // Store token and user data
-          localStorage.setItem('authToken', data.token);
-        },
-        onError: (error) => {
-          console.error('Google login error:', error);
-        }
-      });
+    const {logIn, isChecking, EmailError} = useLogin();
+    const { googleLogin, isCheckingGoogle, GoogleError } = useGoogleLogin();    
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -76,27 +68,27 @@ const LoginPage = () => {
         const decoded = jwtDecode(credentialResponse.credential);
         console.log("Google auth response:", decoded);
 
-        const googleData = {
-            token: credentialResponse.credential,
-            profileObj: {
-                email: decoded.email,
-                name: decoded.name,
-                imageUrl: decoded.picture,
-            },
-        };
+        // const googleData = {
+        //     token: credentialResponse.credential,
+        //     profileObj: {
+        //         email: decoded.email,
+        //         name: decoded.name,
+        //         imageUrl: decoded.picture,
+        //     },
+        // };
 
-        googleMutation.mutate(googleData);
+        // googleLogin(googleData);
     };
 
     const handleGoogleError = () => {
-        console.error("Google login failed");
+        toast.error("Google login failed");
     };
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
 
-    const isLoading = isChecking || googleMutation.isLoading;
+    const isLoading = isChecking || isCheckingGoogle;
 
     return (
         <Container
@@ -117,7 +109,7 @@ const LoginPage = () => {
                     </Typography>
                 </Box>
 
-                {(EmailError || googleMutation.isError) && (
+                {(EmailError || GoogleError) && (
                     <Alert severity="error" sx={{ mb: 3 }}>
                         Login failed. Please check your credentials and try
                         again.

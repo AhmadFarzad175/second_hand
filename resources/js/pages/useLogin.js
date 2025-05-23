@@ -5,13 +5,14 @@ import { useNavigate } from "react-router-dom";
 
 export function useLogin() {
     const navigate = useNavigate();
-    
+
     const { mutate: logIn, isLoading: isChecking, error:EmailError } = useMutation({
         // mutationFn: function($credentials){
         //     loginWithEmail($credentials)
         // },
         mutationFn: loginWithEmail,
         onSuccess: (data) => {
+            localStorage.setItem('authToken', data.token);
             toast.success("You logged in successfully");
             navigate("/");
             // Consider adding redirect here or in the component
