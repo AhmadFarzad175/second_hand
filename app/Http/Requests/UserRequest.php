@@ -27,6 +27,7 @@ class UserRequest extends FormRequest
             'phone' => 'required|string|max:20',
             'description' => 'nullable|string',
             'role' => 'nullable|in:admin,user',
+            'google_id'  => 'nullable|string|unique:users,google_id',
         ];
 
         $this->isMethod('put') ? $this->applyUpdateRules($rules) : null;
