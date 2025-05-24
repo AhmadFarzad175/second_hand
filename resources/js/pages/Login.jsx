@@ -16,44 +16,15 @@ import {
     InputAdornment,
 } from "@mui/material";
 import {
-    Google as GoogleIcon,
+    // Google as GoogleIcon,
     Visibility,
     VisibilityOff,
 } from "@mui/icons-material";
+import { useLogin } from "./useLogin";
+import { toast } from "react-hot-toast";
+import { useGoogleLogin } from "./useGoogleLogin";
 
-// Mock API functions - replace with your actual API calls
-const loginWithEmail = async (credentials) => {
-    // Simulate API call
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                token: "mock-token",
-                user: {
-                    email: credentials.email,
-                    name: "Test User",
-                    role: "user", // or 'admin' based on your logic
-                },
-            });
-        }, 1000);
-    });
-};
 
-const loginWithGoogle = async (googleData) => {
-    // Simulate API call
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                token: "mock-google-token",
-                user: {
-                    email: googleData.profileObj.email,
-                    name: googleData.profileObj.name,
-                    avatar: googleData.profileObj.imageUrl,
-                    role: "user", // or determine role based on your logic
-                },
-            });
-        }, 1000);
-    });
-};
 
 const LoginPage = () => {
     const [email, setEmail] = React.useState("");
@@ -61,30 +32,8 @@ const LoginPage = () => {
     const [showPassword, setShowPassword] = React.useState(false);
     const [emailError, setEmailError] = React.useState("");
     const [passwordError, setPasswordError] = React.useState("");
-
-    const emailMutation = useMutation(loginWithEmail, {
-        onSuccess: (data) => {
-            // Handle successful login (e.g., store token, redirect)
-            console.log("Email login success:", data);
-            // You would typically use your auth context here
-            // auth.login(data.user, data.token);
-        },
-        onError: (error) => {
-            console.error("Email login error:", error);
-        },
-    });
-
-    const googleMutation = useMutation({
-        mutationFn: loginWithGoogle,
-        onSuccess: (data) => {
-            // Handle successful Google login
-            console.log("Google login success:", data);
-            // auth.login(data.user, data.token); // Uncomment when auth context is ready
-        },
-        onError: (error) => {
-            console.error("Google login error:", error);
-        },
-    });
+    const {logIn, isChecking, EmailError} = useLogin();
+    const { googleLogin, isCheckingGoogle, GoogleError } = useGoogleLogin();    
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -112,34 +61,34 @@ const LoginPage = () => {
         }
 
         // Submit form
-        emailMutation.mutate({ email, password });
+        logIn({ email, password });
     };
 
     const handleGoogleSuccess = (credentialResponse) => {
         const decoded = jwtDecode(credentialResponse.credential);
         console.log("Google auth response:", decoded);
 
-        const googleData = {
-            token: credentialResponse.credential,
-            profileObj: {
-                email: decoded.email,
-                name: decoded.name,
-                imageUrl: decoded.picture,
-            },
-        };
+        // const googleData = {
+        //     token: credentialResponse.credential,
+        //     profileObj: {
+        //         email: decoded.email,
+        //         name: decoded.name,
+        //         imageUrl: decoded.picture,
+        //     },
+        // };
 
-        googleMutation.mutate(googleData);
+        // googleLogin(googleData);
     };
 
     const handleGoogleError = () => {
-        console.error("Google login failed");
+        toast.error("Google login failed");
     };
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
 
-    const isLoading = emailMutation.isLoading || googleMutation.isLoading;
+    const isLoading = isChecking || isCheckingGoogle;
 
     return (
         <Container
@@ -160,7 +109,7 @@ const LoginPage = () => {
                     </Typography>
                 </Box>
 
-                {(emailMutation.isError || googleMutation.isError) && (
+                {(EmailError || GoogleError) && (
                     <Alert severity="error" sx={{ mb: 3 }}>
                         Login failed. Please check your credentials and try
                         again.
@@ -221,7 +170,7 @@ const LoginPage = () => {
                         sx={{ mt: 2, py: 1.5 }}
                         disabled={isLoading}
                     >
-                        {emailMutation.isLoading ? (
+                        {isChecking ? (
                             <CircularProgress size={24} color="inherit" />
                         ) : (
                             "Sign In"

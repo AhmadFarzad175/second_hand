@@ -12,12 +12,14 @@ import { Toaster } from "react-hot-toast";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const queryClient = new QueryClient();
+const GOOGLE_CLIENT_ID="785444518943-hpsjopcsgludmvm568387vopmjkvcb3f.apps.googleusercontent.com"
+
 
 createRoot(document.getElementById("root")).render(
     <StrictMode>
         <QueryClientProvider client={queryClient}>
             <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
-            <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com">
+            <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
 
             <BrowserRouter>
                 <ThemeProvider theme={MyTheme}>
