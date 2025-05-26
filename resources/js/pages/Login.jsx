@@ -1,7 +1,7 @@
 import React from "react";
-import { useMutation } from "@tanstack/react-query";
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-import { jwtDecode } from "jwt-decode";
+// import { useMutation } from "@tanstack/react-query";
+// import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+// import { jwtDecode } from "jwt-decode";
 import {
     Container,
     Box,
@@ -21,10 +21,8 @@ import {
     VisibilityOff,
 } from "@mui/icons-material";
 import { useLogin } from "./useLogin";
-import { toast } from "react-hot-toast";
+// import { toast } from "react-hot-toast";
 import { useGoogleLogin } from "./useGoogleLogin";
-
-
 
 const LoginPage = () => {
     const [email, setEmail] = React.useState("");
@@ -32,8 +30,8 @@ const LoginPage = () => {
     const [showPassword, setShowPassword] = React.useState(false);
     const [emailError, setEmailError] = React.useState("");
     const [passwordError, setPasswordError] = React.useState("");
-    const {logIn, isChecking, EmailError} = useLogin();
-    const { googleLogin, isCheckingGoogle, GoogleError } = useGoogleLogin();    
+    const { logIn, isChecking, EmailError } = useLogin();
+    const { googleLogin, isCheckingGoogle } = useGoogleLogin();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -64,25 +62,28 @@ const LoginPage = () => {
         logIn({ email, password });
     };
 
-    const handleGoogleSuccess = (credentialResponse) => {
-        const decoded = jwtDecode(credentialResponse.credential);
-        console.log("Google auth response:", decoded);
-
-        // const googleData = {
-        //     token: credentialResponse.credential,
-        //     profileObj: {
-        //         email: decoded.email,
-        //         name: decoded.name,
-        //         imageUrl: decoded.picture,
-        //     },
-        // };
-
-        // googleLogin(googleData);
+    const handleGoogleLogin = () => {
+        googleLogin();
     };
+    // const handleGoogleSuccess = (credentialResponse) => {
+    //     const decoded = jwtDecode(credentialResponse.credential);
+    //     console.log("Google auth response:", decoded);
 
-    const handleGoogleError = () => {
-        toast.error("Google login failed");
-    };
+    //     // const googleData = {
+    //     //     token: credentialResponse.credential,
+    //     //     profileObj: {
+    //     //         email: decoded.email,
+    //     //         name: decoded.name,
+    //     //         imageUrl: decoded.picture,
+    //     //     },
+    //     // };
+
+    //     // googleLogin(googleData);
+    // };
+
+    // const handleGoogleError = () => {
+    //     toast.error("Google login failed");
+    // };
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -109,7 +110,7 @@ const LoginPage = () => {
                     </Typography>
                 </Box>
 
-                {(EmailError || GoogleError) && (
+                {EmailError && (
                     <Alert severity="error" sx={{ mb: 3 }}>
                         Login failed. Please check your credentials and try
                         again.
@@ -181,19 +182,20 @@ const LoginPage = () => {
                 <Divider sx={{ my: 3 }}>OR</Divider>
 
                 <Box sx={{ textAlign: "center" }}>
-                    <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com">
-                        <GoogleLogin
-                            onSuccess={handleGoogleSuccess}
-                            onError={handleGoogleError}
-                            useOneTap
-                            shape="rectangular"
-                            size="large"
-                            text="continue_with"
-                            theme="filled_blue"
-                            width="100%"
-                            locale="en_US"
-                        />
-                    </GoogleOAuthProvider>
+                    <Button
+                        variant="outlined"
+                        fullWidth
+                        size="large"
+                        // startIcon={<GoogleIcon />}
+                        onClick={handleGoogleLogin}
+                        disabled={isCheckingGoogle}
+                    >
+                        {isCheckingGoogle ? (
+                            <CircularProgress size={24} />
+                        ) : (
+                            "Continue with Google"
+                        )}
+                    </Button>
                 </Box>
 
                 <Box sx={{ textAlign: "center", mt: 3 }}>

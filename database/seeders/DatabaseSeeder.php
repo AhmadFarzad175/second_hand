@@ -14,20 +14,21 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Users and categories
-        User::create([
-            'image' => 'default.png',
-            'name' => 'farzad',
-            'email' => 'farzad@gmail.com',
-            'password' => Hash::make('123456'),
-            'location' => json_encode(['city' => 'Kabul', 'country' => 'Afghanistan']),
-            'phone' => '0700123456',
-            'description' => 'Test user for seeding.',
-            'rating' => '4.5',
-            'role' => 'user',
-            'is_active' => true,
-        ]);
+        // User::create([
+        //     'image' => 'default.png',
+        //     'name' => 'farzad',
+        //     'email' => 'farzad@gmail.com',
+        //     'password' => Hash::make('123456'),
+        //     'location' => json_encode(['city' => 'Kabul', 'country' => 'Afghanistan']),
+        //     'phone' => '0700123456',
+        //     'description' => 'Test user for seeding.',
+        //     'rating' => '4.5',
+        //     'email_verified_at' => now(),
+        //     'role' => 'user',
+        //     'is_active' => true,
+        // ]);
 
-        User::factory(10)->create();
+        // User::factory(10)->create();
 
         $this->call([
             CategorySeeder::class,

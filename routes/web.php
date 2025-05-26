@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\File;
 
@@ -13,6 +14,9 @@ use Illuminate\Support\Facades\File;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+// routes/web.php
+Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,3 +25,4 @@ Route::get('/', function () {
 Route::get('/{any}', function () {
     return view('welcome'); // Serve React app
 })->where('any', '.*');
+
