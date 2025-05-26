@@ -6,17 +6,23 @@ import { useNavigate } from "react-router-dom";
 export function useGoogleLogin() {
     const navigate = useNavigate();
     
-    const { mutate: googleLogin, isLoading: isCheckingGoogle, error:GoogleError } = useMutation({
+    const { mutate: googleLogin, isLoading: isCheckingGoogle } = useMutation({
         mutationFn: loginWithGoogle,
-        onSuccess: (data) => {
-            localStorage.setItem('authToken', data.token);
-            toast.success("You logged in successfully");
-            navigate("/");
+        onSuccess: () => {
+            // Polling to check when auth completes
+            const checkAuth = setInterval(() => {
+                const token = localStorage.getItem('authToken');
+                if (token) {
+                    clearInterval(checkAuth);
+                    toast.success("Logged in successfully");
+                    navigate("/");
+                }
+            }, 500);
         },
-        onError: (err) => {
-            toast.error(err.message);
+        onError: () => {
+            toast.error("Google login failed");
         },
     });
     
-      return { googleLogin, isCheckingGoogle, GoogleError };
+      return { googleLogin, isCheckingGoogle };
 }
