@@ -1,7 +1,4 @@
 import React from "react";
-// import { useMutation } from "@tanstack/react-query";
-// import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-// import { jwtDecode } from "jwt-decode";
 import {
     Container,
     Box,
@@ -15,14 +12,10 @@ import {
     IconButton,
     InputAdornment,
 } from "@mui/material";
-import {
-    // Google as GoogleIcon,
-    Visibility,
-    VisibilityOff,
-} from "@mui/icons-material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+
 import { useLogin } from "./useLogin";
-// import { toast } from "react-hot-toast";
-import { useGoogleLogin } from "./useGoogleLogin";
+import { useGoogleLogin } from "./useGoogleLogin"; // Optional: if you handle login after redirect
 
 const LoginPage = () => {
     const [email, setEmail] = React.useState("");
@@ -31,16 +24,13 @@ const LoginPage = () => {
     const [emailError, setEmailError] = React.useState("");
     const [passwordError, setPasswordError] = React.useState("");
     const { logIn, isChecking, EmailError } = useLogin();
-    const { googleLogin, isCheckingGoogle } = useGoogleLogin();
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Reset errors
         setEmailError("");
         setPasswordError("");
 
-        // Validate email
         if (!email) {
             setEmailError("Email is required");
             return;
@@ -49,7 +39,6 @@ const LoginPage = () => {
             return;
         }
 
-        // Validate password
         if (!password) {
             setPasswordError("Password is required");
             return;
@@ -58,38 +47,16 @@ const LoginPage = () => {
             return;
         }
 
-        // Submit form
         logIn({ email, password });
     };
 
     const handleGoogleLogin = () => {
-        googleLogin();
+        window.location.href = "http://127.0.0.1:8000/auth/google"; // Laravel backend route
     };
-    // const handleGoogleSuccess = (credentialResponse) => {
-    //     const decoded = jwtDecode(credentialResponse.credential);
-    //     console.log("Google auth response:", decoded);
-
-    //     // const googleData = {
-    //     //     token: credentialResponse.credential,
-    //     //     profileObj: {
-    //     //         email: decoded.email,
-    //     //         name: decoded.name,
-    //     //         imageUrl: decoded.picture,
-    //     //     },
-    //     // };
-
-    //     // googleLogin(googleData);
-    // };
-
-    // const handleGoogleError = () => {
-    //     toast.error("Google login failed");
-    // };
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
-
-    const isLoading = isChecking || isCheckingGoogle;
 
     return (
         <Container
@@ -98,22 +65,17 @@ const LoginPage = () => {
         >
             <Paper elevation={3} sx={{ width: "100%", p: 4, borderRadius: 2 }}>
                 <Box sx={{ textAlign: "center", mb: 4 }}>
-                    <Typography
-                        variant="h4"
-                        component="h1"
-                        sx={{ fontWeight: "bold", mb: 1 }}
-                    >
+                    <Typography variant="h4" fontWeight="bold" gutterBottom>
                         Welcome Back
                     </Typography>
-                    <Typography variant="body1" color="text.secondary">
+                    <Typography color="text.secondary">
                         Sign in to access your account
                     </Typography>
                 </Box>
 
                 {EmailError && (
                     <Alert severity="error" sx={{ mb: 3 }}>
-                        Login failed. Please check your credentials and try
-                        again.
+                        Login failed. Please check your credentials and try again.
                     </Alert>
                 )}
 
@@ -127,9 +89,9 @@ const LoginPage = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         error={!!emailError}
                         helperText={emailError}
-                        disabled={isLoading}
                         autoComplete="email"
                         autoFocus
+                        disabled={isChecking}
                     />
 
                     <TextField
@@ -142,21 +104,16 @@ const LoginPage = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         error={!!passwordError}
                         helperText={passwordError}
-                        disabled={isLoading}
                         autoComplete="current-password"
+                        disabled={isChecking}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
                                     <IconButton
-                                        aria-label="toggle password visibility"
                                         onClick={handleClickShowPassword}
                                         edge="end"
                                     >
-                                        {showPassword ? (
-                                            <VisibilityOff />
-                                        ) : (
-                                            <Visibility />
-                                        )}
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
                                     </IconButton>
                                 </InputAdornment>
                             ),
@@ -169,7 +126,7 @@ const LoginPage = () => {
                         fullWidth
                         size="large"
                         sx={{ mt: 2, py: 1.5 }}
-                        disabled={isLoading}
+                        disabled={isChecking}
                     >
                         {isChecking ? (
                             <CircularProgress size={24} color="inherit" />
@@ -183,30 +140,19 @@ const LoginPage = () => {
 
                 <Box sx={{ textAlign: "center" }}>
                     <Button
+                        onClick={handleGoogleLogin}
                         variant="outlined"
                         fullWidth
                         size="large"
-                        // startIcon={<GoogleIcon />}
-                        onClick={handleGoogleLogin}
-                        disabled={isCheckingGoogle}
                     >
-                        {isCheckingGoogle ? (
-                            <CircularProgress size={24} />
-                        ) : (
-                            "Continue with Google"
-                        )}
+                        Continue with Google
                     </Button>
                 </Box>
 
                 <Box sx={{ textAlign: "center", mt: 3 }}>
                     <Typography variant="body2" color="text.secondary">
                         Don't have an account?{" "}
-                        <Button
-                            variant="text"
-                            size="small"
-                            sx={{ textTransform: "none" }}
-                            disabled={isLoading}
-                        >
+                        <Button variant="text" size="small" sx={{ textTransform: "none" }}>
                             Sign up
                         </Button>
                     </Typography>
@@ -214,7 +160,6 @@ const LoginPage = () => {
                         variant="text"
                         size="small"
                         sx={{ textTransform: "none", mt: 1 }}
-                        disabled={isLoading}
                     >
                         Forgot password?
                     </Button>

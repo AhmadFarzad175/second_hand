@@ -35,6 +35,7 @@ export async function loginWithGoogle(googleData) {
     if (!response.ok) {
         throw new Error("Google login failed");
     }
+    console.log(data);
 
     const data = await response.json();
 

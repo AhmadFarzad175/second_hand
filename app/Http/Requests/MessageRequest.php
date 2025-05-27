@@ -23,7 +23,8 @@ class MessageRequest extends FormRequest
             'sender_id' => 'required|exists:users,id',
             'receiver_id' => 'required|exists:users,id|different:sender_id',
             'product_id' => 'required|exists:products,id',
-            'reason' => 'required|string|max:255',
+            'message' => 'required|text|max:255',
+            'is_read' => 'boolean',
             'date' => 'required|date',
         ];
 
