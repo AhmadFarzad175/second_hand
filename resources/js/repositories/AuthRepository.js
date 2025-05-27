@@ -18,25 +18,14 @@ export async function loginWithEmail(credentials) {
     return data;
 }
 
-export async function loginWithGoogle(googleData) {
-
-    const response = await fetch(
-        "http://127.0.0.1:8000/auth/google",
-        {
-            method: "get",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-            body: JSON.stringify({ token: googleData.token }),
-        }
-    );
+export async function loginWithGoogle() {
+    const response = await fetch("http://127.0.0.1:8000/auth/google");
 
     if (!response.ok) {
         throw new Error("Google login failed");
     }
 
     const data = await response.json();
-
+    
     return data;
 }

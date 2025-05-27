@@ -8,10 +8,13 @@ use App\Http\Resources\UserResource;
 use App\Traits\ImageManipulation;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Google_Client;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+
 
 class AuthController extends Controller
 {
@@ -71,44 +74,46 @@ class AuthController extends Controller
     //     return Socialite::driver('google')->stateless()->redirect();
     // }
 
-    public function redirectToGoogle()
-    {
-        return Socialite::driver('google')
-            ->stateless() // Add this for API usage
-            ->redirect();
-    }
 
-    public function handleGoogleCallback()
-    {
-        try {
-            $googleUser = Socialite::driver('google')->stateless()->user();
 
-            $user = User::updateOrCreate(
-                ['email' => $googleUser->email],
-                [
-                    'name' => $googleUser->name,
-                    'image' => $googleUser->avatar, // Stores Google profile image URL
-                    'google_id' => $googleUser->id,
-                    'password' => Hash::make(Str::random(24)),
-                    'email_verified_at' => now(), // Mark email as verified
-                    'location' => json_encode([]), // Empty JSON array as default
-                    'role' => 'user' // Default role
-                ]
-            );
-            $token = $user->createToken('google-token')->plainTextToken;
+    // public function redirectToGoogle()
+    // {
+    //     return Socialite::driver('google')
+    //         ->stateless() // Add this for API usage
+    //         ->redirect();
+    // }
 
-            // Return JSON instead of redirecting
-            return response()->json([
-                'token' => $token,
-                'user' => $user
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Google authentication failed',
-                'message' => $e->getMessage()
-            ], 401);
-        }
-    }
+    // public function handleGoogleCallback()
+    // {
+    //     try {
+    //         $googleUser = Socialite::driver('google')->stateless()->user();
+
+    //         $user = User::updateOrCreate(
+    //             ['email' => $googleUser->email],
+    //             [
+    //                 'name' => $googleUser->name,
+    //                 'image' => $googleUser->avatar, // Stores Google profile image URL
+    //                 'google_id' => $googleUser->id,
+    //                 'password' => Hash::make(Str::random(24)),
+    //                 'email_verified_at' => now(), // Mark email as verified
+    //                 'location' => json_encode([]), // Empty JSON array as default
+    //                 'role' => 'user' // Default role
+    //             ]
+    //         );
+    //         $token = $user->createToken('google-token')->plainTextToken;
+
+    //         // Return JSON instead of redirecting
+    //         return response()->json([
+    //             'token' => $token,
+    //             'user' => $user
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'error' => 'Google authentication failed',
+    //             'message' => $e->getMessage()
+    //         ], 401);
+    //     }
+    // }
 
     // public function handleGoogleCallback()
     // {
@@ -175,5 +180,50 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return response()->json(['message' => 'Logged out successfully']);
+    }
+
+
+
+
+
+
+
+    public function googleLogin(Request $request)
+    {
+        Log::info('Google login attempt', ['input' => $request->all()]);
+
+        $idToken = $request->input('token');
+        Log::info('Received token', ['token' => $idToken]);
+
+        $client = new Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
+        $payload = $client->verifyIdToken($idToken);
+        Log::info('Payload', ['payload' => $payload]);
+
+        if ($payload) {
+            $email = $payload['email'];
+            $name = $payload['name'];
+            Log::info('User data', ['email' => $email, 'name' => $name]);
+
+            try {
+                $user = User::firstOrCreate(
+                    ['email' => $email],
+                    ['name' => $name, 'password' => bcrypt(uniqid())]
+                );
+                Log::info('User processed', ['user' => $user]);
+
+                Auth::login($user);
+
+                return response()->json([
+                    'message' => 'Logged in successfully',
+                    'user' => $user
+                ]);
+            } catch (\Exception $e) {
+                Log::error('User creation failed', ['error' => $e->getMessage()]);
+                return response()->json(['error' => 'User creation failed'], 500);
+            }
+        } else {
+            Log::error('Invalid token');
+            return response()->json(['error' => 'Invalid token'], 401);
+        }
     }
 }

@@ -22,7 +22,8 @@ import {
 } from "@mui/icons-material";
 import { useLogin } from "./useLogin";
 // import { toast } from "react-hot-toast";
-import { useGoogleLogin } from "./useGoogleLogin";
+// import { useGoogleLogin } from "./useGoogleLogin";
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 
 const LoginPage = () => {
     const [email, setEmail] = React.useState("");
@@ -31,7 +32,21 @@ const LoginPage = () => {
     const [emailError, setEmailError] = React.useState("");
     const [passwordError, setPasswordError] = React.useState("");
     const { logIn, isChecking, EmailError } = useLogin();
-    const { googleLogin, isCheckingGoogle } = useGoogleLogin();
+
+    const handleSuccess = (credentialResponse) => {
+        const idToken = credentialResponse.credential;
+
+        // Send ID token to Laravel backend
+        fetch("/api/auth/google", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: idToken }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log("Login success", data);
+            });
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -62,34 +77,11 @@ const LoginPage = () => {
         logIn({ email, password });
     };
 
-    const handleGoogleLogin = () => {
-        googleLogin();
-    };
-    // const handleGoogleSuccess = (credentialResponse) => {
-    //     const decoded = jwtDecode(credentialResponse.credential);
-    //     console.log("Google auth response:", decoded);
-
-    //     // const googleData = {
-    //     //     token: credentialResponse.credential,
-    //     //     profileObj: {
-    //     //         email: decoded.email,
-    //     //         name: decoded.name,
-    //     //         imageUrl: decoded.picture,
-    //     //     },
-    //     // };
-
-    //     // googleLogin(googleData);
-    // };
-
-    // const handleGoogleError = () => {
-    //     toast.error("Google login failed");
-    // };
-
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
 
-    const isLoading = isChecking || isCheckingGoogle;
+    const isLoading = isChecking ;
 
     return (
         <Container
@@ -182,20 +174,12 @@ const LoginPage = () => {
                 <Divider sx={{ my: 3 }}>OR</Divider>
 
                 <Box sx={{ textAlign: "center" }}>
-                    <Button
-                        variant="outlined"
-                        fullWidth
-                        size="large"
-                        // startIcon={<GoogleIcon />}
-                        onClick={handleGoogleLogin}
-                        disabled={isCheckingGoogle}
-                    >
-                        {isCheckingGoogle ? (
-                            <CircularProgress size={24} />
-                        ) : (
-                            "Continue with Google"
-                        )}
-                    </Button>
+                    <GoogleOAuthProvider clientId="3917483292-lt12ni9l0mt3anriqkqjc8klls4pa52m.apps.googleusercontent.com">
+                        <GoogleLogin
+                            onSuccess={handleSuccess}
+                            onError={() => console.log("Login Failed")}
+                        />
+                    </GoogleOAuthProvider>
                 </Box>
 
                 <Box sx={{ textAlign: "center", mt: 3 }}>

@@ -14,9 +14,9 @@ use Illuminate\Support\Facades\File;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-// routes/web.php
-Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
-Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
+// // routes/web.php
+// Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
+// Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
 
 Route::get('/', function () {
     return view('welcome');
