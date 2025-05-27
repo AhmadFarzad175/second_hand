@@ -24,8 +24,9 @@ export async function loginWithGoogle() {
     if (!response.ok) {
         throw new Error("Google login failed");
     }
-
+    
     const data = await response.json();
+    console.log(data);
     
     return data;
 }

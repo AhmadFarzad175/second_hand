@@ -9,7 +9,7 @@ class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        for ($i = 1; $i <= 30; $i++) {
+        for ($i = 1; $i <= 15; $i++) {
             $categoryId = rand(1, 10); // assumes at least 10 categories
             $product = Product::create([
                 'name' => "Dummy Product $i",
@@ -32,7 +32,7 @@ class ProductSeeder extends Seeder
             for ($j = 1; $j <= 2; $j++) {
                 Image::create([
                     'product_id' => $product->id,
-                    'image_url' => "images/products/image{$i}_{$j}.jpg",
+                    'image_url' => "images/products/image{$i}.jpg",
                 ]);
             }
         }

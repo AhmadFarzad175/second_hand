@@ -31,7 +31,8 @@ class UserFactory extends Factory
                 'longitude' => $this->faker->longitude(),
             ],
 
-            'email_varified_at' => now(),
+            'email_verified_at' => now(),
+
             'phone' => $this->faker->phoneNumber(),
             'description' => $this->faker->sentence(),
             'role' => $this->faker->randomElement(['admin', 'user', 'manager']),

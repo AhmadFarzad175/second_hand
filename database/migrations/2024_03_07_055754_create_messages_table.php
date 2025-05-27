@@ -18,7 +18,8 @@
                 $table->foreignIdFor(User::class,'sender_id');
                 $table->foreignIdFor(User::class,'receiver_id');
                 $table->foreignIdFor(Product::class)->constrained();
-                $table->string('reason');
+                $table->text('message');
+                $table->boolean('is_read')->default(false);
                 $table->date('date');
                 $table->timestamps();
 

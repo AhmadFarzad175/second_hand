@@ -18,8 +18,10 @@ class CategoryResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'image' => $this->image ? asset($this->image) : null,
+
             // 'image' => $this->image ? url('storage/' . $this->image) : null,
-            'image' => $this->image ? asset('storage/images/categories/cat' . rand(1, 4) . '.jpg')  : null,
+            // 'image' => $this->image ? asset('storage/images/categories/cat' . rand(1, 4) . '.jpg')  : null,
             'total_productss' => $this->products_count ?? $this->products()->count(), // Number of products
         ];
     }

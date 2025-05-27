@@ -15,12 +15,12 @@ const ChatSystem = () => {
 
   return (
     <>
-      <ChatButton 
-        unreadCount={unreadCount} 
-        onClick={toggleDrawer} 
+      <ChatButton
+        unreadCount={unreadCount}
+        onClick={toggleDrawer}
       />
-      <ChatDrawer 
-        open={open} 
+      <ChatDrawer
+        open={open}
         onClose={toggleDrawer}
         unreadCount={unreadCount}
         setUnreadCount={setUnreadCount}

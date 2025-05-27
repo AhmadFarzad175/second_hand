@@ -20,7 +20,7 @@ class Message extends Model
         'receiver_id',
         'product_id',
         'message',
-        'reason',
+        'is_read',
         'date',
     ];
 

@@ -20,8 +20,10 @@ class MessageFactory extends Factory
             'sender_id' => rand(1,10),
             'receiver_id' => rand(1,10),
             'product_id' => rand(1,5),
-            'reason' => $this->faker->sentence,
+            'message' => $this->faker->sentence,
+            "is_read" => $this->faker->boolean(false),
             'date' => $this->faker->date,
         ];
-    }
+
+}
 }
