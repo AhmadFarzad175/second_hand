@@ -15,13 +15,9 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 import { useLogin } from "./useLogin";
-<<<<<<< HEAD
 // import { toast } from "react-hot-toast";
 // import { useGoogleLogin } from "./useGoogleLogin";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-=======
-import { useGoogleLogin } from "./useGoogleLogin"; // Optional: if you handle login after redirect
->>>>>>> aef3a65230826a5c2f4c509c8aec60f4ea6ee9fb
 
 const LoginPage = () => {
     const [email, setEmail] = React.useState("");
