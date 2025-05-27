@@ -18,6 +18,8 @@ import { useLogin } from "./useLogin";
 // import { toast } from "react-hot-toast";
 // import { useGoogleLogin } from "./useGoogleLogin";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { useNavigate } from 'react-router-dom';
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
     const [email, setEmail] = React.useState("");
@@ -26,20 +28,36 @@ const LoginPage = () => {
     const [emailError, setEmailError] = React.useState("");
     const [passwordError, setPasswordError] = React.useState("");
     const { logIn, isChecking, EmailError } = useLogin();
+    const navigate = useNavigate();
+    
 
     const handleSuccess = (credentialResponse) => {
         const idToken = credentialResponse.credential;
-
-        // Send ID token to Laravel backend
+    
         fetch("/api/auth/google", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
             body: JSON.stringify({ token: idToken }),
         })
-            .then((res) => res.json())
-            .then((data) => {
-                console.log("Login success", data);
-            });
+        .then(async (res) => {
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.error || 'Login failed');
+            }
+            return data;
+        })
+        .then(data => {
+            navigate('/');
+            toast.success("Logged in successfully");
+
+        })  
+        .catch(error => {
+            toast.error("Login failed:", error);
+            // Show error to user (you could use a state variable to display an error message)
+        });
     };
 
     const handleSubmit = (e) => {
@@ -157,7 +175,7 @@ const LoginPage = () => {
                     <GoogleOAuthProvider clientId="3917483292-lt12ni9l0mt3anriqkqjc8klls4pa52m.apps.googleusercontent.com">
                         <GoogleLogin
                             onSuccess={handleSuccess}
-                            onError={() => console.log("Login Failed")}
+                            onError={() => toast.error("Login Failed")}
                         />
                     </GoogleOAuthProvider>
                 </Box>
