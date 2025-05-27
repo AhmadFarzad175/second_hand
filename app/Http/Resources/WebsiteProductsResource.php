@@ -67,7 +67,7 @@ class WebsiteProductsResource extends JsonResource
         $userLat = $request->query('latitude', 34.5034699);
         $userLng = $request->query('longitude', 69.1350106);
 
-        $location = $this->user->location;
+        $location = $this->user?->location;
 
         if (
             !isset($location['latitude'], $location['longitude']) ||

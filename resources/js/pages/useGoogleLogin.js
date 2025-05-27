@@ -8,19 +8,14 @@ export function useGoogleLogin() {
     
     const { mutate: googleLogin, isLoading: isCheckingGoogle } = useMutation({
         mutationFn: loginWithGoogle,
-        onSuccess: () => {
-            // Polling to check when auth completes
-            const checkAuth = setInterval(() => {
-                const token = localStorage.getItem('authToken');
-                if (token) {
-                    clearInterval(checkAuth);
-                    toast.success("Logged in successfully");
-                    navigate("/");
-                }
-            }, 500);
+        onSuccess: (data) => {
+            localStorage.setItem('authToken', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            toast.success("Logged in successfully");
+            navigate("/");
         },
-        onError: () => {
-            toast.error("Google login failed");
+        onError: (error) => {
+            toast.error(error.response?.data?.message || "Google login failed");
         },
     });
     

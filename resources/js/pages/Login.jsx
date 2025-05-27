@@ -15,7 +15,11 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 import { useLogin } from "./useLogin";
-import { useGoogleLogin } from "./useGoogleLogin"; // Optional: if you handle login after redirect
+// import { toast } from "react-hot-toast";
+// import { useGoogleLogin } from "./useGoogleLogin";
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { useNavigate } from 'react-router-dom';
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
     const [email, setEmail] = React.useState("");
@@ -24,6 +28,37 @@ const LoginPage = () => {
     const [emailError, setEmailError] = React.useState("");
     const [passwordError, setPasswordError] = React.useState("");
     const { logIn, isChecking, EmailError } = useLogin();
+    const navigate = useNavigate();
+    
+
+    const handleSuccess = (credentialResponse) => {
+        const idToken = credentialResponse.credential;
+    
+        fetch("/api/auth/google", {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({ token: idToken }),
+        })
+        .then(async (res) => {
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.error || 'Login failed');
+            }
+            return data;
+        })
+        .then(data => {
+            navigate('/');
+            toast.success("Logged in successfully");
+
+        })  
+        .catch(error => {
+            toast.error("Login failed:", error);
+            // Show error to user (you could use a state variable to display an error message)
+        });
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -50,13 +85,11 @@ const LoginPage = () => {
         logIn({ email, password });
     };
 
-    const handleGoogleLogin = () => {
-        window.location.href = "http://127.0.0.1:8000/auth/google"; // Laravel backend route
-    };
-
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
+
+    const isLoading = isChecking ;
 
     return (
         <Container
@@ -139,14 +172,12 @@ const LoginPage = () => {
                 <Divider sx={{ my: 3 }}>OR</Divider>
 
                 <Box sx={{ textAlign: "center" }}>
-                    <Button
-                        onClick={handleGoogleLogin}
-                        variant="outlined"
-                        fullWidth
-                        size="large"
-                    >
-                        Continue with Google
-                    </Button>
+                    <GoogleOAuthProvider clientId="3917483292-lt12ni9l0mt3anriqkqjc8klls4pa52m.apps.googleusercontent.com">
+                        <GoogleLogin
+                            onSuccess={handleSuccess}
+                            onError={() => toast.error("Login Failed")}
+                        />
+                    </GoogleOAuthProvider>
                 </Box>
 
                 <Box sx={{ textAlign: "center", mt: 3 }}>
