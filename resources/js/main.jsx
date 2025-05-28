@@ -18,7 +18,7 @@ const GOOGLE_CLIENT_ID="785444518943-hpsjopcsgludmvm568387vopmjkvcb3f.apps.googl
 createRoot(document.getElementById("root")).render(
     <StrictMode>
         <QueryClientProvider client={queryClient}>
-            <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+            {/* <ReactQueryDevtools initialIsOpen={false} position="bottom-right" /> */}
             <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
 
             <BrowserRouter>
