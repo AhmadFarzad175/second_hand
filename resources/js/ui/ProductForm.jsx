@@ -25,6 +25,9 @@ export default function ProductForm({
 }) {
     const [images, setImages] = useState(Array(6).fill(null));
     const [imageFiles, setImageFiles] = useState(Array(6).fill(null));
+    const [existingImageIds, setExistingImageIds] = useState(
+        Array(6).fill(null)
+    );
     const [categories, setCategories] = useState([]);
     const [categoryAttributes, setCategoryAttributes] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +65,6 @@ export default function ProductForm({
     }, []);
 
     // Fetch attributes when category changes
-    // Fetch attributes when category changes
     useEffect(() => {
         if (!watchedCategory) {
             setCategoryAttributes([]);
@@ -80,17 +82,33 @@ export default function ProductForm({
                 if (Array.isArray(data)) {
                     setCategoryAttributes(data);
 
-                    // Reset only attribute values when category changes
+                    // Get current form values
+                    const currentValues = getValues();
+
+                    // Parse existing attributes if in edit mode
+                    let existingAttributes = {};
+                    if (isEditSession && currentValues.attributes) {
+                        try {
+                            existingAttributes = JSON.parse(
+                                currentValues.attributes
+                            );
+                        } catch (e) {
+                            console.error("Error parsing attributes:", e);
+                        }
+                    }
+
+                    // Prepare reset values - only reset attributes not present in both sets
                     const resetValues = {};
                     data.forEach((attr) => {
+                        // Preserve value if it exists in both old and new attributes
                         resetValues[attr.name] =
-                            attr.type === "select" ? "" : "";
+                            existingAttributes[attr.name] ||
+                            (attr.type === "select" ? "" : "");
                     });
 
-                    // Preserve the current form values while resetting attributes
                     reset({
-                        ...getValues(), // Keep all current form values
-                        ...resetValues, // Override just the attributes
+                        ...currentValues,
+                        ...resetValues,
                     });
                 }
             } catch (error) {
@@ -102,7 +120,7 @@ export default function ProductForm({
         };
 
         fetchAttributes();
-    }, [watchedCategory, reset, getValues]); // Add getValues to dependencies
+    }, [watchedCategory, reset, getValues, isEditSession]);
 
     // Initialize form with edit values and fetch images if in edit mode
     useEffect(() => {
@@ -117,14 +135,30 @@ export default function ProductForm({
                 const data = await response.json();
 
                 const fetchedImages = Array(6).fill(null);
+                const fetchedImageIds = Array(6).fill(null);
                 data.data.forEach((imgObj, index) => {
                     if (index < 6 && imgObj.images) {
                         fetchedImages[index] = imgObj.images;
+                        fetchedImageIds[index] = imgObj.id; // Assuming your API returns image IDs
                     }
                 });
 
                 setImages(fetchedImages);
-                reset(editValues);
+                setExistingImageIds(fetchedImageIds);
+
+                // Parse attributes from JSON string
+                let parsedAttributes = {};
+                try {
+                    parsedAttributes = JSON.parse(editValues.attributes);
+                } catch (e) {
+                    console.error("Error parsing attributes:", e);
+                }
+
+                // Combine all form values including parsed attributes
+                reset({
+                    ...editValues,
+                    ...parsedAttributes,
+                });
             } catch (error) {
                 console.error("Error fetching product images:", error);
             } finally {
@@ -159,18 +193,18 @@ export default function ProductForm({
         setImageFiles(newImageFiles);
     };
 
+    // Modify your onFormSubmit function
     const onFormSubmit = (data) => {
         const formData = new FormData();
         formData.append("currency", "AFN");
 
-        // Build attributes object dynamically
+        // Build attributes object
         const attributes = {};
         categoryAttributes.forEach((attr) => {
             if (data[attr.name] !== undefined && data[attr.name] !== "") {
                 attributes[attr.name] = data[attr.name];
             }
         });
-
         formData.append("attributes", JSON.stringify(attributes));
 
         // Append other form data
@@ -180,12 +214,46 @@ export default function ProductForm({
             }
         }
 
-        // Append images
-        imageFiles.forEach((file) => {
-            if (file) {
-                formData.append("images[]", file);
-            }
-        });
+        // Handle images differently for edit mode
+        if (isEditSession) {
+            // Create an array to track which images to keep/delete
+            const imageUpdates = [];
+
+            images.forEach((image, index) => {
+                if (image === null) {
+                    // Image was removed - mark for deletion if it was an existing image
+                    if (existingImageIds[index]) {
+                        imageUpdates.push({
+                            id: existingImageIds[index],
+                            action: "delete",
+                        });
+                    }
+                } else if (imageFiles[index]) {
+                    // New image was uploaded
+                    formData.append("new_images[]", imageFiles[index]);
+                    imageUpdates.push({
+                        position: index,
+                        action: "add",
+                    });
+                } else if (existingImageIds[index]) {
+                    // Existing image was kept
+                    imageUpdates.push({
+                        id: existingImageIds[index],
+                        position: index,
+                        action: "keep",
+                    });
+                }
+            });
+
+            formData.append("image_updates", JSON.stringify(imageUpdates));
+        } else {
+            // For new products, just append all non-null images
+            imageFiles.forEach((file) => {
+                if (file) {
+                    formData.append("images[]", file);
+                }
+            });
+        }
 
         onSubmit(formData);
     };

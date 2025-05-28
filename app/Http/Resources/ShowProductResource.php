@@ -34,6 +34,7 @@ class ShowProductResource extends JsonResource
             ],
             'category_id' => $this->category_id,
             'net_price' => $this->net_price,
+            'currency' => $this->currency,
             'discount' => $this->discount,
             'quantity' => $this->quantity,
             'condition' => $this->condition,
