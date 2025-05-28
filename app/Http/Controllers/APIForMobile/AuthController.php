@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\APIForMobile;
 
 use Google_Client;
 use App\Models\User;
@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Traits\ImageManipulation;
 use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Log;
+use Spatie\FlareClient\Http\Client;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;

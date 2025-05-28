@@ -35,13 +35,13 @@ class CategoryController extends Controller
     /**
      * Store a new category.
      */
-    public function store(CategoryRequest $request)
-    {
-        $validated = $request->validated();
-        $request->hasFile('image') ? $this->storeImage($request, $validated, "images/categories", 'image') : null;
-        Category::create($validated);
-        return response()->json(['success' => 'Category created successfully']);
-    }
+    // public function store(CategoryRequest $request)
+    // {
+    //     $validated = $request->validated();
+    //     $request->hasFile('image') ? $this->storeImage($request, $validated, "storage/images/categories", 'image') : null;
+    //     Category::create($validated);
+    //     return response()->json(['success' => 'Category created successfully']);
+    // }
 
     /**
      * Display the specified category.
@@ -50,27 +50,63 @@ class CategoryController extends Controller
     {
         return new CategoryResource($category);
     }
+    // inside store() and update() methods of CategoryController
+
+public function store(CategoryRequest $request)
+{
+    $validated = $request->validated();
+
+    if ($request->hasFile('image')) {
+        $this->storeImage($request, $validated, 'images/categories', 'image');
+    }
+
+    Category::create($validated);
+
+    return response()->json(['success' => 'Category created successfully']);
+}
+
+public function update(CategoryRequest $request, Category $category): JsonResponse
+{
+    $validated = $request->validated();
+
+    if ($request->hasFile('image')) {
+        $this->updateImage($category, $request, $validated, 'images/categories', 'image');
+    }
+
+    $category->update($validated);
+
+    return response()->json(['success' => 'Category updated successfully']);
+}
+
+public function destroy(Category $category): JsonResponse
+{
+    $this->deleteImage($category, 'images/categories', 'image');
+    $category->delete();
+
+    return response()->json(['success' => 'Category deleted successfully']);
+}
+
 
     /**
      * Update the specified category.
      */
-    public function update(CategoryRequest $request, Category $category): JsonResponse
-    {
-        $validated = $request->validated();
-        $request->hasFile('image') && $this->updateImage($category, $request, $validated, 'images/categories', 'image');
-        $category->update($validated);
-        return response()->json(['success' => 'Category updated successfully']);
-    }
+    // public function update(CategoryRequest $request, Category $category): JsonResponse
+    // {
+    //     $validated = $request->validated();
+    //     $request->hasFile('image') && $this->updateImage($category, $request, $validated, 'images/categories', 'image');
+    //     $category->update($validated);
+    //     return response()->json(['success' => 'Category updated successfully']);
+    // }
 
     /**
      * Remove the specified category from storage.
      */
-    public function destroy(Category $category): JsonResponse
-    {
-        $this->deleteImage($category, 'images/categories', 'image');
-        $category->delete();
-        return response()->json(['success' => 'Category deleted successfully']);
-    }
+    // public function destroy(Category $category): JsonResponse
+    // {
+    //     $this->deleteImage($category, 'images/categories', 'image');
+    //     $category->delete();
+    //     return response()->json(['success' => 'Category deleted successfully']);
+    // }
 //     public function getAttributes(Category $category)
 // {
 //     $category->load('attributes', 'parent.attributes');
