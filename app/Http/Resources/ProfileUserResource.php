@@ -27,9 +27,7 @@ class ProfileUserResource extends JsonResource
             'role' => $this->role,
             'is_active' => $this->is_active,
             'total_products' => $this->products()->count(), // 👈 this line
-            'products' => [
-                $this->products
-            ],
+            'products' => UserProducts::collection($this->products),
         ];
     }
 }

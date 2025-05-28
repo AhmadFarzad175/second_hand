@@ -9,6 +9,7 @@ export default function AdminCreateProduct() {
     const { state } = useLocation();
     const isEditSession = Boolean(state?.product?.id);
     const editValues = state?.product || {};
+    console.log(editValues)
 
     const { isCreating, createProduct } = useCreateProduct();
     const { isUpdating, updateProduct } = useUpdateProduct();

@@ -59,10 +59,10 @@ const ProductRow = ({ product, isSelected, handleClick }) => {
                 <Checkbox checked={isSelected} />
             </TableCell>
             <TableCell align="left" sx={{ width: 80, height: 80 }}>
-                {product.images?.length > 0 ? (
+                {product.image?.length > 0 ? (
                     <Box
                         component="img"
-                        src={product.images}
+                        src={product.image}
                         alt="Product"
                         sx={{
                             width: "100%",
@@ -110,7 +110,7 @@ const ProductRow = ({ product, isSelected, handleClick }) => {
             <TableCell align="left">
                 <Box display="flex" flexDirection="column">
                     <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                        {product.net_price - product.discount}
+                        {product.net_price - product.discount + ' ' + product.currency}
                     </Typography>
                     {Number(product.discount) > 0 && (
                         <Typography
@@ -120,7 +120,7 @@ const ProductRow = ({ product, isSelected, handleClick }) => {
                                 textDecoration: "line-through",
                             }}
                         >
-                            {product.net_price}
+                            {product.net_price + ' ' + product.currency}
                         </Typography>
                     )}
                 </Box>

@@ -66,7 +66,7 @@ class ProductController extends Controller
      * Store a newly created resource in storage.
      */
 
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
         $validated = $request->input();
         $validated['user_id'] = Auth::user()?->id || 1;

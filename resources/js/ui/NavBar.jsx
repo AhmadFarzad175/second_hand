@@ -20,7 +20,7 @@ import LanguageIcon from "@mui/icons-material/Language";
 import SearchIcon from "@mui/icons-material/Search";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Logout } from "@mui/icons-material";
 import SearchInput from "./SearchInput";
 import AppDrawer from "../../../public/images/Drawer";
@@ -123,7 +123,6 @@ function NavBar({ onSearch }) {
                         <IconButton
                             sx={{ display: { xs: "none", sm: "flex" } }}
                             onClick={() => navigate("favorite")}
-
                         >
                             <FavoriteIcon />
                         </IconButton>
@@ -160,7 +159,14 @@ function NavBar({ onSearch }) {
                 open={Boolean(anchorEl)}
                 onClose={handleMenuClose}
             >
-                <MenuItem onClick={handleMenuClose}>
+                <MenuItem
+                    // onClick={handleMenuClose}
+                    onClick={() => {
+                        window.location.href =
+                            "http://127.0.0.1:8000/profile";
+                        handleMenuClose();
+                    }}
+                >
                     <ListItemIcon>
                         <AccountCircleIcon fontSize="small" />
                     </ListItemIcon>

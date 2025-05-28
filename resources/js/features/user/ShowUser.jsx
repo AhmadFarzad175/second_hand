@@ -47,7 +47,7 @@ const UserProfile = ({ user }) => {
                 maxWidth: 1200,
                 margin: "0 auto",
                 p: isSmallScreen ? 1 : 3,
-                backgroundColor: theme.palette.background.paper,
+                // backgroundColor: theme.palette.background.paper,
                 borderRadius: 2,
             }}
         >
@@ -232,7 +232,7 @@ const UserProfile = ({ user }) => {
                                                             "center",
                                                         backgroundColor:
                                                             theme.palette
-                                                                .grey[200],
+                                                                .grey[400],
                                                         mb: 1,
                                                         borderRadius: 1,
                                                     }}
@@ -315,7 +315,7 @@ const UserProfile = ({ user }) => {
                                         backgroundSize: "cover",
                                         backgroundPosition: "center",
                                         backgroundColor:
-                                            theme.palette.grey[200],
+                                            theme.palette.grey[400],
                                         mb: 1,
                                         borderRadius: 1,
                                     }}
