@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\APIForMobile\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -8,7 +9,6 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CurrencyController;
 
@@ -43,22 +43,19 @@ Route::post('/auth/google', [AuthController::class, 'googleLogin']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'getUser']);
     Route::post('/logout', [AuthController::class, 'logout']);
-});
 
-// Route::middleware('auth:sanctum')->group(function () {
-//     Route::get('/user', fn(Request $request) => $request->user());
-// });
+
 
 ///////////////////  DASHBOARD  ///////////////////
 
 
-   Route::get('/stats', [DashboardController::class, 'getStats']);
-    Route::get('/recent-products', [DashboardController::class, 'getRecentProducts']);
-    Route::get('/recent-users', [DashboardController::class, 'getRecentUsers']);
-    Route::get('/reports', [DashboardController::class, 'getReports']);
-    Route::get('/reviews', [DashboardController::class, 'getReviews']);
-    Route::get('/top-rated-products', [DashboardController::class, 'getTopRatedProducts']);
-    Route::get('/top-rated-users', [DashboardController::class, 'getTopRatedUsers']);
+Route::get('/stats', [DashboardController::class, 'getStats']);
+Route::get('/recent-products', [DashboardController::class, 'getRecentProducts']);
+Route::get('/recent-users', [DashboardController::class, 'getRecentUsers']);
+Route::get('/reports', [DashboardController::class, 'getReports']);
+Route::get('/reviews', [DashboardController::class, 'getReviews']);
+Route::get('/top-rated-products', [DashboardController::class, 'getTopRatedProducts']);
+Route::get('/top-rated-users', [DashboardController::class, 'getTopRatedUsers']);
 
 
 ///////////////////  FAVORITES  ///////////////////
@@ -70,7 +67,7 @@ Route::get('/favorites', [FavoriteController::class, 'index']);
 ///////////////// PRODUCTS///////////////////////
 
 Route::apiResource('products', ProductController::class);
-    Route::get('categories/{id}/attributes', [ProductController::class, 'getAttributesByCategory']);
+Route::get('categories/{id}/attributes', [ProductController::class, 'getAttributesByCategory']);
 Route::patch('/products/{id}/state', [ProductController::class, 'StateOfProduct']);
 Route::Post('products/update/{product}', [ProductController::class, 'update']);
 Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
@@ -96,6 +93,7 @@ Route::apiResource('users', UserController::class);
 Route::put('users/{user}/status', [UserController::class, 'Status']);
 Route::post('users/update/{user}', [UserController::class, 'update']);
 Route::delete('bulk-delte-user', [UserController::class, 'bulkDelete']);
+
 Route::get('users/{user}/location', [UserController::class, 'userLocation']);
 Route::get('/profile', [UserController::class, 'profile']);
 
@@ -105,6 +103,7 @@ Route::get('/profile', [UserController::class, 'profile']);
 
 
 
+});
 
 
 
@@ -124,7 +123,8 @@ Route::prefix('v1/mobile')->group(function () {
     Route::apiResource('users', UserController::class);
     Route::put('users/{user}/status', [UserController::class, 'Status']);
     Route::post('users/update/{user}', [UserController::class, 'update']);
-    Route::delete('bulk-delte-user', [UserController::class, 'bulkDelete']);
+    Route::delete('bulk-delete-user', [UserController::class, 'bulkDelete']);
+
 
 
     /////////////// CATEGORIES ///////////////////
