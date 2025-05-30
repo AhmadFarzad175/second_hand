@@ -24,6 +24,15 @@ use Illuminate\Support\Facades\File;
 class ProductController extends Controller
 {
     use ImageManipulation;
+
+    public function __construct()
+{
+    $this->middleware('can:viewProduct')->only(['index', 'show']);
+    $this->middleware('can:createProduct')->only(['store']);
+    $this->middleware('can:editProduct')->only(['update']);
+    $this->middleware('can:deleteProduct')->only(['destroy']);
+}
+
     /**
      * Display a listing of the resource with filtering.
      */

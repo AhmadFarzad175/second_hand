@@ -6,13 +6,14 @@ use App\Events\MessageSent;
 use App\Http\Requests\MessageRequest;
 use App\Http\Resources\MessageResource;
 use App\Models\Message;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
     /**
-     * List messages between two users (with pagination and optional product filter)
+     * List messages between two users.
      */
     public function index(Request $request): JsonResponse
     {
@@ -44,10 +45,72 @@ class MessageController extends Controller
      */
     public function store(MessageRequest $request): MessageResource
     {
-        $message = Message::create($request->validated());
-        broadcast(new MessageSent($message))->toOthers(); // Real-time broadcast
+        $data = $request->validated();
+        $data['sender_id'] = auth()->id(); // Ensure sender is authenticated user
+        $message = Message::create($data);
+        broadcast(new MessageSent($message))->toOthers();
 
         return new MessageResource($message);
+    }
+
+    /**
+     * Get messages between the logged-in user and another user.
+     */
+    public function fetchMessages($userId): JsonResponse
+    {
+        $messages = Message::where(function ($q) use ($userId) {
+                $q->where('sender_id', auth()->id())
+                  ->where('receiver_id', $userId);
+            })
+            ->orWhere(function ($q) use ($userId) {
+                $q->where('sender_id', $userId)
+                  ->where('receiver_id', auth()->id());
+            })
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return response()->json(MessageResource::collection($messages));
+    }
+
+    /**
+     * Mark messages as read from a specific user.
+     */
+    public function markAsRead($userId): JsonResponse
+    {
+        Message::where('sender_id', $userId)
+            ->where('receiver_id', auth()->id())
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return response()->json(['status' => 'read']);
+    }
+
+    /**
+     * List all users the authenticated user has chatted with.
+     */
+    public function conversations(): JsonResponse
+    {
+        $userId = auth()->id();
+
+        $conversations = Message::selectRaw('
+                CASE
+                    WHEN sender_id = ? THEN receiver_id
+                    ELSE sender_id
+                END as other_user_id,
+                MAX(created_at) as last_message_time
+            ', [$userId])
+            ->where(function ($query) use ($userId) {
+                $query->where('sender_id', $userId)
+                      ->orWhere('receiver_id', $userId);
+            })
+            ->groupBy('other_user_id')
+            ->orderByDesc('last_message_time')
+            ->with('sender', 'receiver')
+            ->get();
+
+        $users = User::whereIn('id', $conversations->pluck('other_user_id'))->get();
+
+        return response()->json($users);
     }
 
     public function show(Message $message): JsonResponse

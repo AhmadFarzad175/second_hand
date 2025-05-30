@@ -22,11 +22,14 @@ class RolesAndPermissionsSeeder extends Seeder
             'delete product',
             'view product',
             'manage users',
-
-              'viewUser',
-    'createUser',
-    'editUser',
-    'deleteUser',
+            'viewCategory',
+            'createCategory',
+            'editCategory',
+            'deleteCategory',
+            'viewUser',
+            'createUser',
+            'editUser',
+            'deleteUser',
         ];
 
         // Create permissions if they don't exist

@@ -82,8 +82,10 @@ Route::apiResource('categories', CategoryController::class);
 Route::Post('categories/update/{category}', [CategoryController::class, 'update']);
 
 ///////////////////  MESSAGE  ///////////////////
-
-Route::apiResource('messages', MessageController::class);
+    Route::get('/conversations', [MessageController::class, 'conversations']);
+    Route::get('/messages/{userId}', [MessageController::class, 'fetchMessages']);
+    Route::post('/messages/mark-read/{userId}', [MessageController::class, 'markAsRead']);
+    Route::apiResource('messages', MessageController::class)->except(['create', 'edit']);
 Route::apiResource('reports', ReportController::class);
 Route::apiResource('reviews', ReviewController::class);
 

@@ -15,35 +15,46 @@ class MessageRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Validation rules for message creation or update.
      */
     public function rules(): array
     {
         $rules = [
-            'sender_id' => 'required|exists:users,id',
-            'receiver_id' => 'required|exists:users,id|different:sender_id',
-            'product_id' => 'required|exists:products,id',
-            'message' => 'required|text|max:255',
+            'receiver_id' => 'required|exists:users,id|different:auth_user',
+            'product_id' => 'nullable|exists:products,id',
+            'message' => 'required|string|max:255',
             'is_read' => 'boolean',
-            'date' => 'required|date',
+            'date' => 'nullable|date',
         ];
 
-        // For update requests, some fields might be optional.
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules['reason'] = 'sometimes|string|max:255';
-            $rules['date'] = 'sometimes|date';
+            // Fields become optional on update
+            $rules['receiver_id'] = 'sometimes|exists:users,id|different:auth_user';
+            $rules['message'] = 'sometimes|string|max:255';
         }
 
         return $rules;
     }
 
     /**
-     * Get custom messages for validation errors.
+     * Custom validation messages.
      */
     public function messages(): array
     {
         return [
-            'receiver_id.different' => 'The sender and receiver must be different users.',
+            'receiver_id.different' => 'You cannot send a message to yourself.',
         ];
+    }
+
+    /**
+     * Replace placeholder "auth_user" in validation with actual user ID.
+     */
+    protected function prepareForValidation()
+    {
+        if ($this->user()) {
+            $this->merge([
+                'auth_user' => $this->user()->id,
+            ]);
+        }
     }
 }
