@@ -22,7 +22,6 @@ class UserRequest extends FormRequest
             'image' => 'required',
             'name' => 'required|string|max:255',
             'email' => 'required|email',
-            // 'password' => 'required|min:6',
             'location' => 'required',
             'phone' => 'required|string|max:20',
             'description' => 'nullable|string',
@@ -30,8 +29,13 @@ class UserRequest extends FormRequest
             'google_id'  => 'nullable|string|unique:users,google_id',
         ];
 
-        $this->isMethod('put') ? $this->applyUpdateRules($rules) : null;
-
+        if ($this->routeIs('users.update')) {
+            // Creating a user
+            $rules['password'] = ['nullable', 'string', 'min:6'];
+        } else {
+            // Updating a user
+            $rules['password'] = ['required', 'string', 'min:6'];
+        }
         return $rules;
     }
 

@@ -20,16 +20,18 @@ class UserProducts extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'category' => $this->category?->name,
             'net_price' => $this->net_price,
             'currency' => $this->currency,
             'discount' => $this->discount,
-            'quantity' => $this->quantity,
-            'condition' => $this->condition,
-            'date' => Carbon::parse($this->created_at)->format('Y-m-d'), // Parse and format the date
-            'favorites_count' => $this->favorites->count(),
+            'posted'     => Carbon::parse($this->created_at)->diffForHumans(),
             'state' =>  $this->state,
             'image' => asset('storage/' . $this->images->first()->image_url),
+            'rating' => rand(3, 5)
+            
+            // 'quantity' => $this->quantity,
+            // 'category' => $this->category?->name,
+            // 'condition' => $this->condition,
+            // 'favorites_count' => $this->favorites->count(),
             // 'images' => $this->images->map(function ($image) {
             //     return asset('storage/' . $image->image_url);
             // }),

@@ -7,7 +7,7 @@ import {
     CircularProgress,
     Box,
     Paper,
-    Typography,
+    // Typography,
     Button,
 } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -108,8 +108,10 @@ export const LocationField = React.memo(
         name,
         control,
         disabled = false,
-        showButton = false,
         isEditMode = false,
+        onEditToggle,
+        isEditing: isEditingProp, // Renamed prop
+        showButton = false, // Added missing prop
         ...props
     }) => {
         const { field, fieldState } = useController({
@@ -118,7 +120,7 @@ export const LocationField = React.memo(
             defaultValue: "",
         });
 
-        const [isEditing, setIsEditing] = useState(false);
+        // Removed the duplicate state - using the prop instead
         const [searchQuery, setSearchQuery] = useState("");
         const [suggestions, setSuggestions] = useState([]);
         const [isSearching, setIsSearching] = useState(false);
@@ -184,7 +186,7 @@ export const LocationField = React.memo(
             setSearchQuery(result.label);
             field.onChange(locationText);
             setSuggestions([]);
-            if (isEditMode) setIsEditing(false);
+            onEditToggle && onEditToggle(false);
         };
 
         const handleFindLocation = () => {
@@ -196,7 +198,7 @@ export const LocationField = React.memo(
                         setSearchQuery("Your current location");
                         field.onChange(locationText);
                         setIsSearching(false);
-                        if (isEditMode) setIsEditing(false);
+                        onEditToggle && onEditToggle(false);
                     },
                     (error) => {
                         console.error("Geolocation error:", error);
@@ -206,22 +208,18 @@ export const LocationField = React.memo(
             }
         };
 
-        // Render edit mode button if not currently editing
-        if (isEditMode && !isEditing) {
+        // In LocationField component, modify the edit mode return:
+        if (isEditMode && !isEditingProp) {
             return (
-                <Box>
-                    <Typography sx={{ mb: 1 }}>
-                        Location can be updated
-                    </Typography>
-                    <Button
-                        variant="outlined"
-                        startIcon={<LocationOnIcon />}
-                        onClick={() => setIsEditing(true)}
-                        disabled={disabled}
-                    >
-                        Change Location
-                    </Button>
-                </Box>
+                <Button
+                    variant="outlined"
+                    startIcon={<LocationOnIcon />}
+                    onClick={() => onEditToggle(true)}
+                    disabled={disabled}
+                    sx={{ flexShrink: 0 }}
+                >
+                    Change Location
+                </Button>
             );
         }
 
@@ -277,6 +275,93 @@ export const LocationField = React.memo(
                         ))}
                     </Paper>
                 )}
+            </Box>
+        );
+    }
+);
+
+export const PasswordField = React.memo(
+    ({
+        label,
+        name,
+        control,
+        disabled = false,
+        isEditMode = false,
+        onEditToggle,
+        isEditing,
+        ...props
+    }) => {
+        const { field, fieldState } = useController({
+            name,
+            control,
+            defaultValue: "",
+        });
+        const [password, setPassword] = useState("");
+
+        const handleSavePassword = () => {
+            field.onChange(password);
+            setPassword("");
+            onEditToggle && onEditToggle(false);
+        };
+
+        const handleCancel = () => {
+            setPassword("");
+            onEditToggle && onEditToggle(false);
+        };
+
+        // Button mode
+        if (isEditMode && !isEditing) {
+            return (
+                <Button
+                    variant="outlined"
+                    onClick={() => onEditToggle(true)}
+                    disabled={disabled}
+                    sx={{ flexShrink: 0 }}
+                >
+                    Change Password
+                </Button>
+            );
+        }
+
+        // Editing mode
+        return (
+            <Box sx={{ width: "100%" }}>
+                <MuiTextField
+                    fullWidth
+                    label={label}
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={disabled}
+                    error={!!fieldState.error}
+                    helperText={fieldState.error?.message}
+                    {...props}
+                />
+                <Box
+                    sx={{
+                        display: "flex",
+                        gap: 1,
+                        mt: 1,
+                        justifyContent: "flex-end",
+                    }}
+                >
+                    <Button
+                        variant="outlined"
+                        onClick={handleCancel}
+                        disabled={disabled}
+                        size="small"
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        variant="contained"
+                        onClick={handleSavePassword}
+                        disabled={disabled || !password}
+                        size="small"
+                    >
+                        Save
+                    </Button>
+                </Box>
             </Box>
         );
     }

@@ -58,6 +58,15 @@ function NavBar({ onSearch }) {
             navigate(currentPath); // Clear search if term is empty
         }
     };
+    const goProfile = () => {
+        handleMenuClose();
+        navigate("profile");
+    };
+
+    const goDashboard = () => {
+        handleMenuClose();
+        navigate("admin/dashboard");
+    };
 
     return (
         <AppBar
@@ -160,12 +169,7 @@ function NavBar({ onSearch }) {
                 onClose={handleMenuClose}
             >
                 <MenuItem
-                    // onClick={handleMenuClose}
-                    onClick={() => {
-                        window.location.href =
-                            "http://127.0.0.1:8000/profile";
-                        handleMenuClose();
-                    }}
+                    onClick={goProfile}
                 >
                     <ListItemIcon>
                         <AccountCircleIcon fontSize="small" />
@@ -174,11 +178,7 @@ function NavBar({ onSearch }) {
                 </MenuItem>
 
                 <MenuItem
-                    onClick={() => {
-                        handleMenuClose();
-                        window.location.href =
-                            "http://127.0.0.1:8000/admin/dashboard";
-                    }}
+                    onClick={goDashboard}
                 >
                     <ListItemIcon>
                         <DashboardIcon fontSize="small" />

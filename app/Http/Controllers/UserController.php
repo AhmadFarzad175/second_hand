@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Traits\ImageManipulation;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -46,8 +47,7 @@ class UserController extends Controller
         $validated = $request->validated();
         // Create the user with validated data
         $request->hasFile('image') ? $this->storeImage($request, $validated, 'images/users', "image") : null;
-
-        if ($request->filled('password')) {
+        if ($validated['password']) {
             $validated['password'] = Hash::make($request->password);
         }
         // dd($validated['image']);
@@ -74,15 +74,33 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, User $user)
     {
-        // $user = User::find($id);
         $validated = $request->validated();
-        // dd($request->input());
-        $this->updateImage($user, $request, $validated, 'images/users', "image");
 
+        // Handle optional image update
+        $this->updateImage($user, $request, $validated, 'images/users', 'image');
+
+        // 🔐 Only update password if it's not null or empty
+        if (!empty($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']); // prevent null overwrite
+        }
+
+        // 🌍 Handle location: decode and validate
+        if (!empty($validated['location'])) {
+            $location = json_decode($validated['location'], true);
+
+            // If latitude or longitude is missing or empty, don't update
+            if (empty($location['latitude']) || empty($location['longitude'])) {
+                unset($validated['location']);
+            }
+        }
+        // dd($validated);
         $user->update($validated);
 
         return new UserResource($user);
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -155,6 +173,13 @@ class UserController extends Controller
         return response()->json([
             'location' => $user->location,
         ]);
+    }
+
+    public function profile()
+    {
+        $id = Auth::id() || 1;
+        $user = User::with('products')->findOrFail($id);
+        return ProfileUserResource::make($user);
     }
 }
 

@@ -8,6 +8,9 @@ import {
     ListItemText,
     Collapse,
     Typography,
+    Divider,
+    Avatar,
+    Box,
 } from "@mui/material";
 import {
     Dashboard,
@@ -15,6 +18,11 @@ import {
     Group,
     Settings,
     BlurOn,
+    ExitToApp,
+    Person,
+    Public,
+    ExpandMore,
+    ExpandLess,
 } from "@mui/icons-material";
 
 const menuItems = [
@@ -54,16 +62,27 @@ const menuItems = [
     },
 ];
 
+const userMenuItems = [
+    { name: "Go to Website", icon: <Public />, path: "/" },
+    // { name: "Profile", icon: <Person />, path: "/profile" },
+    { name: "Logout", icon: <ExitToApp />, path: "/logout" },
+];
+
 const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar }) => {
     const [openMenu, setOpenMenu] = useState(null);
-    const navigate = useNavigate(); // React Router navigation
+    const [userMenuOpen, setUserMenuOpen] = useState(false);
+    const navigate = useNavigate();
 
     const handleMenuClick = (menu, path) => {
         if (path) {
-            navigate(path); // Navigate to the path if there's no sub-menu
+            navigate(path);
             return;
         }
         setOpenMenu((prev) => (prev === menu ? null : menu));
+    };
+
+    const toggleUserMenu = () => {
+        setUserMenuOpen(!userMenuOpen);
     };
 
     return (
@@ -81,79 +100,143 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar }) => {
                     backgroundColor: "#eee",
                     color: "black",
                     border: 0,
+                    display: "flex",
+                    flexDirection: "column",
                 },
             }}
         >
-            <div style={{ padding: "30px", textAlign: "center" }}>
-                <Typography variant="h6">Admin Panel</Typography>
-            </div>
-            <List
-                sx={{
-                    p: { xs: "17px 10px 10px 10px", md: "17px 0px 10px 10px" },
-                    cursor: "pointer",
-                }}
-            >
-                {menuItems.map((item) => (
-                    <React.Fragment key={item.key}>
-                        <ListItem
-                            button
-                            onClick={() => handleMenuClick(item.key, item.path)}
-                            sx={{
-                                "&:hover": {
-                                    borderRadius: 2,
-                                    backgroundColor: "white",
-                                },
-                            }}
-                        >
-                            <ListItemIcon sx={{ color: "inherit" }}>
-                                {item.icon}
-                            </ListItemIcon>
-                            <ListItemText primary={item.name} />
-                        </ListItem>
-                        {item.subItems && (
-                            <Collapse
-                                in={openMenu === item.key}
-                                timeout="auto"
-                                unmountOnExit
+            <div>
+                <div style={{ padding: "30px", textAlign: "center" }}>
+                    <Typography variant="h6">Admin Panel</Typography>
+                </div>
+                <List
+                    sx={{
+                        p: { xs: "17px 10px 10px 10px", md: "17px 0px 10px 10px" },
+                        cursor: "pointer",
+                    }}
+                >
+                    {menuItems.map((item) => (
+                        <React.Fragment key={item.key}>
+                            <ListItem
+                                button
+                                onClick={() => handleMenuClick(item.key, item.path)}
+                                sx={{
+                                    "&:hover": {
+                                        borderRadius: 2,
+                                        backgroundColor: "white",
+                                    },
+                                }}
                             >
-                                <List component="div" disablePadding>
-                                    {item.subItems.map((subItem, index) => (
-                                        <ListItem
-                                            key={index}
-                                            button
-                                            onClick={() =>
-                                                navigate(subItem.path)
-                                            }
-                                            sx={{
-                                                pl: 5,
-                                                "&:hover": {
-                                                    borderRadius: 2,
-                                                    backgroundColor: "inherit",
-                                                    color: "#666",
-                                                },
-                                            }}
-                                        >
-                                            <ListItemIcon
+                                <ListItemIcon sx={{ color: "inherit" }}>
+                                    {item.icon}
+                                </ListItemIcon>
+                                <ListItemText primary={item.name} />
+                            </ListItem>
+                            {item.subItems && (
+                                <Collapse
+                                    in={openMenu === item.key}
+                                    timeout="auto"
+                                    unmountOnExit
+                                >
+                                    <List component="div" disablePadding>
+                                        {item.subItems.map((subItem, index) => (
+                                            <ListItem
+                                                key={index}
+                                                button
+                                                onClick={() => navigate(subItem.path)}
                                                 sx={{
-                                                    color: "inherit",
-                                                    minWidth: "30px",
+                                                    pl: 5,
+                                                    "&:hover": {
+                                                        borderRadius: 2,
+                                                        backgroundColor: "inherit",
+                                                        color: "#666",
+                                                    },
                                                 }}
                                             >
-                                                <BlurOn
-                                                    sx={{ fontSize: "12px" }}
-                                                />
-                                            </ListItemIcon>
-                                            <ListItemText
-                                                primary={subItem.name}
-                                            />
-                                        </ListItem>
-                                    ))}
-                                </List>
-                            </Collapse>
-                        )}
-                    </React.Fragment>
-                ))}
-            </List>
+                                                <ListItemIcon
+                                                    sx={{
+                                                        color: "inherit",
+                                                        minWidth: "30px",
+                                                    }}
+                                                >
+                                                    <BlurOn sx={{ fontSize: "12px" }} />
+                                                </ListItemIcon>
+                                                <ListItemText primary={subItem.name} />
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                </Collapse>
+                            )}
+                        </React.Fragment>
+                    ))}
+                </List>
+            </div>
+
+            {/* User Profile Section at the bottom with menu expanding upwards */}
+            <Box sx={{ mt: "auto" }}>
+                <Collapse 
+                    in={userMenuOpen} 
+                    timeout="auto" 
+                    unmountOnExit
+                    sx={{
+                        transformOrigin: 'bottom', // Makes the collapse expand upwards
+                        "& .MuiCollapse-wrapper": {
+                            display: 'flex',
+                            flexDirection: 'column-reverse' // Reverses the items so they appear above
+                        }
+                    }}
+                >
+                    <List component="div" disablePadding>
+                        {userMenuItems.map((item, index) => (
+                            <ListItem
+                                key={index}
+                                button
+                                onClick={() => navigate(item.path)}
+                                sx={{
+                                    pl: 5,
+                                    "&:hover": {
+                                        borderRadius: 2,
+                                        backgroundColor: "inherit",
+                                        cursor: 'pointer',
+                                        color: "#666",
+                                    },
+                                }}
+                            >
+                                <ListItemIcon
+                                    sx={{
+                                        color: "inherit",
+                                        minWidth: "30px",
+                                    }}
+                                >
+                                    {item.icon}
+                                </ListItemIcon>
+                                <ListItemText primary={item.name} />
+                            </ListItem>
+                        ))}
+                    </List>
+                </Collapse>
+                
+                <Divider />
+                <ListItem
+                    button
+                    onClick={toggleUserMenu}
+                    sx={{
+                        "&:hover": {
+                            borderRadius: 2,
+                            cursor:'pointer',
+                            backgroundColor: "white",
+                        },
+                    }}
+                >
+                    <ListItemIcon>
+                        <Avatar sx={{ width: 32, height: 32 }}>U</Avatar>
+                    </ListItemIcon>
+                    <ListItemText 
+                        primary="Admin User"
+                        secondary="admin@example.com" 
+                    />
+                    </ListItem>
+            </Box>
         </Drawer>
     );
 };

@@ -1,6 +1,7 @@
+// src/components/UserForm/UserForm.jsx
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
     Box,
     Typography,
@@ -20,39 +21,29 @@ import {
     TextArea,
     LocationField,
     PasswordField,
-} from "../../ui/InputFields";
+} from "../ui/InputFields";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import CloseIcon from "@mui/icons-material/Close";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useCreateUser } from "./useCreateUser";
-import { useUpdateUser } from "./useUpdateUser";
 
-// Main Form Component
-export default function CreateUser() {
+export default function UserForm({
+    isEditSession = false,
+    editValues = {},
+    onSubmit,
+    isWorking = false,
+    onCancel,
+    adminMode = false,
+}) {
     const theme = useTheme();
-    const navigate = useNavigate();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
     const isMediumScreen = useMediaQuery(theme.breakpoints.between("sm", "md"));
-    const { state } = useLocation();
-    const { id: editId, ...editValues } = state?.user || {};
-    // In CreateUser component, add this state:
-    const [editingField, setEditingField] = useState(null);
     
-    const isEditSession = Boolean(editId);
+    const [editingField, setEditingField] = useState(null);
     const [image, setImage] = useState(editValues?.user_image || null);
     const [imageFile, setImageFile] = useState(null);
-    const { isCreating, createUser } = useCreateUser();
-    const { isUpdating, updateUser } = useUpdateUser();
-    const isWorking = isCreating || isUpdating;
 
     const { control, handleSubmit, setValue, reset } = useForm({
         defaultValues: isEditSession ? editValues : {},
     });
-
-    // const userLocation = useWatch({
-    //     control,
-    //     name: "userLocation",
-    // });
 
     const handleAddImage = (event) => {
         if (event.target.files && event.target.files[0]) {
@@ -69,7 +60,7 @@ export default function CreateUser() {
         setValue("user_image", null);
     };
 
-    const onSubmit = (data) => {
+    const handleFormSubmit = (data) => {
         const formData = new FormData();
 
         // Handle location
@@ -101,30 +92,7 @@ export default function CreateUser() {
             formData.append("image", editValues.user_image);
         }
 
-        if (isEditSession) {
-            updateUser(
-                { formData, id: editId },
-                {
-                    onSuccess: () => {
-                        navigate(
-                            window.location.pathname.includes("/admin")
-                                ? "/admin/users"
-                                : "/"
-                        );
-                    },
-                }
-            );
-        } else {
-            createUser(formData, {
-                onSuccess: () => {
-                    navigate(
-                        window.location.pathname.includes("/admin")
-                            ? "/admin/users"
-                            : "/"
-                    );
-                },
-            });
-        }
+        onSubmit(formData);
     };
 
     // Initialize form only once when editValues changes
@@ -153,7 +121,7 @@ export default function CreateUser() {
                 sx={{
                     p: { xs: 1.5, sm: 3, md: 4 },
                     borderRadius: { xs: 2, md: 4 },
-                    backgroundColor: "background.paper",
+                    backgroundColor: "transparent",
                     boxShadow: "none",
                     borderColor: "divider",
                 }}
@@ -211,7 +179,6 @@ export default function CreateUser() {
                                 <Grid
                                     container
                                     rowSpacing={2}
-                                    // columnSpacing={isSmallScreen ? 0 : 0}
                                 >
                                     <Grid
                                         item
@@ -240,7 +207,6 @@ export default function CreateUser() {
                                 <Grid
                                     container
                                     rowSpacing={2}
-                                    // columnSpacing={isSmallScreen ? 1 : 2}
                                 >
                                     <Grid
                                         item
@@ -256,27 +222,28 @@ export default function CreateUser() {
                                             disabled={isWorking}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <Select
-                                            label="Role"
-                                            name="role"
-                                            control={control}
-                                            options={[
-                                                {
-                                                    value: "admin",
-                                                    label: "Admin",
-                                                },
-                                                {
-                                                    value: "user",
-                                                    label: "User",
-                                                },
-                                            ]}
-                                            disabled={isWorking}
-                                        />
-                                    </Grid>
+                                    {adminMode && (
+                                        <Grid item xs={12} sm={6}>
+                                            <Select
+                                                label="Role"
+                                                name="role"
+                                                control={control}
+                                                options={[
+                                                    {
+                                                        value: "admin",
+                                                        label: "Admin",
+                                                    },
+                                                    {
+                                                        value: "user",
+                                                        label: "User",
+                                                    },
+                                                ]}
+                                                disabled={isWorking}
+                                            />
+                                        </Grid>
+                                    )}
                                 </Grid>
 
-                                {/* // Then modify the fields section: */}
                                 {isEditSession ? (
                                     <Box>
                                         <Typography
@@ -394,7 +361,7 @@ export default function CreateUser() {
                         </Grid>
 
                         {/* Right Column - Profile Picture */}
-                        <Grid item xs={12} md={5}>
+                        <Grid item xs={12} md={5} sx={{ mt:{xs:10,md:0 }}}>
                             <Stack spacing={isSmallScreen ? 1.5 : 3}>
                                 <Typography
                                     variant={isSmallScreen ? "subtitle1" : "h6"}
@@ -418,12 +385,12 @@ export default function CreateUser() {
                                             position: "relative",
                                             width: "100%",
                                             maxWidth: isSmallScreen
-                                                ? 150
+                                                ? 250
                                                 : isMediumScreen
                                                 ? 200
                                                 : 280,
                                             height: isSmallScreen
-                                                ? 150
+                                                ? 250
                                                 : isMediumScreen
                                                 ? 200
                                                 : 280,
@@ -543,7 +510,7 @@ export default function CreateUser() {
                             variant="outlined"
                             color="inherit"
                             size={isSmallScreen ? "small" : "medium"}
-                            onClick={() => navigate(-1)}
+                            onClick={onCancel}
                             sx={{
                                 px: isSmallScreen ? 2 : 4,
                                 borderRadius: 1,
@@ -558,7 +525,7 @@ export default function CreateUser() {
                             color="primary"
                             size={isSmallScreen ? "small" : "medium"}
                             disabled={isWorking}
-                            onClick={handleSubmit(onSubmit)}
+                            onClick={handleSubmit(handleFormSubmit)}
                             sx={{
                                 px: isSmallScreen ? 2 : 4,
                                 borderRadius: 1,
