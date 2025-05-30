@@ -64,7 +64,7 @@ const menuItems = [
 
 const userMenuItems = [
     { name: "Go to Website", icon: <Public />, path: "/" },
-    { name: "Profile", icon: <Person />, path: "/admin/profile" },
+    // { name: "Profile", icon: <Person />, path: "/profile" },
     { name: "Logout", icon: <ExitToApp />, path: "/logout" },
 ];
 
@@ -197,6 +197,7 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar }) => {
                                     "&:hover": {
                                         borderRadius: 2,
                                         backgroundColor: "inherit",
+                                        cursor: 'pointer',
                                         color: "#666",
                                     },
                                 }}

@@ -17,6 +17,7 @@ import ShowUser from "./features/user/ShowUser";
 import AdminCreateProduct from "./features/product/AdminCreateProduct";
 import WebsiteCreateProduct from "./pages/WebsiteCreateProduct";
 import Profile from "./pages/Profile";
+import CreateWebsiteUser from "./pages/CreateWebsiteUser";
 
 function App() {
     return (
@@ -28,6 +29,8 @@ function App() {
                 <Route path="favorite" element={<Favorite />} />
                 <Route path="add-product" element={<WebsiteCreateProduct />} />
                 <Route path="profile" element={<Profile />} />
+                <Route path="/register" element={<CreateWebsiteUser />} />
+                <Route path="/profile/edit" element={<CreateWebsiteUser />} />
             </Route>
 
             {/* Admin Panel routes */}
@@ -38,7 +41,10 @@ function App() {
                 <Route path="products" element={<Products />} />
                 <Route path="product/:id" element={<ShowProduct />} />
                 <Route path="create-product" element={<AdminCreateProduct />} />
-                <Route path="edit-product/:id" element={<AdminCreateProduct />} />
+                <Route
+                    path="edit-product/:id"
+                    element={<AdminCreateProduct />}
+                />
                 <Route path="categories" element={<Categories />} />
 
                 {/* User Menu */}
