@@ -52,7 +52,7 @@ class FavoriteController extends Controller
             ->pluck('product_id'); // Just get the product IDs
 
         // Step 2: Fetch those products with all needed relationships
-        $favorites = Product::with(['images', 'favorites', 'user', 'currency'])
+        $favorites = Product::with(['images', 'favorites', 'user'])
             ->whereIn('id', $favoritedProductIds)
             ->orderBy('id', 'DESC')
             ->search($search)

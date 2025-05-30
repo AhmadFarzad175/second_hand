@@ -14,9 +14,18 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     use ImageManipulation;
+    public function __construct()
+    {
+        $this->middleware('can:viewUser')->only(['index', 'show']);
+        $this->middleware('can:createUser')->only(['store']);
+        $this->middleware('can:editUser')->only(['update', 'Status']);
+        $this->middleware('can:deleteUser')->only(['destroy', 'bulkDelete']);
+    }
+
     /**
      * Display a listing of the resource.
      */
+
     public function index(Request $request)
     {
 
@@ -115,20 +124,44 @@ class UserController extends Controller
             'message' => 'User status updated successfully',
         ]);
     }
+    // public function bulkDelete(Request $request)
+    // {
+    //     $user = $request->validated->input('userIds');
+    //     $userIds = $request["userIds"];
+    //     if (!empty($userIds)) {
+    //         return response()->json(['massage' => 'IDs not found']);
+    //     }
+    //     foreach ($userIds as $id) {
+    //         $user = User::find($id);
+    //         $this->deleteImage($user, 'images/users', 'image');
+    //     }
+    //     User::whereIn('id', $request->userIds)->delete();
+    //     return response()->noContent();
+    // }
     public function bulkDelete(Request $request)
     {
-        $user = $request->validated->input('userIds');
-        $userIds = $request["userIds"];
-        if (!empty($userIds)) {
-            return response()->json(['massage' => 'IDs not found']);
+        $request->validate([
+            'userIds' => 'required|array',
+            'userIds.*' => 'integer|exists:users,id',
+        ]);
+
+        $userIds = $request->input('userIds');
+
+        if (empty($userIds)) {
+            return response()->json(['message' => 'IDs not found'], 400);
         }
-        foreach ($userIds as $id) {
-            $user = User::find($id);
+
+        $users = User::whereIn('id', $userIds)->get();
+
+        foreach ($users as $user) {
             $this->deleteImage($user, 'images/users', 'image');
         }
-        User::whereIn('id', $request->userIds)->delete();
+
+        User::whereIn('id', $userIds)->delete();
+
         return response()->noContent();
     }
+
 
 
 

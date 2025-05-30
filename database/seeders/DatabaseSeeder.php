@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        User::factory(5)->create();
+        // User::factory(5)->create();
 
         // Users and categories
         // User::create([
@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             ProductAttributesSeeder::class,
             ProductSeeder::class,
+            UserSeeder::class,
         ]);
 
         // Seed other related models
