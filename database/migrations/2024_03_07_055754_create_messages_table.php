@@ -1,5 +1,6 @@
     <?php
 
+    use App\Models\Conversation;
     use App\Models\Product;
     use App\Models\User;
     use Illuminate\Database\Migrations\Migration;
@@ -15,17 +16,24 @@
         {
             Schema::create('messages', function (Blueprint $table) {
                 $table->id();
+                $table->foreignIdFor(Conversation::class);
                 $table->foreignIdFor(User::class,'sender_id');
-                $table->foreignIdFor(User::class,'receiver_id');
-                $table->foreignIdFor(Product::class)->constrained();
+                // $table->foreignIdFor(Product::class)->constrained();
                 $table->text('message');
                 $table->boolean('is_read')->default(false);
-                $table->date('date');
                 $table->timestamps();
 
-                $table->index(['sender_id', 'receiver_id']);
-                $table->index('product_id');
-                $table->index('created_at');
+                // $table->id();
+                // $table->foreignIdFor(User::class,'sender_id');
+                // $table->foreignIdFor(User::class,'receiver_id');
+                // $table->text('message');
+                // $table->boolean('is_read')->default(false);
+                // $table->date('date');
+                // $table->timestamps();
+
+                // $table->index(['sender_id', 'receiver_id']);
+                // $table->index('product_id');
+                // $table->index('created_at');
             });
         }
 

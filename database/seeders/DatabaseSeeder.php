@@ -37,10 +37,11 @@ class DatabaseSeeder extends Seeder
             ProductAttributesSeeder::class,
             ProductSeeder::class,
             UserSeeder::class,
+            ConversationSeeder::class,
         ]);
 
         // Seed other related models
-        Message::factory(5)->create();
+        Message::factory(10)->create();
         Review::factory(5)->create();
         // Favorite::factory(10)->create();
         // Report::factory(15)->create(); // Uncomment when needed

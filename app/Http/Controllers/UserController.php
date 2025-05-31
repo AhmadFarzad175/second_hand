@@ -14,13 +14,13 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     use ImageManipulation;
-    public function __construct()
-    {
-        $this->middleware('can:viewUser')->only(['index', 'show']);
-        $this->middleware('can:createUser')->only(['store']);
-        $this->middleware('can:editUser')->only(['update', 'Status']);
-        $this->middleware('can:deleteUser')->only(['destroy', 'bulkDelete']);
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('can:viewUser')->only(['index', 'show']);
+    //     $this->middleware('can:createUser')->only(['store']);
+    //     $this->middleware('can:editUser')->only(['update', 'Status']);
+    //     $this->middleware('can:deleteUser')->only(['destroy', 'bulkDelete']);
+    // }
 
     /**
      * Display a listing of the resource.

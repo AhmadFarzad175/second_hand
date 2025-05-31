@@ -7,88 +7,89 @@ use App\Http\Requests\MessageRequest;
 use App\Http\Resources\MessageResource;
 use App\Models\Message;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
-    /**
-     * List messages between two users.
-     */
-    public function index(Request $request): JsonResponse
+    public function index($conversationId)
     {
-        $senderId = $request->query('sender_id');
-        $receiverId = $request->query('receiver_id');
-        $productId = $request->query('product_id'); // optional
+        $messages = Message::where('conversation_id', $conversationId)
+            ->with('sender')
+            ->orderBy('created_at', 'asc')
+            ->get();
 
-        if (!$senderId || !$receiverId) {
-            return response()->json(['error' => 'sender_id and receiver_id are required'], 422);
-        }
-
-        $messages = Message::where(function ($query) use ($senderId, $receiverId) {
-                $query->where('sender_id', $senderId)
-                      ->where('receiver_id', $receiverId);
-            })
-            ->orWhere(function ($query) use ($senderId, $receiverId) {
-                $query->where('sender_id', $receiverId)
-                      ->where('receiver_id', $senderId);
-            })
-            ->when($productId, fn($q) => $q->where('product_id', $productId))
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
-
-        return response()->json(MessageResource::collection($messages));
+        return MessageResource::collection($messages);
     }
 
-    /**
-     * Store and broadcast a new message.
-     */
-    public function store(MessageRequest $request): MessageResource
+    public function store(MessageRequest $request)
     {
         $data = $request->validated();
-        $data['sender_id'] = auth()->id(); // Ensure sender is authenticated user
+        $data['sender_id'] = Auth::id();
+
         $message = Message::create($data);
+        $message->conversation->touch();
+
         broadcast(new MessageSent($message))->toOthers();
 
         return new MessageResource($message);
     }
 
-    /**
-     * Get messages between the logged-in user and another user.
-     */
-    public function fetchMessages($userId): JsonResponse
+    public function show($id)
     {
-        $messages = Message::where(function ($q) use ($userId) {
-                $q->where('sender_id', auth()->id())
-                  ->where('receiver_id', $userId);
-            })
-            ->orWhere(function ($q) use ($userId) {
-                $q->where('sender_id', $userId)
-                  ->where('receiver_id', auth()->id());
-            })
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        return response()->json(MessageResource::collection($messages));
+        $message = Message::with('sender')->findOrFail($id);
+        return new MessageResource($message);
     }
 
-    /**
-     * Mark messages as read from a specific user.
-     */
-    public function markAsRead($userId): JsonResponse
+    public function update(MessageRequest $request, Message $message)
     {
-        Message::where('sender_id', $userId)
-            ->where('receiver_id', auth()->id())
+        $this->authorize('update', $message);
+        $message->update($request->validated());
+        return new MessageResource($message);
+    }
+
+    public function destroy($id)
+    {
+        $message = Message::findOrFail($id);
+
+        if ($message->sender_id !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $message->delete();
+
+        return response()->json(['message' => 'Message deleted']);
+    }
+
+    public function markAsRead($conversationId)
+    {
+        Message::where('conversation_id', $conversationId)
+            ->where('receiver_id', Auth::id())
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
         return response()->json(['status' => 'read']);
     }
 
-    /**
-     * List all users the authenticated user has chatted with.
-     */
-    public function conversations(): JsonResponse
+    public function unreadCount()
+    {
+        $count = Message::where('receiver_id', Auth::id())
+            ->where('is_read', false)
+            ->count();
+
+        return response()->json(['unread_count' => $count]);
+    }
+
+    public function latestMessage($conversationId)
+    {
+        $message = Message::where('conversation_id', $conversationId)
+            ->latest()
+            ->first();
+
+        return new MessageResource($message);
+    }
+
+    public function conversations()
     {
         $userId = auth()->id();
 
@@ -105,28 +106,10 @@ class MessageController extends Controller
             })
             ->groupBy('other_user_id')
             ->orderByDesc('last_message_time')
-            ->with('sender', 'receiver')
             ->get();
 
         $users = User::whereIn('id', $conversations->pluck('other_user_id'))->get();
 
         return response()->json($users);
-    }
-
-    public function show(Message $message): JsonResponse
-    {
-        return response()->json(new MessageResource($message));
-    }
-
-    public function update(MessageRequest $request, Message $message): MessageResource
-    {
-        $message->update($request->validated());
-        return new MessageResource($message);
-    }
-
-    public function destroy(Message $message): JsonResponse
-    {
-        $message->delete();
-        return response()->json(['message' => 'Message deleted successfully']);
     }
 }

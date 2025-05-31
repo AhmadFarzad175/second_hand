@@ -14,13 +14,13 @@ class CategoryController extends Controller
 {
     use ImageManipulation;
 
-    public function __construct()
-{
-    $this->middleware('can:viewCategory')->only(['index', 'show']);
-    $this->middleware('can:createCategory')->only(['store']);
-    $this->middleware('can:editCategory')->only(['update']);
-    $this->middleware('can:deleteCategory')->only(['destroy']);
-}
+//     public function __construct()
+// {
+//     $this->middleware('can:viewCategory')->only(['index', 'show']);
+//     $this->middleware('can:createCategory')->only(['store']);
+//     $this->middleware('can:editCategory')->only(['update']);
+//     $this->middleware('can:deleteCategory')->only(['destroy']);
+// }
     /**
      * Display a listing of categories.
      */

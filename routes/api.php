@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\APIForMobile\AuthController;
+use App\Http\Controllers\ConversationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -41,6 +42,7 @@ Route::post('/auth/google', [AuthController::class, 'googleLogin']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
+});
     Route::get('/user', [AuthController::class, 'getUser']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
@@ -82,10 +84,17 @@ Route::apiResource('categories', CategoryController::class);
 Route::Post('categories/update/{category}', [CategoryController::class, 'update']);
 
 ///////////////////  MESSAGE  ///////////////////
-    Route::get('/conversations', [MessageController::class, 'conversations']);
-    Route::get('/messages/{userId}', [MessageController::class, 'fetchMessages']);
-    Route::post('/messages/mark-read/{userId}', [MessageController::class, 'markAsRead']);
-    Route::apiResource('messages', MessageController::class)->except(['create', 'edit']);
+Route::apiResource('conversations', ConversationController::class)->except(['create', 'edit']);
+Route::get('/conversations/get-or-create/{userId}', [ConversationController::class, 'getOrCreate']);
+
+Route::apiResource('messages', MessageController::class)->except(['create', 'edit']);
+Route::get('/messages/conversation/{conversationId}', [MessageController::class, 'index']); // for fetching messages by conversation
+Route::post('/messages/mark-read/{conversationId}', [MessageController::class, 'markAsRead']);
+Route::get('/messages/unread-count', [MessageController::class, 'unreadCount']);
+Route::get('/messages/latest/{conversationId}', [MessageController::class, 'latestMessage']);
+Route::get('/messages/conversations', [MessageController::class, 'conversations']);
+///////////////////  REPORTS  ///////////////////
+
 Route::apiResource('reports', ReportController::class);
 Route::apiResource('reviews', ReviewController::class);
 
@@ -105,7 +114,6 @@ Route::get('/profile', [UserController::class, 'profile']);
 
 
 
-});
 
 
 
