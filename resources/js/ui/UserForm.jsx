@@ -127,36 +127,6 @@ export default function UserForm({
                 }}
             >
                 <Stack spacing={isSmallScreen ? 2 : 3}>
-                    {/* Header Section */}
-                    <Box>
-                        <Typography
-                            variant={
-                                isSmallScreen
-                                    ? "h6"
-                                    : isMediumScreen
-                                    ? "h5"
-                                    : "h4"
-                            }
-                            sx={{
-                                fontWeight: 700,
-                                color: "text.primary",
-                                mb: 1,
-                            }}
-                        >
-                            {isEditSession ? "Edit User" : "Create User"}
-                        </Typography>
-                        <Typography
-                            variant={isSmallScreen ? "body2" : "body1"}
-                            color="text.secondary"
-                        >
-                            {isEditSession
-                                ? "Update user information"
-                                : "Fill in user details"}
-                        </Typography>
-                    </Box>
-
-                    <Divider />
-
                     <Grid
                         container
                         rowSpacing={isSmallScreen ? 1 : isMediumScreen ? 2 : 4}
@@ -537,7 +507,7 @@ export default function UserForm({
                                 ? "Processing..."
                                 : isEditSession
                                 ? "Save Changes"
-                                : "Create user"}
+                                : "Register"}
                         </Button>
                     </Box>
                 </Stack>

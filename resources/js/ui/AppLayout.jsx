@@ -1,9 +1,10 @@
 import { Outlet } from "react-router-dom";
-import { Container, Box } from "@mui/material";
+import { Container, Box, Button } from "@mui/material";
 import Navbar from "./NavBar";
 import Footer from "./Footer";
 import { useState } from "react";
 import ChatSystem from "./ChatSystem";
+import Can from "../repositories/Can";
 
 function AppLayout() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -11,6 +12,9 @@ function AppLayout() {
     return (
         <>
             <Navbar onSearch={setSearchTerm} />
+            {/* <Can permission="create product">
+                <Button variant="contained">Create Product</Button>
+            </Can> */}
             <Container maxWidth="xl">
                 <Box
                     component="main"

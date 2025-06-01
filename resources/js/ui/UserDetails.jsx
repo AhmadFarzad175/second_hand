@@ -1,5 +1,4 @@
 // src/components/UserDetails/UserDetails.jsx
-import React from "react";
 import {
     Box,
     Typography,
@@ -30,6 +29,7 @@ const UserDetails = ({ user, isEditable = false }) => {
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
     const isMediumScreen = useMediaQuery(theme.breakpoints.between("sm", "md"));
+    const isAdmin = user.role === "admin" ? true : false;
 
     if (!user) return <Typography>User not found</Typography>;
 
@@ -81,19 +81,23 @@ const UserDetails = ({ user, isEditable = false }) => {
                             mb: 2,
                         }}
                     />
-                    <Rating
-                        value={user.rating}
-                        precision={0.5}
-                        readOnly
-                        size={isSmallScreen ? "small" : "medium"}
-                    />
-                    <Chip
-                        label={`${user.total_products} Products`}
-                        icon={<ShoppingBasket fontSize="small" />}
-                        variant="outlined"
-                        sx={{ mt: 1 }}
-                        size={isSmallScreen ? "small" : "medium"}
-                    />
+                    {!isAdmin && (
+                        <>
+                            <Rating
+                                value={user.rating}
+                                precision={0.5}
+                                readOnly
+                                size={isSmallScreen ? "small" : "medium"}
+                            />
+                            <Chip
+                                label={`${user.total_products} Products`}
+                                icon={<ShoppingBasket fontSize="small" />}
+                                variant="outlined"
+                                sx={{ mt: 1 }}
+                                size={isSmallScreen ? "small" : "medium"}
+                            />
+                        </>
+                    )}
                 </Box>
 
                 {/* Right column - profile details */}
@@ -123,7 +127,7 @@ const UserDetails = ({ user, isEditable = false }) => {
                                 size="small"
                                 onClick={() =>
                                     navigate(`./edit`, {
-                                        state: {user},
+                                        state: { user },
                                     })
                                 }
                             >
@@ -169,15 +173,25 @@ const UserDetails = ({ user, isEditable = false }) => {
                                 </Typography>
                             </Box>
                         </Box>
-                        <Box sx={{ flex: 1 }}>
-                            <Box sx={{ display: "flex", alignItems: "center" }}>
-                                <LocationOn color="primary" sx={{ mr: 1 }} />
-                                <Typography variant="body1">
-                                    {user.user_location ||
-                                        "Location not specified"}
-                                </Typography>
+                        {!isAdmin && (
+                            <Box sx={{ flex: 1 }}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <LocationOn
+                                        color="primary"
+                                        sx={{ mr: 1 }}
+                                    />
+                                    <Typography variant="body1">
+                                        {user.user_location ||
+                                            "Location not specified"}
+                                    </Typography>
+                                </Box>
                             </Box>
-                        </Box>
+                        )}
                     </Box>
 
                     {/* Description */}
@@ -308,7 +322,10 @@ const UserDetails = ({ user, isEditable = false }) => {
                                                         variant="subtitle2"
                                                         color="primary"
                                                     >
-                                                        ${product.price}
+                                                        {product.net_price -
+                                                            product.discount +
+                                                            " " +
+                                                            product.currency}
                                                     </Typography>
                                                     <Rating
                                                         value={product.rating}
@@ -385,7 +402,9 @@ const UserDetails = ({ user, isEditable = false }) => {
                                         variant="subtitle2"
                                         color="primary"
                                     >
-                                        {`${product.net_price} ${product.currency}`}
+                                        {`${
+                                            product.net_price - product.discount
+                                        } ${product.currency}`}
                                     </Typography>
                                     {product.rating && (
                                         <Rating

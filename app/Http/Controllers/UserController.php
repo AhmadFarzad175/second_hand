@@ -16,10 +16,11 @@ class UserController extends Controller
     use ImageManipulation;
     public function __construct()
     {
-        $this->middleware('can:viewUser')->only(['index', 'show']);
-        $this->middleware('can:createUser')->only(['store']);
-        $this->middleware('can:editUser')->only(['update', 'Status']);
-        $this->middleware('can:deleteUser')->only(['destroy', 'bulkDelete']);
+        $this->middleware('can:view product');
+        // $this->middleware('can:view product')->only(['index', 'show']);
+        // $this->middleware('can:view product')->only(['store']);
+        // $this->middleware('can:view product')->only(['update', 'Status']);
+        // $this->middleware('can:view product')->only(['destroy', 'bulkDelete']);
     }
 
     /**
@@ -177,7 +178,7 @@ class UserController extends Controller
 
     public function profile()
     {
-        $id = Auth::id() || 1;
+        $id = Auth::id() ?? 1;
         $user = User::with('products')->findOrFail($id);
         return ProfileUserResource::make($user);
     }

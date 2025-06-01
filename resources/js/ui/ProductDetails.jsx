@@ -33,9 +33,7 @@ function ProductDetails({ dashboard = false }) {
     const [product, setProduct] = useState(null);
     const [copied, setCopied] = useState(false);
     const navigate = useNavigate();
-        const { isDeleting, deletePro } = useDeleteProduct();
-    
-
+    const { isDeleting, deletePro } = useDeleteProduct();
 
     // Fix for default icon issue
     delete L.Icon.Default.prototype._getIconUrl;
@@ -76,7 +74,7 @@ function ProductDetails({ dashboard = false }) {
     const handleDelete = async (event) => {
         event.stopPropagation(); // Prevent row selection when clicking delete
         deletePro(id);
-        navigate('/admin/products')
+        navigate("/admin/products");
     };
 
     // Optional fallback for loading state
@@ -85,7 +83,8 @@ function ProductDetails({ dashboard = false }) {
     } else {
     }
 
-    let coordinates = product.location || null;
+    let coordinates = product.location ? JSON.parse(product.location) : null;
+    console.log(coordinates);
 
     return (
         <Box sx={{ width: "100%" }}>
@@ -160,9 +159,12 @@ function ProductDetails({ dashboard = false }) {
                                     }}
                                 >
                                     <>
-                                    <FavoriteButton id={product.id} isFavorited={product.isFavorite} />
-                                    
-                                    <Typography variant="body2">
+                                        <FavoriteButton
+                                            id={product.id}
+                                            isFavorited={product.isFavorite}
+                                        />
+
+                                        <Typography variant="body2">
                                             123
                                         </Typography>
                                     </>
@@ -232,7 +234,7 @@ function ProductDetails({ dashboard = false }) {
                         {/* User Image */}
                         <Box
                             component="img"
-                            src={product.user?.image || "images/img-1.jpg"}
+                            src={product.user?.image || "/motorcycle.jpg"}
                             alt={product.user?.name}
                             sx={{
                                 width: 160,
@@ -421,7 +423,7 @@ function ProductDetails({ dashboard = false }) {
                         color="text.secondary"
                         sx={{ fontSize: { xs: "0.8rem", md: "0.9rem" }, mb: 2 }}
                     >
-                        {product.distance ?? 'insert '}
+                        {/* {product.distance ?? 'insert '} */}
                     </Typography>
 
                     <Divider sx={{ my: 2 }} />
@@ -472,37 +474,47 @@ function ProductDetails({ dashboard = false }) {
                     </Box>
 
                     {/* Actions Section */}
-                    {dashboard ? (
+                    {dashboard ?? (
                         <Box sx={{ mt: 3 }}>
                             <Stack direction="row" spacing={2}>
-                                <Button variant="outlined" color="primary"
-                                onClick={(event) => {
-                                    event.stopPropagation();
-                                    navigate(`/admin/edit-product/${product.id}`, {
-                                        state: { product }, // Pass the entire user object
-                                    });
-                                }}>
+                                <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    onClick={(event) => {
+                                        event.stopPropagation();
+                                        navigate(
+                                            `/admin/edit-product/${product.id}`,
+                                            {
+                                                state: { product }, // Pass the entire user object
+                                            }
+                                        );
+                                    }}
+                                >
                                     Edit Product
                                 </Button>
-                                <Button variant="outlined" color="error"
-                                onClick={handleDelete} disabled={isDeleting}>
+                                <Button
+                                    variant="outlined"
+                                    color="error"
+                                    onClick={handleDelete}
+                                    disabled={isDeleting}
+                                >
                                     Delete Product
                                 </Button>
                             </Stack>
                         </Box>
-                    ) : (
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            fullWidth
-                            sx={{
-                                mt: 3,
-                                fontSize: { xs: "0.875rem", md: "1rem" },
-                                padding: { xs: 1, md: 2 },
-                            }}
-                        >
-                            Buy Now
-                        </Button>
+                        // ) : (
+                        // <Button
+                        //     variant="contained"
+                        //     color="primary"
+                        //     fullWidth
+                        //     sx={{
+                        //         mt: 3,
+                        //         fontSize: { xs: "0.875rem", md: "1rem" },
+                        //         padding: { xs: 1, md: 2 },
+                        //     }}
+                        // >
+                        //     Buy Now
+                        // </Button>
                     )}
                 </Box>
             </Stack>

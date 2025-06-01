@@ -23,10 +23,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'view product',
             'manage users',
 
-              'viewUser',
-    'createUser',
-    'editUser',
-    'deleteUser',
+            'viewUser',
+            'createUser',
+            'editUser',
+            'deleteUser',
         ];
 
         // Create permissions if they don't exist
@@ -51,7 +51,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'name' => 'Admin User',
                 'phone' => '1234567890',
                 'image' => 'default.png', // default image placeholder
-                'location' => json_encode(['lat' => 0, 'lng' => 0]), // sample JSON
+                'location' => json_encode(['lattitude' => 0, 'longitude' => 0]), // sample JSON
                 'password' => Hash::make('password123'), // change password after seed!
                 'role' => 'admin',
                 'is_active' => true,
@@ -62,6 +62,32 @@ class RolesAndPermissionsSeeder extends Seeder
         $adminUser->assignRole($adminRole);
     }
 }
+
+// $permissions = [
+//     // For authenticated user
+//     'create product',
+//     'edit own product',
+//     'delete own product',
+//     'add to favorites',
+//     'remove from favorites',
+//     'comment on product',
+//     'rate product',
+//     'chat with user',
+
+//     // For admin only
+//     'edit any product',
+//     'delete any product',
+//     'create category',
+//     'edit category',
+//     'delete category',
+//     'view users',
+//     'create user',
+//     'edit user',
+//     'delete user',
+//     'ban user',
+//     'view reports',
+// ];
+
 
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;

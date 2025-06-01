@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { Fragment, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     Drawer,
@@ -19,11 +19,11 @@ import {
     Settings,
     BlurOn,
     ExitToApp,
-    Person,
     Public,
-    ExpandMore,
-    ExpandLess,
+
 } from "@mui/icons-material";
+import { logout } from "../repositories/AuthRepository";
+import { useTranslation } from "react-i18next";
 
 const menuItems = [
     {
@@ -65,13 +65,14 @@ const menuItems = [
 const userMenuItems = [
     { name: "Go to Website", icon: <Public />, path: "/" },
     // { name: "Profile", icon: <Person />, path: "/profile" },
-    { name: "Logout", icon: <ExitToApp />, path: "/logout" },
+    { name: "Logout", icon: <ExitToApp />, path: "/login" },
 ];
 
 const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar }) => {
     const [openMenu, setOpenMenu] = useState(null);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
 
     const handleMenuClick = (menu, path) => {
         if (path) {
@@ -84,6 +85,13 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar }) => {
     const toggleUserMenu = () => {
         setUserMenuOpen(!userMenuOpen);
     };
+
+    const handleNavigate =(item) => {
+        if(item.name === 'Logout'){
+            logout()
+        }
+        navigate(item.path)
+    }
 
     return (
         <Drawer
@@ -116,7 +124,7 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar }) => {
                     }}
                 >
                     {menuItems.map((item) => (
-                        <React.Fragment key={item.key}>
+                        <Fragment key={item.key}>
                             <ListItem
                                 button
                                 onClick={() => handleMenuClick(item.key, item.path)}
@@ -167,7 +175,7 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar }) => {
                                     </List>
                                 </Collapse>
                             )}
-                        </React.Fragment>
+                        </Fragment>
                     ))}
                 </List>
             </div>
@@ -191,7 +199,7 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar }) => {
                             <ListItem
                                 key={index}
                                 button
-                                onClick={() => navigate(item.path)}
+                                onClick={() => handleNavigate(item)}
                                 sx={{
                                     pl: 5,
                                     "&:hover": {

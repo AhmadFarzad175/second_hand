@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { IconButton, Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Brightness4Icon from "@mui/icons-material/Brightness4";

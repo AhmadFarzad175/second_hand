@@ -20,6 +20,7 @@ class ProfileUserResource extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone,
             'location' => $this->location,
+            'role' => $this->role,
             'description' => $this->description,
             // 'image' => $this->image ? url('storage/' . $this->image) : null, // Image URL if available
             'user_image' => $this->image ? url('storage/' . $this->image) : null, // Image URL if available

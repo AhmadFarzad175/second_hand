@@ -15,6 +15,7 @@ import { TextField, Select, TextArea } from "../ui/InputFields";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useNavigate } from "react-router-dom";
+import AxiosSetup from "../repositories/AxiosSetup";
 
 export default function ProductForm({
     onSubmit,
@@ -39,7 +40,7 @@ export default function ProductForm({
         handleSubmit,
         control,
         watch,
-        getValues, // Add this
+        getValues,
         formState: { errors },
         reset,
     } = useForm({
@@ -53,11 +54,15 @@ export default function ProductForm({
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch("/api/categories");
-                const data = await response.json();
-                setCategories(data.data);
+                const response = await AxiosSetup.get("/categories");
+                setCategories(response.data.data || []); // Ensure we always set an array
             } catch (error) {
                 console.error("Error fetching categories:", error);
+                setCategories([]); // Set empty array on error
+                throw new Error(
+                    error.response?.data?.message ||
+                        "Failed to fetch categories"
+                );
             }
         };
 
@@ -74,10 +79,10 @@ export default function ProductForm({
         const fetchAttributes = async () => {
             setIsLoadingAttributes(true);
             try {
-                const response = await fetch(
-                    `/api/categories/${watchedCategory}/attributes`
+                const response = await AxiosSetup.get(
+                    `/categories/${watchedCategory}/attributes`
                 );
-                const { data } = await response.json();
+                const { data } = response.data;
 
                 if (Array.isArray(data)) {
                     setCategoryAttributes(data);
@@ -114,6 +119,10 @@ export default function ProductForm({
             } catch (error) {
                 console.error("Error fetching attributes:", error);
                 setCategoryAttributes([]);
+                throw new Error(
+                    error.response?.data?.message ||
+                        "Failed to fetch attributes"
+                );
             } finally {
                 setIsLoadingAttributes(false);
             }
@@ -129,17 +138,17 @@ export default function ProductForm({
 
         const fetchProductImages = async () => {
             try {
-                const response = await fetch(
+                const response = await AxiosSetup.get(
                     `/api/productImages/${editValues.id}`
                 );
-                const data = await response.json();
+                const { data } = response.data;
 
                 const fetchedImages = Array(6).fill(null);
                 const fetchedImageIds = Array(6).fill(null);
-                data.data.forEach((imgObj, index) => {
+                data.forEach((imgObj, index) => {
                     if (index < 6 && imgObj.images) {
                         fetchedImages[index] = imgObj.images;
-                        fetchedImageIds[index] = imgObj.id; // Assuming your API returns image IDs
+                        fetchedImageIds[index] = imgObj.id;
                     }
                 });
 
@@ -161,6 +170,10 @@ export default function ProductForm({
                 });
             } catch (error) {
                 console.error("Error fetching product images:", error);
+                throw new Error(
+                    error.response?.data?.message ||
+                        "Failed to fetch product images"
+                );
             } finally {
                 setIsLoading(false);
             }
@@ -169,6 +182,7 @@ export default function ProductForm({
         fetchProductImages();
     }, [isEditSession, editValues, reset]);
 
+    // Rest of the component remains the same...
     const handleAddImage = (event, index) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
@@ -193,7 +207,6 @@ export default function ProductForm({
         setImageFiles(newImageFiles);
     };
 
-    // Modify your onFormSubmit function
     const onFormSubmit = (data) => {
         const formData = new FormData();
         formData.append("currency", "AFN");
@@ -294,10 +307,11 @@ export default function ProductForm({
         { value: "1", label: "Used" },
     ];
 
-    const categoryOptions = categories.map((category) => ({
-        value: category.id,
-        label: category.name,
-    }));
+    const categoryOptions =
+        categories?.map((category) => ({
+            value: category.id,
+            label: category.name,
+        })) || [];
 
     return (
         <Box
@@ -339,17 +353,22 @@ export default function ProductForm({
                                     required
                                 />
 
-                                <Select
-                                    label="Category"
-                                    control={control}
-                                    register={register}
-                                    name="category_id"
-                                    errors={errors}
-                                    options={categoryOptions}
-                                    disabled={isWorking || isLoading}
-                                    fullWidth
-                                    required
-                                />
+                                {isLoading ? (
+                                    <CircularProgress />
+                                ) : categoryOptions.length === 0 ? (
+                                    <Typography color="error">
+                                        No categories available
+                                    </Typography>
+                                ) : (
+                                    <Select
+                                        name="category_id"
+                                        label="Category"
+                                        control={control}
+                                        options={categoryOptions}
+                                        errors={errors}
+                                        disabled={isWorking}
+                                    />
+                                )}
 
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} sm={6}>

@@ -2,9 +2,11 @@ import { TextField, InputAdornment, IconButton } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const SearchInput = ({ onSearch }) => {
     const [searchValue, setSearchValue] = useState("");
+    const { t } = useTranslation();
 
     const handleClear = () => {
         setSearchValue("");
@@ -20,7 +22,7 @@ const SearchInput = ({ onSearch }) => {
     return (
         <TextField
             variant="standard"
-            placeholder="Search..."
+            placeholder={t("navbar.Search...")}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             onKeyDown={handleKeyDown}

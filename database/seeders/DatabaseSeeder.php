@@ -30,13 +30,14 @@ class DatabaseSeeder extends Seeder
         //     'is_active' => true,
         // ]);
 
-        // User::factory(10)->create();
+        User::factory(10)->create();
 
         $this->call([
             CategorySeeder::class,
             ProductAttributesSeeder::class,
             ProductSeeder::class,
             UserSeeder::class,
+            RolesAndPermissionsSeeder::class,
         ]);
 
         // Seed other related models

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef, memo } from "react";
 import {
     TextField as MuiTextField,
     InputAdornment,
@@ -17,7 +17,7 @@ import { useEffect } from "react";
 import { useController } from "react-hook-form";
 
 // Custom TextField Component
-export const TextField = React.memo(
+export const TextField = memo(
     ({ label, name, control, errors, type = "text", disabled, ...rest }) => {
         const { field, fieldState } = useController({
             name,
@@ -44,7 +44,7 @@ export const TextField = React.memo(
 );
 
 // Custom Select Component
-export const Select = React.memo(
+export const Select = memo(
     ({ label, name, control, errors, options, disabled, ...rest }) => {
         const { field, fieldState } = useController({
             name,
@@ -76,7 +76,7 @@ export const Select = React.memo(
 );
 
 // Custom TextArea Component
-export const TextArea = React.memo(
+export const TextArea = memo(
     ({ label, name, control, errors, rows = 4, disabled, ...rest }) => {
         const { field, fieldState } = useController({
             name,
@@ -102,7 +102,7 @@ export const TextArea = React.memo(
     }
 );
 
-export const LocationField = React.memo(
+export const LocationField = memo(
     ({
         label,
         name,
@@ -177,7 +177,7 @@ export const LocationField = React.memo(
             clearTimeout(typingTimeoutRef.current);
             typingTimeoutRef.current = setTimeout(
                 () => performSearch(value),
-                500
+                1000
             );
         };
 
@@ -280,7 +280,7 @@ export const LocationField = React.memo(
     }
 );
 
-export const PasswordField = React.memo(
+export const PasswordField = memo(
     ({
         label,
         name,

@@ -38,16 +38,15 @@ export default function Carousel() {
     const handleChange = (event, newValue) => {
         setValue(newValue);
         const selectedCategory = categories[newValue];
-    
+
         if (selectedCategory?.id) {
             // Create a NEW searchParams instance with only the category
             const params = new URLSearchParams();
             params.set("category", selectedCategory.id);
-    
+
             navigate(`?${params.toString()}`);
         }
     };
-    
 
     //fetching categories
     const {
@@ -102,6 +101,10 @@ export default function Carousel() {
                     {categories.map((category, index) => (
                         <Tab
                             key={index}
+                            sx={{
+                                backgroundColor: "transparent",
+                                background: "transparent",
+                            }}
                             icon={
                                 <img
                                     src={category.image}
@@ -112,6 +115,8 @@ export default function Carousel() {
                                         // borderRadius: "50%",
                                         objectFit: "cover",
                                         borderRadius: 5,
+                                        backgroundColor: "transparent",
+                                        background: "transparent",
                                     }}
                                 />
                             }

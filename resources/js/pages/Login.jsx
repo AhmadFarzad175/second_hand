@@ -1,4 +1,3 @@
-import React from "react";
 import {
     Container,
     Box,
@@ -20,13 +19,14 @@ import { useLogin } from "./useLogin";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from 'react-router-dom';
 import toast from "react-hot-toast";
+import { useState } from "react";
 
 const LoginPage = () => {
-    const [email, setEmail] = React.useState("");
-    const [password, setPassword] = React.useState("");
-    const [showPassword, setShowPassword] = React.useState(false);
-    const [emailError, setEmailError] = React.useState("");
-    const [passwordError, setPasswordError] = React.useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
     const { logIn, isChecking, EmailError } = useLogin();
     const navigate = useNavigate();
     
@@ -183,7 +183,8 @@ const LoginPage = () => {
                 <Box sx={{ textAlign: "center", mt: 3 }}>
                     <Typography variant="body2" color="text.secondary">
                         Don't have an account?{" "}
-                        <Button variant="text" size="small" sx={{ textTransform: "none" }}>
+                        <Button variant="text" size="small" sx={{ textTransform: "none" }}
+                        onClick={() => navigate('/register')}>
                             Sign up
                         </Button>
                     </Typography>

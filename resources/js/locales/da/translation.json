@@ -1,0 +1,15 @@
+{
+    "navbar": {
+      "login": "ورود",
+      "profile": "پروفایل",
+      "adminPanel": "پنل مدیریت",
+      "logout": "خروج",
+      "Search...": "جستجو...",
+
+      "languages": {
+        "english": "انگلیسی",
+        "dari": "دری",
+        "pashto": "پشتو"
+      }
+    }
+  }

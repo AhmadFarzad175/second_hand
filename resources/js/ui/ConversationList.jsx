@@ -1,4 +1,3 @@
-import React from 'react';
 import { 
   Box, 
   Typography, 
@@ -11,6 +10,7 @@ import {
   ListItemText 
 } from '@mui/material';
 import { Close as CloseIcon, Person as PersonIcon, CheckCircle as CheckCircleIcon } from '@mui/icons-material';
+import { Fragment } from 'react';
 
 const ConversationList = ({ onClose, onSelectChat, setUnreadCount }) => {
   const chats = [
@@ -44,7 +44,7 @@ const ConversationList = ({ onClose, onSelectChat, setUnreadCount }) => {
       <Divider />
       <List sx={{ flex: 1, overflowY: 'auto' }}>
         {chats.map((chat) => (
-          <React.Fragment key={chat.id}>
+          <Fragment key={chat.id}>
             <ListItem
               alignItems="flex-start"
               sx={{
@@ -77,7 +77,7 @@ const ConversationList = ({ onClose, onSelectChat, setUnreadCount }) => {
               />
             </ListItem>
             <Divider variant="inset" component="li" />
-          </React.Fragment>
+          </Fragment>
         ))}
       </List>
     </>

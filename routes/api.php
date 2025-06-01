@@ -37,7 +37,12 @@ use App\Http\Controllers\ProductAttributeValueController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+
 Route::post('/auth/google', [AuthController::class, 'googleLogin']);
+
+Route::apiResource('products', ProductController::class);
+Route::apiResource('categories', CategoryController::class);
+Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -66,11 +71,9 @@ Route::get('/favorites', [FavoriteController::class, 'index']);
 
 ///////////////// PRODUCTS///////////////////////
 
-Route::apiResource('products', ProductController::class);
 Route::get('categories/{id}/attributes', [ProductController::class, 'getAttributesByCategory']);
 Route::patch('/products/{id}/state', [ProductController::class, 'StateOfProduct']);
 Route::Post('products/update/{product}', [ProductController::class, 'update']);
-Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
 Route::get('productImages/{id}', [ProductController::class, 'allImages']);
 
 
@@ -78,7 +81,6 @@ Route::post('/products/{productId}/favorite', [FavoriteController::class, 'toggl
 
 ///////////////////  CATEGORY  ///////////////////
 
-Route::apiResource('categories', CategoryController::class);
 Route::Post('categories/update/{category}', [CategoryController::class, 'update']);
 
 ///////////////////  MESSAGE  ///////////////////

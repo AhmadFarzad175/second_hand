@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ChatButton from './ChatButton';
 import ChatDrawer from './ChatDrawer';
 

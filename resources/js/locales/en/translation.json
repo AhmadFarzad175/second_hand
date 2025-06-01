@@ -1,0 +1,14 @@
+{
+    "navbar": {
+      "login": "Login",
+      "profile": "Profile",
+      "adminPanel": "Admin Panel",
+      "logout": "Logout",
+      "Search...": "Search...",
+      "languages": {
+        "english": "English",
+        "dari": "Dari",
+        "pashto": "Pashto"
+      }
+    }
+  }
