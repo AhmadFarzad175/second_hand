@@ -19,20 +19,10 @@ class MessageRequest extends FormRequest
      */
     public function rules(): array
     {
-        // $rules = [
-        //     'receiver_id' => 'required|exists:users,id|different:auth_user',
-        //     'product_id' => 'nullable|exists:products,id',
-        //     'message' => 'required|string|max:255',
-        //     'is_read' => 'boolean',
-        //     'date' => 'nullable|date',
-        // ];
         return [
             'conversation_id' => 'required|exists:conversations,id',
-            // 'sender_id' => 'required|exists:users,id',
             'message' => 'required|string',
         ];
-
-
     }
 
 }

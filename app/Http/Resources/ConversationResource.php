@@ -22,17 +22,10 @@ class ConversationResource extends JsonResource
                 'name' => $this->userTwo->name,
                 'avatar' => $this->userTwo->avatar_url ?? null,
             ],
-            'last_message' => $this->whenLoaded('messages', function() {
-                return $this->messages->first() ? [
-                    'message' => $this->messages->first()->message,
-                    'created_at' => $this->messages->first()->created_at,
-                    'is_read' => $this->messages->first()->is_read,
-                ] : null;
-            }),
+
             'unread_count' => $this->whenCounted('messages', function() {
                 return $this->messages_count;
             }),
-            'updated_at' => $this->updated_at,
         ];
     }
 }

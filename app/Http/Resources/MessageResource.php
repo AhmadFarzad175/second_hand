@@ -26,17 +26,5 @@ class MessageResource extends JsonResource
                 'name' => $this->sender->name,
             ]
         ];
-    //    return [
-    //         'id' => $this->id,
-    //         'conversation_id' => $this->conversation_id,
-    //         'sender' => [
-    //             'id' => $this->sender->id,
-    //             'name' => $this->sender->name,
-    //             'avatar' => $this->sender->avatar_url ?? null,
-    //         ],
-    //         'message' => $this->message,
-    //         'is_read' => $this->is_read,
-    //         'created_at' => $this->created_at,
-    //         'updated_at' => $this->updated_at,];
     }
 }

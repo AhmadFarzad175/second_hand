@@ -95,6 +95,8 @@ Route::get('/messages/unread-count', [MessageController::class, 'unreadCount']);
 Route::post('/messages/mark-read/{conversationId}', [MessageController::class, 'markAsRead']);
 Route::get('/messages/{conversationId}', [MessageController::class, 'index']);
 Route::post('/messages/{conversationId}', [MessageController::class, 'store']);
+Route::delete('/messages/{messageId}', [MessageController::class, 'destroy']);
+
 
 // Route::apiResource('/messages', MessageController::class);
 

@@ -13,7 +13,9 @@ class ConversationController extends Controller
      */
     public function index()
     {
-        $userId = 1; // TEMP: Hardcoded test user ID
+        // $userId = auth()->id();
+
+        $userId = 3; // TEMP: Hardcoded test user ID
 
         $conversations = Conversation::with([
             'userOne',
@@ -33,7 +35,9 @@ class ConversationController extends Controller
      */
     public function store(Request $request)
     {
-        $userId = 1; // TEMP: Hardcoded user ID for testing
+        // $userId = auth()->id();
+
+        $userId = 3; // TEMP: Hardcoded user ID for testing
 
         $request->validate([
             'user_id' => 'required|exists:users,id|not_in:' . $userId,
@@ -74,3 +78,72 @@ class ConversationController extends Controller
         return response()->json(['message' => 'Conversation deleted']);
     }
 }
+
+// <?php
+
+// namespace App\Http\Controllers;
+
+// use App\Models\Conversation;
+// use Illuminate\Http\Request;
+// use App\Http\Resources\ConversationResource;
+
+// class ConversationController extends Controller
+// {
+//     public function index()
+//     {
+//         $userId = auth()->id();
+
+//         $conversations = Conversation::with([
+//             'userOne',
+//             'userTwo',
+//             'messages' => fn($query) => $query->latest()->limit(1),
+//         ])
+//         ->where('user_one_id', $userId)
+//         ->orWhere('user_two_id', $userId)
+//         ->orderByDesc('updated_at')
+//         ->get();
+
+//         return ConversationResource::collection($conversations);
+//     }
+
+//     public function store(Request $request)
+//     {
+//         $userId = auth()->id();
+
+//         $request->validate([
+//             'user_id' => 'required|exists:users,id|not_in:' . $userId,
+//         ]);
+
+//         $conversation = Conversation::betweenUsers($userId, $request->user_id)->first();
+
+//         if (!$conversation) {
+//             $conversation = Conversation::create([
+//                 'user_one_id' => min($userId, $request->user_id),
+//                 'user_two_id' => max($userId, $request->user_id),
+//             ]);
+//         }
+
+//         return new ConversationResource(
+//             $conversation->load(['userOne', 'userTwo'])
+//         );
+//     }
+
+//     public function show(Conversation $conversation)
+//     {
+//         return new ConversationResource(
+//             $conversation->load(['userOne', 'userTwo', 'messages.sender'])
+//         );
+//     }
+
+//     public function destroy(Conversation $conversation)
+//     {
+//         // Optional: Check if auth user is part of the conversation
+//         if (auth()->id() !== $conversation->user_one_id && auth()->id() !== $conversation->user_two_id) {
+//             return response()->json(['error' => 'Unauthorized'], 403);
+//         }
+
+//         $conversation->delete();
+
+//         return response()->json(['message' => 'Conversation deleted']);
+//     }
+// }
