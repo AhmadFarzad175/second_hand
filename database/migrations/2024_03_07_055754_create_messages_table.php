@@ -18,22 +18,9 @@
                 $table->id();
                 $table->foreignIdFor(Conversation::class);
                 $table->foreignIdFor(User::class,'sender_id');
-                // $table->foreignIdFor(Product::class)->constrained();
                 $table->text('message');
                 $table->boolean('is_read')->default(false);
                 $table->timestamps();
-
-                // $table->id();
-                // $table->foreignIdFor(User::class,'sender_id');
-                // $table->foreignIdFor(User::class,'receiver_id');
-                // $table->text('message');
-                // $table->boolean('is_read')->default(false);
-                // $table->date('date');
-                // $table->timestamps();
-
-                // $table->index(['sender_id', 'receiver_id']);
-                // $table->index('product_id');
-                // $table->index('created_at');
             });
         }
 

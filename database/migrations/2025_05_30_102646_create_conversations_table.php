@@ -7,25 +7,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('conversations', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class,'user_one_id')->constrained('users');
-            $table->foreignIdFor(User::class,'user_two_id')->constrained('users');
+            $table->foreignIdFor(User::class, 'user_one_id')->constrained('users');
+            $table->foreignIdFor(User::class, 'user_two_id')->constrained('users');
             $table->timestamps();
             $table->unique(['user_one_id', 'user_two_id']);
-            // $table->unique(['user_one_id', 'user_two_id', 'product_id']);
-
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('conversations');

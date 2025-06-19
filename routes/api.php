@@ -41,10 +41,9 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/auth/google', [AuthController::class, 'googleLogin']);
 
 
-Route::middleware('auth:sanctum')->group(function () {
-});
-    Route::get('/user', [AuthController::class, 'getUser']);
-    Route::post('/logout', [AuthController::class, 'logout']);
+Route::middleware('auth:sanctum')->group(function () {});
+Route::get('/user', [AuthController::class, 'getUser']);
+Route::post('/logout', [AuthController::class, 'logout']);
 
 
 
@@ -84,16 +83,20 @@ Route::apiResource('categories', CategoryController::class);
 Route::Post('categories/update/{category}', [CategoryController::class, 'update']);
 
 ///////////////////  MESSAGE  ///////////////////
-Route::apiResource('conversations', ConversationController::class)->except(['create', 'edit']);
-Route::get('/conversations/get-or-create/{userId}', [ConversationController::class, 'getOrCreate']);
 
-Route::apiResource('messages', MessageController::class)->except(['create', 'edit']);
-Route::get('/messages/conversation/{conversationId}', [MessageController::class, 'index']); // for fetching messages by conversation
-Route::post('/messages/mark-read/{conversationId}', [MessageController::class, 'markAsRead']);
+// ✅ Conversation APIs
+Route::get('/conversations', [ConversationController::class, 'index']);
+Route::post('/conversations', [ConversationController::class, 'store']);
+Route::get('/conversations/{conversation}', [ConversationController::class, 'show']);
+Route::delete('/conversations/{conversation}', [ConversationController::class, 'destroy']);
+
+// ✅ Message APIs — reorder static routes FIRST
 Route::get('/messages/unread-count', [MessageController::class, 'unreadCount']);
-Route::get('/messages/latest/{conversationId}', [MessageController::class, 'latestMessage']);
-Route::get('/messages/conversations', [MessageController::class, 'conversations']);
-///////////////////  REPORTS  ///////////////////
+Route::post('/messages/mark-read/{conversationId}', [MessageController::class, 'markAsRead']);
+Route::get('/messages/{conversationId}', [MessageController::class, 'index']);
+Route::post('/messages/{conversationId}', [MessageController::class, 'store']);
+
+// Route::apiResource('/messages', MessageController::class);
 
 Route::apiResource('reports', ReportController::class);
 Route::apiResource('reviews', ReviewController::class);
@@ -108,11 +111,6 @@ Route::delete('bulk-delte-user', [UserController::class, 'bulkDelete']);
 Route::get('users/{user}/location', [UserController::class, 'userLocation']);
 Route::get('/profile', [UserController::class, 'profile']);
 
-///////////////////  CURRENCIES  ///////////////////
-
-// Route::apiResource('currency', CurrencyController::class);
-
-
 
 
 
@@ -123,9 +121,14 @@ Route::prefix('v1/mobile')->group(function () {
 
     /////////////// PRODUCTS ///////////////////
 
-    Route::get('/products', [ProductController::class, 'index']); // With filters
-    Route::get('/products/{product}', [ProductController::class, 'show']);
+
+    Route::apiResource('products', ProductController::class);
+    Route::get('categories/{id}/attributes', [ProductController::class, 'getAttributesByCategory']);
+    Route::patch('/products/{id}/state', [ProductController::class, 'StateOfProduct']);
+    Route::Post('products/update/{product}', [ProductController::class, 'update']);
     Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
+    Route::get('productImages/{id}', [ProductController::class, 'allImages']);
+
 
 
     /////////////// USERS ///////////////////

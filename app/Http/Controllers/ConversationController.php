@@ -5,80 +5,70 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ConversationResource;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class ConversationController extends Controller
 {
-   public function index()
-{
-    $userId = Auth::id();
+    /**
+     * List all conversations for a test user (user_id = 1)
+     */
+    public function index()
+    {
+        $userId = 1; // TEMP: Hardcoded test user ID
 
-    $conversations = Conversation::with([
-        'userOne',
-        'userTwo',
-        'product', // if needed
-        'messages' => function ($q) {
-            $q->latest()->limit(1); // fetch only the last message
-        }
-    ])
-    ->where(function ($query) use ($userId) {
-        $query->where('user_one_id', $userId)
-              ->orWhere('user_two_id', $userId);
-    })
-    ->orderByDesc('updated_at')
-    ->get();
+        $conversations = Conversation::with([
+            'userOne',
+            'userTwo',
+            'messages' => fn($query) => $query->latest()->limit(1)
+        ])
+        ->where('user_one_id', $userId)
+        ->orWhere('user_two_id', $userId)
+        ->orderByDesc('updated_at')
+        ->get();
 
-    return ConversationResource::collection($conversations);
-}
+        return ConversationResource::collection($conversations);
+    }
 
-
+    /**
+     * Start or fetch existing conversation between user 1 and another user
+     */
     public function store(Request $request)
     {
+        $userId = 1; // TEMP: Hardcoded user ID for testing
+
         $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'user_id' => 'required|exists:users,id|not_in:' . $userId,
         ]);
 
-        $userId = Auth::id();
-        $otherUserId = $request->user_id;
-
-        $conversation = Conversation::betweenUsers($userId, $otherUserId)->first();
+        // Avoid duplicate conversations
+        $conversation = Conversation::betweenUsers($userId, $request->user_id)->first();
 
         if (!$conversation) {
             $conversation = Conversation::create([
-                'user_one_id' => $userId,
-                'user_two_id' => $otherUserId,
+                'user_one_id' => min($userId, $request->user_id),
+                'user_two_id' => max($userId, $request->user_id),
             ]);
         }
 
-        return new ConversationResource($conversation);
+        return new ConversationResource(
+            $conversation->load(['userOne', 'userTwo'])
+        );
     }
 
-    public function getOrCreate($userId)
+    /**
+     * Show full conversation details
+     */
+    public function show(Conversation $conversation)
     {
-        $authId = Auth::id();
-
-        $conversation = Conversation::betweenUsers($authId, $userId)->first();
-
-        if (!$conversation) {
-            $conversation = Conversation::create([
-                'user_one_id' => $authId,
-                'user_two_id' => $userId,
-            ]);
-        }
-
-        return new ConversationResource($conversation);
+        return new ConversationResource(
+            $conversation->load(['userOne', 'userTwo', 'messages'])
+        );
     }
 
-    public function destroy($id)
+    /**
+     * Delete a conversation (no auth check for now)
+     */
+    public function destroy(Conversation $conversation)
     {
-        $conversation = Conversation::findOrFail($id);
-
-        $userId = Auth::id();
-
-        if ($conversation->user_one_id !== $userId && $conversation->user_two_id !== $userId) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
         $conversation->delete();
 
         return response()->json(['message' => 'Conversation deleted']);
