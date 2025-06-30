@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\APIForMobile\AuthController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\File;
 
@@ -26,3 +26,16 @@ Route::get('/{any}', function () {
     return view('welcome'); // Serve React app
 })->where('any', '.*');
 
+// Password reset routes
+Route::get('/reset-password/{token}', function ($token) {
+    return response()->json([
+        'message' => 'Password reset token verification endpoint',
+        'token' => $token
+    ]);
+})->name('password.reset');
+
+
+// Catch-all for React
+Route::get('/{any}', function () {
+    return view('welcome');
+})->where('any', '.*');

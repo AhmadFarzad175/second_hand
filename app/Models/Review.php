@@ -13,7 +13,7 @@ class Review extends Model
         'product_id',
         'rating',
         'comment',
-        'date',
+        // 'date',
     ];
     public function user()
     {

@@ -36,10 +36,10 @@ class ProductResource extends JsonResource
             'attributes' => $this->attributes,
             'state' =>  $this->state,
 
-            'image' => asset('storage/' . $this->images[0]?->image_url),
-            // 'images' => $this->images->map(function ($image) {
-            //     return asset('storage/' . $image->image_url);
-            // }),
+            // 'image' => asset('storage/' . $this->images[0]?->image_url),
+            'images' => $this->images->map(function ($image) {
+                return asset('storage/' . $image->image_url);
+            }),
         ];
     }
 }

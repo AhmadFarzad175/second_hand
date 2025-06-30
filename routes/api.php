@@ -40,10 +40,24 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/auth/google', [AuthController::class, 'googleLogin']);
 
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 Route::middleware('auth:sanctum')->group(function () {});
 Route::get('/user', [AuthController::class, 'getUser']);
 Route::post('/logout', [AuthController::class, 'logout']);
+// Route::get('/reset-password/{token}', function ($token) {
+//     return response()->json([
+//         'message' => 'Dummy API reset password route.',
+//         'token' => $token
+//     ]);
+// })->name('password.reset');
+
+
+// Route::post('/forgot-password/send-code', [AuthController::class, 'sendResetCode']);
+
+// // Forgot password: verify code + reset password
+// Route::post('/forgot-password/verify-code', [AuthController::class, 'verifyCodeAndReset']);
 
 
 

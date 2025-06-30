@@ -13,9 +13,14 @@ use Spatie\FlareClient\Http\Client;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Socialite\Facades\Socialite;
-// use Illuminate\Support\Facade\Log;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Auth\Notifications\ResetPassword;
+
 
 
 
@@ -142,4 +147,58 @@ class AuthController extends Controller
             return response()->json(['error' => 'Invalid token'], 401);
         }
     }
+
+    // Fixed password reset methods
+   public function sendResetLink(Request $request)
+{
+    $request->validate(['email' => 'required|email']);
+
+    $status = Password::sendResetLink(
+        $request->only('email')
+    );
+
+    // API-friendly response
+    if ($status === Password::RESET_LINK_SENT) {
+        return response()->json([
+            'message' => __($status),
+            'status' => 'success'
+        ]);
+    }
+
+    return response()->json([
+        'message' => __($status),
+        'status' => 'error'
+    ], 400);
+}
+
+public function resetPassword(Request $request)
+{
+    $request->validate([
+        'token' => 'required',
+        'email' => 'required|email',
+        'password' => 'required|min:8|confirmed',
+    ]);
+
+    $status = Password::reset(
+        $request->only('email', 'password', 'password_confirmation', 'token'),
+        function ($user, $password) {
+            $user->forceFill([
+                'password' => Hash::make($password),
+                'remember_token' => Str::random(60),
+            ])->save();
+        }
+    );
+
+    if ($status === Password::PASSWORD_RESET) {
+        return response()->json([
+            'message' => __($status),
+            'status' => 'success'
+        ]);
+    }
+
+    return response()->json([
+        'message' => __($status),
+        'status' => 'error'
+    ], 400);
+}
 }
