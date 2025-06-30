@@ -2,68 +2,162 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Message;
 use App\Events\MessageSent;
+use App\Models\Conversation;
+use Illuminate\Http\Request;
+use App\Events\MessageDeleted;
 use App\Http\Requests\MessageRequest;
 use App\Http\Resources\MessageResource;
-use App\Models\Message;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
-    /**
-     * List messages between two users (with pagination and optional product filter)
-     */
-    public function index(Request $request): JsonResponse
+    public function index($conversationId)
     {
-        $senderId = $request->query('sender_id');
-        $receiverId = $request->query('receiver_id');
-        $productId = $request->query('product_id'); // optional
+        $conversation = Conversation::findOrFail($conversationId);
 
-        if (!$senderId || !$receiverId) {
-            return response()->json(['error' => 'sender_id and receiver_id are required'], 422);
-        }
+        $messages = $conversation->messages()
+            ->with('sender')
+            ->orderBy('created_at')
+            ->get();
 
-        $messages = Message::where(function ($query) use ($senderId, $receiverId) {
-                $query->where('sender_id', $senderId)
-                      ->where('receiver_id', $receiverId);
-            })
-            ->orWhere(function ($query) use ($senderId, $receiverId) {
-                $query->where('sender_id', $receiverId)
-                      ->where('receiver_id', $senderId);
-            })
-            ->when($productId, fn($q) => $q->where('product_id', $productId))
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
-
-        return response()->json(MessageResource::collection($messages));
+        return MessageResource::collection($messages);
     }
 
-    /**
-     * Store and broadcast a new message.
-     */
-    public function store(MessageRequest $request): MessageResource
-    {
-        $message = Message::create($request->validated());
-        broadcast(new MessageSent($message))->toOthers(); // Real-time broadcast
+public function store(MessageRequest $request, $conversationId)
+{
+    $message = Message::create([
+        'conversation_id' => $conversationId,
+        'sender_id' => $request->sender_id,
+        'message' => $request->message,
+        'is_read' => false,
+    ]);
 
-        return new MessageResource($message);
+    broadcast(new MessageSent($message))->toOthers();
+
+    return new MessageResource($message->load('sender'));
+}
+public function destroy($messageId, Request $request)
+{
+    $message = Message::findOrFail($messageId);
+
+    // if ($message->sender_id !== $request->user_id) {
+    //     return response()->json(['error' => 'Unauthorized'], 403);
+    // }
+
+    broadcast(new MessageDeleted($message))->toOthers();
+
+    $message->delete();
+
+    return response()->json(['message' => 'Message deleted successfully.']);
+}
+
+
+
+    public function markAsRead($conversationId, Request $request)
+    {
+        $conversation = Conversation::findOrFail($conversationId);
+
+        Message::where('conversation_id', $conversationId)
+            ->where('sender_id', '!=', $request->user_id) // no Auth
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return response()->json(['status' => 'read']);
     }
 
-    public function show(Message $message): JsonResponse
+    public function unreadCount(Request $request)
     {
-        return response()->json(new MessageResource($message));
-    }
+        // $userId = auth()->id();
 
-    public function update(MessageRequest $request, Message $message): MessageResource
-    {
-        $message->update($request->validated());
-        return new MessageResource($message);
-    }
+        $userId = $request->user_id;
 
-    public function destroy(Message $message): JsonResponse
-    {
-        $message->delete();
-        return response()->json(['message' => 'Message deleted successfully']);
+        $count = Message::whereHas('conversation', function ($q) use ($userId) {
+            $q->where('user_one_id', $userId)->orWhere('user_two_id', $userId);
+        })->where('sender_id', '!=', $userId)->where('is_read', false)->count();
+
+        return response()->json(['unread_count' => $count]);
     }
 }
+
+// <?php
+
+// namespace App\Http\Controllers;
+
+// use App\Models\Message;
+// use App\Events\MessageSent;
+// use App\Events\MessageDeleted;
+// use App\Models\Conversation;
+// use Illuminate\Http\Request;
+// use App\Http\Requests\MessageRequest;
+// use App\Http\Resources\MessageResource;
+
+// class MessageController extends Controller
+// {
+//     public function index($conversationId)
+//     {
+//         $conversation = Conversation::findOrFail($conversationId);
+
+//         $messages = $conversation->messages()
+//             ->with('sender')
+//             ->orderBy('created_at')
+//             ->get();
+
+//         return MessageResource::collection($messages);
+//     }
+
+//     public function store(MessageRequest $request, $conversationId)
+//     {
+//         $message = Message::create([
+//             'conversation_id' => $conversationId,
+//             'sender_id' => auth()->id(),
+//             'message' => $request->message,
+//             'is_read' => false,
+//         ]);
+
+//         broadcast(new MessageSent($message))->toOthers();
+
+//         return new MessageResource($message->load('sender'));
+//     }
+
+//     public function destroy($messageId)
+//     {
+//         $message = Message::findOrFail($messageId);
+
+//         if ($message->sender_id !== auth()->id()) {
+//             return response()->json(['error' => 'Unauthorized'], 403);
+//         }
+
+//         broadcast(new MessageDeleted($message))->toOthers();
+
+//         $message->delete();
+
+//         return response()->json(['message' => 'Message deleted successfully.']);
+//     }
+
+//     public function markAsRead($conversationId)
+//     {
+//         $conversation = Conversation::findOrFail($conversationId);
+
+//         Message::where('conversation_id', $conversationId)
+//             ->where('sender_id', '!=', auth()->id())
+//             ->where('is_read', false)
+//             ->update(['is_read' => true]);
+
+//         return response()->json(['status' => 'read']);
+//     }
+
+//     public function unreadCount()
+//     {
+//         $userId = auth()->id();
+
+//         $count = Message::whereHas('conversation', function ($q) use ($userId) {
+//             $q->where('user_one_id', $userId)
+//               ->orWhere('user_two_id', $userId);
+//         })->where('sender_id', '!=', $userId)
+//           ->where('is_read', false)
+//           ->count();
+
+//         return response()->json(['unread_count' => $count]);
+//     }
+// }

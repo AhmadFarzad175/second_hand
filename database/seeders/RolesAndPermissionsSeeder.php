@@ -22,7 +22,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'delete product',
             'view product',
             'manage users',
-
+            'viewCategory',
+            'createCategory',
+            'editCategory',
+            'deleteCategory',
             'viewUser',
             'createUser',
             'editUser',

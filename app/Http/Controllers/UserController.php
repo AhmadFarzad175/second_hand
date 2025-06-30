@@ -17,10 +17,10 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('can:view product');
-        // $this->middleware('can:view product')->only(['index', 'show']);
-        // $this->middleware('can:view product')->only(['store']);
-        // $this->middleware('can:view product')->only(['update', 'Status']);
-        // $this->middleware('can:view product')->only(['destroy', 'bulkDelete']);
+    //     $this->middleware('can:viewUser')->only(['index', 'show']);
+    //     $this->middleware('can:createUser')->only(['store']);
+    //     $this->middleware('can:editUser')->only(['update', 'Status']);
+    //     $this->middleware('can:deleteUser')->only(['destroy', 'bulkDelete']);
     }
 
     /**

@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
             ['latitude' => 31.6339, 'longitude' => 65.7372],
         ];
 
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 6; $i++) {
             User::create([
                 'name' => "Test User $i",
                 'email' => "user$i@example.com",

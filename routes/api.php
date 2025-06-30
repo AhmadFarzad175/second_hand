@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\APIForMobile\AuthController;
+use App\Http\Controllers\ConversationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -46,10 +47,16 @@ Route::get('productImages/{id}', [ProductController::class, 'allImages']);
 Route::get('productDetails/{product}', [ProductController::class, 'show']);
 Route::apiResource('categories', CategoryController::class);
 
+Route::get('categoriesWithoutImage', [CategoryController::class, 'CategoryWithoutImage']);
+Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
+Route::get('productImages/{id}', [ProductController::class, 'allImages']);
+Route::get('productDetails/{product}', [ProductController::class, 'show']);
+Route::apiResource('categories', CategoryController::class);
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', [AuthController::class, 'getUser']);
-    Route::post('/logout', [AuthController::class, 'logout']);
+
+Route::middleware('auth:sanctum')->group(function () {});
+Route::get('/user', [AuthController::class, 'getUser']);
+Route::post('/logout', [AuthController::class, 'logout']);
 
 
 
@@ -86,9 +93,24 @@ Route::middleware('auth:sanctum')->group(function () {
 
     ///////////////////  MESSAGE  ///////////////////
 
-    Route::apiResource('messages', MessageController::class);
-    Route::apiResource('reports', ReportController::class);
-    Route::apiResource('reviews', ReviewController::class);
+// ✅ Conversation APIs
+Route::get('/conversations', [ConversationController::class, 'index']);
+Route::post('/conversations', [ConversationController::class, 'store']);
+Route::get('/conversations/{conversation}', [ConversationController::class, 'show']);
+Route::delete('/conversations/{conversation}', [ConversationController::class, 'destroy']);
+
+// ✅ Message APIs — reorder static routes FIRST
+Route::get('/messages/unread-count', [MessageController::class, 'unreadCount']);
+Route::post('/messages/mark-read/{conversationId}', [MessageController::class, 'markAsRead']);
+Route::get('/messages/{conversationId}', [MessageController::class, 'index']);
+Route::post('/messages/{conversationId}', [MessageController::class, 'store']);
+Route::delete('/messages/{messageId}', [MessageController::class, 'destroy']);
+
+
+// Route::apiResource('/messages', MessageController::class);
+
+Route::apiResource('reports', ReportController::class);
+Route::apiResource('reviews', ReviewController::class);
 
     ///////////////////  USERS  ///////////////////
 
@@ -100,13 +122,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('users/{user}/location', [UserController::class, 'userLocation']);
     Route::get('/profile', [UserController::class, 'profile']);
 
-    ///////////////////  CURRENCIES  ///////////////////
 
-    // Route::apiResource('currency', CurrencyController::class);
-
-
-
-});
 
 
 
@@ -116,9 +132,14 @@ Route::prefix('v1/mobile')->group(function () {
 
     /////////////// PRODUCTS ///////////////////
 
-    Route::get('/products', [ProductController::class, 'index']); // With filters
-    Route::get('/products/{product}', [ProductController::class, 'show']);
+
+    Route::apiResource('products', ProductController::class);
+    Route::get('categories/{id}/attributes', [ProductController::class, 'getAttributesByCategory']);
+    Route::patch('/products/{id}/state', [ProductController::class, 'StateOfProduct']);
+    Route::Post('products/update/{product}', [ProductController::class, 'update']);
     Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
+    Route::get('productImages/{id}', [ProductController::class, 'allImages']);
+
 
 
     /////////////// USERS ///////////////////

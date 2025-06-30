@@ -27,10 +27,12 @@ class ProductController extends Controller
 
 //     public function __construct()
 // {
-//     $this->middleware('can:view product')->except(['websiteProducts', 'show']);
+//     $this->middleware('can:viewProduct')->only(['index', 'show']);
+//     $this->middleware('can:createProduct')->only(['store']);
+//     $this->middleware('can:editProduct')->only(['update']);
+//     $this->middleware('can:deleteProduct')->only(['destroy']);
 // }
 
-    
     /**
      * Display a listing of the resource with filtering.
      */
