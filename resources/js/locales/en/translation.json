@@ -1,14 +1,21 @@
 {
     "navbar": {
-      "login": "Login",
-      "profile": "Profile",
-      "adminPanel": "Admin Panel",
-      "logout": "Logout",
-      "Search...": "Search...",
-      "languages": {
-        "english": "English",
-        "dari": "Dari",
-        "pashto": "Pashto"
-      }
+        "login": "Login",
+        "Profile": "Profile",
+        "Admin Panel": "Admin Panel",
+        "logout": "Logout",
+        "Search...": "Search...",
+        "languages": {
+            "english": "English",
+            "dari": "Dari",
+            "pashto": "Pashto"
+        }
+    },
+    "home": {
+        "Filter": "Filter"
+    },
+    "favorite": {
+      "h1": "Your Treasured Favorites",
+      "h3": "A collection of products you've loved and saved for later"
     }
-  }
+}

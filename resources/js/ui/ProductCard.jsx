@@ -1,4 +1,4 @@
-import { Card, CardContent, CardMedia, Typography, Box } from "@mui/material";
+import { Card, CardContent, CardMedia, Typography, Box, Chip } from "@mui/material";
 import { Link } from "react-router-dom";
 import FavoriteButton from "./FavoriteButton";
 
@@ -10,13 +10,29 @@ function ProductCard({ product }) {
             sx={{
                 height: "100%",
                 position: "relative",
-                textDecoration: "none", // remove underline from link
-                color: "inherit", // inherit text color
+                textDecoration: "none",
+                color: "inherit",
                 "&:hover": {
                     boxShadow: 6,
                 },
             }}
         >
+            {/* Discount Badge */}
+            {product.has_discount && (
+                <Chip
+                    label={product.discount}
+                    color="error"
+                    size="small"
+                    sx={{
+                        position: "absolute",
+                        top: 8,
+                        left: 8,
+                        zIndex: 1,
+                        fontWeight: 'bold',
+                    }}
+                />
+            )}
+
             <Box
                 sx={{
                     position: "absolute",
@@ -54,14 +70,22 @@ function ProductCard({ product }) {
                         alignItems: "center",
                         gap: 1,
                         mb: 1,
+                        flexWrap: 'wrap',
                     }}
                 >
-                    <Typography variant="body1" fontWeight="bold">
-                        ${product.net_price}
+                    <Typography variant="h6" fontWeight="bold" color="primary">
+                        {product.final_price}
                     </Typography>
-                    {product.discount > 0 && (
-                        <Typography variant="body2" color="error">
-                            {product.discount}% off
+                    
+                    {product.has_discount && (
+                        <Typography 
+                            variant="body2" 
+                            sx={{
+                                textDecoration: 'line-through',
+                                color: 'text.secondary'
+                            }}
+                        >
+                            {product.original_price}
                         </Typography>
                     )}
                 </Box>

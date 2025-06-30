@@ -53,6 +53,8 @@ class UserController extends Controller
         }
         // dd($validated['image']);
         $user = User::create($validated);
+        // Assign a role (e.g. 'admin' or 'customer')
+$user->assignRole($validated['role']);
 
 
         // Return a success response with status code 201
@@ -98,6 +100,12 @@ class UserController extends Controller
         }
         // dd($validated);
         $user->update($validated);
+
+        // ✅ Assign or update user role
+    if (!empty($validated['role'])) {
+        $user->syncRoles($validated['role']); // replaces old role(s)
+    }
+
 
         return new UserResource($user);
     }

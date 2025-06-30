@@ -45,7 +45,7 @@ export default function CreateUser() {
     const { isUpdating, updateUser } = useUpdateUser();
     const isWorking = isCreating || isUpdating;
 
-    const { control, handleSubmit, setValue, reset } = useForm({
+    const { register, control, handleSubmit, setValue, reset } = useForm({
         defaultValues: isEditSession ? editValues : {},
     });
 
@@ -272,6 +272,9 @@ export default function CreateUser() {
                                                 },
                                             ]}
                                             disabled={isWorking}
+                                            {...register("role", {
+                                        required: "Role is required",
+                                    })}
                                         />
                                     </Grid>
                                 </Grid>
@@ -336,7 +339,7 @@ export default function CreateUser() {
                                                     }
                                                 />
                                                 <LocationField
-                                                    label="Location"
+                                                    label="Location: click the Icon"
                                                     name="userLocation"
                                                     control={control}
                                                     disabled={isWorking}
@@ -350,6 +353,7 @@ export default function CreateUser() {
                                                                 : null
                                                         )
                                                     }
+                                                    
                                                 />
                                             </Box>
                                         )}

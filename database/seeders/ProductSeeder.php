@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -16,11 +17,12 @@ class ProductSeeder extends Seeder
                 'category_id' => $categoryId,
                 'user_id' => rand(1, 5),
                 'currency' => 'AFN', // Use valid codes: AFN, USD, EUR
-                'net_price' => rand(100, 1000),
+                'price' => rand(100, 1000),
                 'discount' => rand(0, 100),
                 'quantity' => rand(1, 20),
                 'condition' => (bool)rand(0, 1),
-                'state' => 'available',
+                'state' => (bool)rand(0, 1),
+                'discount_type' => 'fixed',
                 'description' => "Description for Dummy Product $i",
                 'attributes' => json_encode([
                     'Color' => ['Red', 'Blue', 'Green'][array_rand(['Red', 'Blue', 'Green'])],

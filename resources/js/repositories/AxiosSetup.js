@@ -3,7 +3,7 @@ import axios from 'axios';
 import { getToken } from './AuthRepository';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8000/api', // Change to your API base URL
+  baseURL: 'http://127.0.0.1:8000/api', // Change to your API base URL
 });
 
 axiosInstance.interceptors.request.use(config => {

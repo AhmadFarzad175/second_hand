@@ -56,7 +56,7 @@ function ProductDetails({ dashboard = false }) {
 
     useEffect(() => {
         if (id) {
-            fetch(`/api/products/${id}`)
+            fetch(`/api/productDetails/${id}`)
                 .then((response) => {
                     if (!response.ok) {
                         throw new Error(
@@ -377,7 +377,7 @@ function ProductDetails({ dashboard = false }) {
                                         fontSize: { xs: "1rem", md: "1.25rem" },
                                     }}
                                 >
-                                    ${parseFloat(product.net_price).toFixed(2)}
+                                    ${parseFloat(product.price).toFixed(2)}
                                 </Typography>
 
                                 {/* Discounted Price in Bold */}
@@ -393,7 +393,7 @@ function ProductDetails({ dashboard = false }) {
                                 >
                                     $
                                     {parseFloat(
-                                        product.net_price - product.discount
+                                        product.price - product.discount
                                     ).toFixed(2)}
                                 </Typography>
                             </Stack>
@@ -405,7 +405,7 @@ function ProductDetails({ dashboard = false }) {
                                     fontSize: { xs: "1.25rem", md: "1.5rem" },
                                 }}
                             >
-                                ${parseFloat(product.net_price).toFixed(2)}
+                                ${parseFloat(product.price).toFixed(2)}
                             </Typography>
                         )}
                     </Box>

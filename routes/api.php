@@ -40,9 +40,11 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/auth/google', [AuthController::class, 'googleLogin']);
 
-Route::apiResource('products', ProductController::class);
-Route::apiResource('categories', CategoryController::class);
+Route::get('categoriesWithoutImage', [CategoryController::class, 'CategoryWithoutImage']);
 Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
+Route::get('productImages/{id}', [ProductController::class, 'allImages']);
+Route::get('productDetails/{product}', [ProductController::class, 'show']);
+Route::apiResource('categories', CategoryController::class);
 
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -51,57 +53,56 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 
-///////////////////  DASHBOARD  ///////////////////
+    ///////////////////  DASHBOARD  ///////////////////
 
 
-Route::get('/stats', [DashboardController::class, 'getStats']);
-Route::get('/recent-products', [DashboardController::class, 'getRecentProducts']);
-Route::get('/recent-users', [DashboardController::class, 'getRecentUsers']);
-Route::get('/reports', [DashboardController::class, 'getReports']);
-Route::get('/reviews', [DashboardController::class, 'getReviews']);
-Route::get('/top-rated-products', [DashboardController::class, 'getTopRatedProducts']);
-Route::get('/top-rated-users', [DashboardController::class, 'getTopRatedUsers']);
+    Route::get('/stats', [DashboardController::class, 'getStats']);
+    Route::get('/recent-products', [DashboardController::class, 'getRecentProducts']);
+    Route::get('/recent-users', [DashboardController::class, 'getRecentUsers']);
+    Route::get('/reports', [DashboardController::class, 'getReports']);
+    Route::get('/reviews', [DashboardController::class, 'getReviews']);
+    Route::get('/top-rated-products', [DashboardController::class, 'getTopRatedProducts']);
+    Route::get('/top-rated-users', [DashboardController::class, 'getTopRatedUsers']);
 
 
-///////////////////  FAVORITES  ///////////////////
+    ///////////////////  FAVORITES  ///////////////////
 
 
-Route::get('/favorites', [FavoriteController::class, 'index']);
+    Route::get('/favorites', [FavoriteController::class, 'index']);
 
 
-///////////////// PRODUCTS///////////////////////
+    ///////////////// PRODUCTS///////////////////////
+    Route::apiResource('products', ProductController::class);
+    Route::get('categories/{id}/attributes', [ProductController::class, 'getAttributesByCategory']);
+    Route::patch('/products/{id}/state', [ProductController::class, 'StateOfProduct']);
+    Route::Post('products/update/{product}', [ProductController::class, 'update']);
 
-Route::get('categories/{id}/attributes', [ProductController::class, 'getAttributesByCategory']);
-Route::patch('/products/{id}/state', [ProductController::class, 'StateOfProduct']);
-Route::Post('products/update/{product}', [ProductController::class, 'update']);
-Route::get('productImages/{id}', [ProductController::class, 'allImages']);
 
+    Route::post('/products/{productId}/favorite', [FavoriteController::class, 'toggle']);
 
-Route::post('/products/{productId}/favorite', [FavoriteController::class, 'toggle']);
+    ///////////////////  CATEGORY  ///////////////////
+    // Route::apiResource('categories', CategoryController::class);
+    Route::Post('categories/update/{category}', [CategoryController::class, 'update']);
 
-///////////////////  CATEGORY  ///////////////////
+    ///////////////////  MESSAGE  ///////////////////
 
-Route::Post('categories/update/{category}', [CategoryController::class, 'update']);
+    Route::apiResource('messages', MessageController::class);
+    Route::apiResource('reports', ReportController::class);
+    Route::apiResource('reviews', ReviewController::class);
 
-///////////////////  MESSAGE  ///////////////////
+    ///////////////////  USERS  ///////////////////
 
-Route::apiResource('messages', MessageController::class);
-Route::apiResource('reports', ReportController::class);
-Route::apiResource('reviews', ReviewController::class);
+    Route::apiResource('users', UserController::class);
+    Route::put('users/{user}/status', [UserController::class, 'Status']);
+    Route::post('users/update/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('bulk-delte-user', [UserController::class, 'bulkDelete']);
 
-///////////////////  USERS  ///////////////////
+    Route::get('users/{user}/location', [UserController::class, 'userLocation']);
+    Route::get('/profile', [UserController::class, 'profile']);
 
-Route::apiResource('users', UserController::class);
-Route::put('users/{user}/status', [UserController::class, 'Status']);
-Route::post('users/update/{user}', [UserController::class, 'update'])->name('users.update');
-Route::delete('bulk-delte-user', [UserController::class, 'bulkDelete']);
+    ///////////////////  CURRENCIES  ///////////////////
 
-Route::get('users/{user}/location', [UserController::class, 'userLocation']);
-Route::get('/profile', [UserController::class, 'profile']);
-
-///////////////////  CURRENCIES  ///////////////////
-
-// Route::apiResource('currency', CurrencyController::class);
+    // Route::apiResource('currency', CurrencyController::class);
 
 
 
@@ -131,7 +132,6 @@ Route::prefix('v1/mobile')->group(function () {
 
     /////////////// CATEGORIES ///////////////////
 
-    Route::apiResource('categories', CategoryController::class);
     Route::Post('categories/update/{category}', [CategoryController::class, 'update']);
 
 

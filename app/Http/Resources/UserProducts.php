@@ -20,14 +20,14 @@ class UserProducts extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'net_price' => $this->net_price,
+            'price' => $this->price,
             'currency' => $this->currency,
             'discount' => $this->discount,
             'posted'     => Carbon::parse($this->created_at)->diffForHumans(),
             'state' =>  $this->state,
             'image' => asset('storage/' . $this->images->first()->image_url),
             'rating' => rand(3, 5)
-            
+
             // 'quantity' => $this->quantity,
             // 'category' => $this->category?->name,
             // 'condition' => $this->condition,

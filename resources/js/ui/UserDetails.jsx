@@ -173,25 +173,6 @@ const UserDetails = ({ user, isEditable = false }) => {
                                 </Typography>
                             </Box>
                         </Box>
-                        {!isAdmin && (
-                            <Box sx={{ flex: 1 }}>
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                    }}
-                                >
-                                    <LocationOn
-                                        color="primary"
-                                        sx={{ mr: 1 }}
-                                    />
-                                    <Typography variant="body1">
-                                        {user.user_location ||
-                                            "Location not specified"}
-                                    </Typography>
-                                </Box>
-                            </Box>
-                        )}
                     </Box>
 
                     {/* Description */}
@@ -322,7 +303,7 @@ const UserDetails = ({ user, isEditable = false }) => {
                                                         variant="subtitle2"
                                                         color="primary"
                                                     >
-                                                        {product.net_price -
+                                                        {product.price -
                                                             product.discount +
                                                             " " +
                                                             product.currency}
@@ -402,9 +383,9 @@ const UserDetails = ({ user, isEditable = false }) => {
                                         variant="subtitle2"
                                         color="primary"
                                     >
-                                        {`${
-                                            product.net_price - product.discount
-                                        } ${product.currency}`}
+                                        {`${product.price - product.discount} ${
+                                            product.currency
+                                        }`}
                                     </Typography>
                                     {product.rating && (
                                         <Rating

@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
         // Users and categories
         // User::create([
         //     'image' => 'default.png',
-        //     'name' => 'farzad',
+        //     'name' => 'Farzad',
         //     'email' => 'farzad@gmail.com',
         //     'password' => Hash::make('123456'),
         //     'location' => json_encode(['city' => 'Kabul', 'country' => 'Afghanistan']),
@@ -30,19 +30,19 @@ class DatabaseSeeder extends Seeder
         //     'is_active' => true,
         // ]);
 
-        User::factory(10)->create();
+        // User::factory(10)->create();
 
         $this->call([
             CategorySeeder::class,
             ProductAttributesSeeder::class,
-            ProductSeeder::class,
-            UserSeeder::class,
+            // ProductSeeder::class,
+            // UserSeeder::class,
             RolesAndPermissionsSeeder::class,
         ]);
 
         // Seed other related models
-        Message::factory(5)->create();
-        Review::factory(5)->create();
+        // Message::factory(5)->create();
+        // Review::factory(5)->create();
         // Favorite::factory(10)->create();
         // Report::factory(15)->create(); // Uncomment when needed
     }

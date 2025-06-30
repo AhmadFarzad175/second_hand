@@ -8,7 +8,6 @@ export async function getProducts(params = {}) {
         const response = await AxiosSetup.get(endpoint, {
             params: {
                 ...filters,
-                website, // if you still need this flag
             },
         });
         return response.data.data || [];

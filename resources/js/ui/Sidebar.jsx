@@ -73,6 +73,11 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar }) => {
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const navigate = useNavigate();
     const { t, i18n } = useTranslation();
+    const user = JSON.parse(localStorage.getItem("user"));
+
+const name = user?.name || "Unknown";
+const email = user?.email || "No email";
+const image = user?.image;
 
     const handleMenuClick = (menu, path) => {
         if (path) {
@@ -237,11 +242,16 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar }) => {
                     }}
                 >
                     <ListItemIcon>
-                        <Avatar sx={{ width: 32, height: 32 }}>U</Avatar>
-                    </ListItemIcon>
+  {image ? (
+    <Avatar src={image} sx={{ width: 32, height: 32 }} />
+  ) : (
+    <Avatar sx={{ width: 32, height: 32 }}>U</Avatar>
+  )}
+</ListItemIcon>
+
                     <ListItemText 
-                        primary="Admin User"
-                        secondary="admin@example.com" 
+                        primary={name}
+                        secondary={email}
                     />
                     </ListItem>
             </Box>

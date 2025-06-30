@@ -1,15 +1,23 @@
 {
     "navbar": {
-      "login": "ورود",
-      "profile": "پروفایل",
-      "adminPanel": "پنل مدیریت",
-      "logout": "خروج",
-      "Search...": "جستجو...",
+        "login": "ورود",
+        "Profile": "پروفایل",
+        "Admin Panel": "پنل مدیریت",
+        "logout": "خروج",
+        "Search...": "جستجو...",
 
-      "languages": {
-        "english": "انگلیسی",
-        "dari": "دری",
-        "pashto": "پشتو"
-      }
+        "languages": {
+            "english": "انگلیسی",
+            "dari": "دری",
+            "pashto": "پشتو"
+        }
+    },
+    "home": {
+        "Filter": "فیلتر"
+    },
+    "favorite": {
+        "h1": "گنجینه ای از علایق",
+        "h3": "A collection of products you've loved and saved for later"
+
     }
-  }
+}

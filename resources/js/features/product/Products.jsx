@@ -119,7 +119,7 @@ const Products = () => {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 20, 30]}
                     component="div"
-                    count={paginatedRows.length}
+                    count={products.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}

@@ -234,7 +234,7 @@ function NavBar({ onSearch }) {
                         <ListItemIcon>
                             <AccountCircleIcon fontSize="small" />
                         </ListItemIcon>
-                        <ListItemText>Profile</ListItemText>
+                        <ListItemText>{t('navbar.Profile')}</ListItemText>
                     </MenuItem>
 
                     <Can permission="create product">
@@ -242,7 +242,7 @@ function NavBar({ onSearch }) {
                             <ListItemIcon>
                                 <DashboardIcon fontSize="small" />
                             </ListItemIcon>
-                            <ListItemText>Admin Panel</ListItemText>
+                            <ListItemText>{t('navbar.Admin Panel')}</ListItemText>
                         </MenuItem>
                     </Can>
 

@@ -64,15 +64,14 @@ class AuthController extends Controller
 
         $user = Auth::user();
         $token = $user->createToken('authToken')->plainTextToken;
-
         return response()->json([
             'message' => 'Login successful',
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'image' => $user->image, // or asset('storage/'.$user->image) if needed
-                'role' => $user->role, // returns the first role name
+                'image' => asset('storage/'.$user->image), // or asset('storage/'.$user->image) if needed
+'role' => $user->getRoleNames()->first(),
 'permissions' => $user->getAllPermissions()->pluck('name')->toArray(),
             ],
             'token' => $token,

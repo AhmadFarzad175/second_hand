@@ -8,12 +8,15 @@ import { getCategories } from "../repositories/CategoryRepository";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterDialog from "./FilterDialog";
+import { useTranslation } from "react-i18next";
 
 export default function Carousel() {
     const [value, setValue] = useState(null);
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const [filterOpen, setFilterOpen] = useState(false);
+        const { t } = useTranslation();
+    
 
     const currentFilters = {
         price: searchParams.get("price") || "",
@@ -132,7 +135,7 @@ export default function Carousel() {
                 onClick={() => setFilterOpen(true)}
                 sx={{ ml: 2, minWidth: 90, borderRadius: 1 }}
             >
-                Filter
+                {t('home.Filter')}
             </Button>
 
             <FilterDialog

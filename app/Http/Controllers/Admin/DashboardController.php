@@ -17,7 +17,7 @@ class DashboardController extends Controller
         return response()->json([
             'total_products' => Product::count(),
             'total_users' => User::count(),
-            'total_sales' => Product::where('state', 'sold')->sum('net_price'),
+            'total_sales' => Product::where('state', 'sold')->sum('price'),
             'total_categories' => Category::count(),
         ]);
     }
@@ -26,7 +26,7 @@ class DashboardController extends Controller
     {
         return response()->json(
             Product::with(['category:id,name', 'user:id,name'])
-                ->select(['id', 'name', 'category_id', 'net_price', 'user_id', 'state'])
+                ->select(['id', 'name', 'category_id', 'price', 'user_id', 'state'])
                 ->latest()
                 ->take(10)
                 ->get()
@@ -35,7 +35,7 @@ class DashboardController extends Controller
                         'id' => $product->id,
                         'name' => $product->name,
                         'category' => $product->category->name,
-                        'price' => '$' . number_format($product->net_price, 2),
+                        'price' => '$' . number_format($product->price, 2),
                         'seller' => $product->user->name,
                         'status' => $product->state,
                     ];

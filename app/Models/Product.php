@@ -13,8 +13,9 @@ class Product extends Model
         'name',
         'category_id',
         'user_id',
-        'net_price',
+        'price',
         'discount',
+        'discount_type',
         'quantity',
         'condition',
         'attributes',
@@ -52,7 +53,7 @@ class Product extends Model
     public function favorites()
     {
         return $this->belongsToMany(User::class, 'favorites')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 
     // public function currency()
@@ -103,37 +104,44 @@ class Product extends Model
     protected $casts = [
         'attributes' => 'array', // Ensures JSON data is treated as an array
     ];
-    protected static function booted()
-    {
-        static::deleting(function ($product) {
-            foreach ($product->images as $image) {
-                if ($image->image_path && Storage::disk('public')->exists($image->image_path)) {
-                    Storage::disk('public')->delete($image->image_path);
+        protected static function booted()
+        {
+            static::deleting(function ($product) {
+                foreach ($product->images as $image) {
+                    if ($image->image_path && Storage::disk('public')->exists($image->image_path)) {
+                        Storage::disk('public')->delete($image->image_path);
+                    }
                 }
-            }
 
-            $product->images()->delete();
-        });
+                $product->images()->delete();
+            });
+        }
+
+
+
+
+    public function getFinalPriceAttribute()
+    {
+        if ($this->discount === 0) {
+            return $this->price;
+        } elseif ($this->discount_type === 'fixed') {
+            return max(0, $this->price - $this->discount);
+        } elseif ($this->discount_type === '%') {
+return number_format(max(0, $this->price - ($this->price * ($this->discount / 100))), 2);
+        }
+        return $this->price;
+    }
+
+
+
+    // public function getCurrencyAttribute()
+    // {
+    //     return $this->attributes['currency'] === "AFN" ? "؋" : "$";
+    // }
+    
+
+    public function getStateAttribute()
+    {
+        return $this->attributes['state'] ? 'available' : 'sold';
     }
 }
-
-
-
-// it is from product resource
-   // 'attribute_values' => $this->attributeValues->map(function ($attributeValue) {
-            //     return [
-            //         'attribute' => $attributeValue->attribute->name,
-            //         'value' => $attributeValue->value,
-            //     ];
-            // }),
-            // 'reviews' => [
-            //     'count' => $this->reviews->count(),
-            //     'average_rating' => $this->reviews->average('rating'),
-            // ],
-            // 'favorites_count' => $this->favorites->count(),
-            // // 'whatsapp_link' => $this->user->phone
-            // //     ? 'https://wa.me/' . $this->user->phone . '?text=Hello%2C%20I%27m%20interested%20in%20your%20product%20%27' . urlencode($this->name) . '%27%20listed%20for%20' . $this->price
-            // //     : null,
-            // 'whatsapp_link' => $this->user && $this->user->phone
-            //     ? 'https://wa.me/' . $this->user->phone . '?text=' . urlencode("Hello, I'm interested in your product '{$this->name}' listed for {$this->price}")
-                // : null,

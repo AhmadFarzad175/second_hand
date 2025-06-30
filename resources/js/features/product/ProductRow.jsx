@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import {
     TableRow,
     TableCell,
@@ -99,10 +99,10 @@ const ProductRow = ({ product, isSelected, handleClick }) => {
                         variant="body2"
                         sx={{
                             color: "text.secondary",
-                            fontSize:"14px"
+                            fontSize: "14px",
                         }}
                     >
-                        {product.user?.name}
+                        {product.user}
                     </Typography>
                 </Box>
             </TableCell>
@@ -110,7 +110,11 @@ const ProductRow = ({ product, isSelected, handleClick }) => {
             <TableCell align="left">
                 <Box display="flex" flexDirection="column">
                     <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                        {product.net_price - product.discount + ' ' + product.currency}
+                        {`${product.final_price} 
+                            ${product.currency ===
+                        "AFN"
+                            ? "؋"
+                            : "$"}`}
                     </Typography>
                     {Number(product.discount) > 0 && (
                         <Typography
@@ -120,7 +124,10 @@ const ProductRow = ({ product, isSelected, handleClick }) => {
                                 textDecoration: "line-through",
                             }}
                         >
-                            {product.net_price + ' ' + product.currency}
+                            {`${product.price} ${product.currency ===
+                        "AFN"
+                            ? "؋"
+                            : "$"}`}
                         </Typography>
                     )}
                 </Box>

@@ -18,19 +18,20 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // ✅ Add this line
-            $table->index('name');  // ✅ Now this makes sense
+            $table->string('name');
+            $table->index('name'); 
             $table->foreignIdFor(Category::class)->constrained()->onDelete('cascade');
             $table->foreignIdFor(User::class);
-            $table->decimal('net_price', 10, 2);
+            $table->decimal('price', 10, 2);
+            $table->string('currency', 3);
             $table->decimal('discount', 10, 2)->default(0);
+            $table->enum('discount_type', ['fixed', '%']); 
             $table->integer('quantity')->default(1);
-            $table->boolean('condition')->default(false);
-            $table->enum('state', ['available', 'sold'])->default('available');
+            $table->boolean('condition')->default(false); // 0 == New, 1 == Old
+            $table->boolean('state')->default(0); // 0 == available, 1 == sold
             $table->string('description');
             $table->index('description');
             $table->json('attributes')->nullable();
-            $table->string('currency')->default('USD');
             $table->timestamps();
         });
     }
