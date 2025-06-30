@@ -38,10 +38,26 @@ use App\Http\Controllers\ProductAttributeValueController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+
 Route::post('/auth/google', [AuthController::class, 'googleLogin']);
 
+<<<<<<< HEAD
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+=======
+Route::get('categoriesWithoutImage', [CategoryController::class, 'CategoryWithoutImage']);
+Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
+Route::get('productImages/{id}', [ProductController::class, 'allImages']);
+Route::get('productDetails/{product}', [ProductController::class, 'show']);
+Route::apiResource('categories', CategoryController::class);
+
+Route::get('categoriesWithoutImage', [CategoryController::class, 'CategoryWithoutImage']);
+Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
+Route::get('productImages/{id}', [ProductController::class, 'allImages']);
+Route::get('productDetails/{product}', [ProductController::class, 'show']);
+Route::apiResource('categories', CategoryController::class);
+
+>>>>>>> e776a48f249c6e584b7fe378d6e7fc76f15f7e63
 
 Route::middleware('auth:sanctum')->group(function () {});
 Route::get('/user', [AuthController::class, 'getUser']);
@@ -61,42 +77,38 @@ Route::post('/logout', [AuthController::class, 'logout']);
 
 
 
-///////////////////  DASHBOARD  ///////////////////
+    ///////////////////  DASHBOARD  ///////////////////
 
 
-Route::get('/stats', [DashboardController::class, 'getStats']);
-Route::get('/recent-products', [DashboardController::class, 'getRecentProducts']);
-Route::get('/recent-users', [DashboardController::class, 'getRecentUsers']);
-Route::get('/reports', [DashboardController::class, 'getReports']);
-Route::get('/reviews', [DashboardController::class, 'getReviews']);
-Route::get('/top-rated-products', [DashboardController::class, 'getTopRatedProducts']);
-Route::get('/top-rated-users', [DashboardController::class, 'getTopRatedUsers']);
+    Route::get('/stats', [DashboardController::class, 'getStats']);
+    Route::get('/recent-products', [DashboardController::class, 'getRecentProducts']);
+    Route::get('/recent-users', [DashboardController::class, 'getRecentUsers']);
+    Route::get('/reports', [DashboardController::class, 'getReports']);
+    Route::get('/reviews', [DashboardController::class, 'getReviews']);
+    Route::get('/top-rated-products', [DashboardController::class, 'getTopRatedProducts']);
+    Route::get('/top-rated-users', [DashboardController::class, 'getTopRatedUsers']);
 
 
-///////////////////  FAVORITES  ///////////////////
+    ///////////////////  FAVORITES  ///////////////////
 
 
-Route::get('/favorites', [FavoriteController::class, 'index']);
+    Route::get('/favorites', [FavoriteController::class, 'index']);
 
 
-///////////////// PRODUCTS///////////////////////
-
-Route::apiResource('products', ProductController::class);
-Route::get('categories/{id}/attributes', [ProductController::class, 'getAttributesByCategory']);
-Route::patch('/products/{id}/state', [ProductController::class, 'StateOfProduct']);
-Route::Post('products/update/{product}', [ProductController::class, 'update']);
-Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
-Route::get('productImages/{id}', [ProductController::class, 'allImages']);
+    ///////////////// PRODUCTS///////////////////////
+    Route::apiResource('products', ProductController::class);
+    Route::get('categories/{id}/attributes', [ProductController::class, 'getAttributesByCategory']);
+    Route::patch('/products/{id}/state', [ProductController::class, 'StateOfProduct']);
+    Route::Post('products/update/{product}', [ProductController::class, 'update']);
 
 
-Route::post('/products/{productId}/favorite', [FavoriteController::class, 'toggle']);
+    Route::post('/products/{productId}/favorite', [FavoriteController::class, 'toggle']);
 
-///////////////////  CATEGORY  ///////////////////
+    ///////////////////  CATEGORY  ///////////////////
+    // Route::apiResource('categories', CategoryController::class);
+    Route::Post('categories/update/{category}', [CategoryController::class, 'update']);
 
-Route::apiResource('categories', CategoryController::class);
-Route::Post('categories/update/{category}', [CategoryController::class, 'update']);
-
-///////////////////  MESSAGE  ///////////////////
+    ///////////////////  MESSAGE  ///////////////////
 
 // ✅ Conversation APIs
 Route::get('/conversations', [ConversationController::class, 'index']);
@@ -117,15 +129,15 @@ Route::delete('/messages/{messageId}', [MessageController::class, 'destroy']);
 Route::apiResource('reports', ReportController::class);
 Route::apiResource('reviews', ReviewController::class);
 
-///////////////////  USERS  ///////////////////
+    ///////////////////  USERS  ///////////////////
 
-Route::apiResource('users', UserController::class);
-Route::put('users/{user}/status', [UserController::class, 'Status']);
-Route::post('users/update/{user}', [UserController::class, 'update'])->name('users.update');
-Route::delete('bulk-delte-user', [UserController::class, 'bulkDelete']);
+    Route::apiResource('users', UserController::class);
+    Route::put('users/{user}/status', [UserController::class, 'Status']);
+    Route::post('users/update/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('bulk-delte-user', [UserController::class, 'bulkDelete']);
 
-Route::get('users/{user}/location', [UserController::class, 'userLocation']);
-Route::get('/profile', [UserController::class, 'profile']);
+    Route::get('users/{user}/location', [UserController::class, 'userLocation']);
+    Route::get('/profile', [UserController::class, 'profile']);
 
 
 
@@ -158,7 +170,6 @@ Route::prefix('v1/mobile')->group(function () {
 
     /////////////// CATEGORIES ///////////////////
 
-    Route::apiResource('categories', CategoryController::class);
     Route::Post('categories/update/{category}', [CategoryController::class, 'update']);
 
 

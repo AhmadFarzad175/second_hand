@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('description')->nullable();
             $table->string('rating')->nullable();
-            $table->enum('role', ['admin', 'user', 'manager'])->nullable()->default('user');
+            // $table->enum('role', ['admin', 'user', 'manager'])->nullable()->default('user');
             $table->boolean('is_active')->default(true);
             $table->string('google_id')->nullable()->unique();
             $table->rememberToken();

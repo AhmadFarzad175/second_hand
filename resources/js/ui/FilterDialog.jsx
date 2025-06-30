@@ -159,7 +159,7 @@ export default function FilterDialog({ open, onClose, filters, onApply }) {
         {/* Price Range Section */}
         <Box mb={4}>
           <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-            Price Range (ZAR)
+            Price Range
           </Typography>
           <Slider
             value={priceRange}
@@ -168,7 +168,7 @@ export default function FilterDialog({ open, onClose, filters, onApply }) {
             min={0}
             max={10000}
             step={100}
-            valueLabelFormat={(value) => `R${value}`}
+            valueLabelFormat={(value) => `${value}`}
             sx={{ mt: 2 }}
           />
           <Stack direction="row" justifyContent="space-between" mt={1}>

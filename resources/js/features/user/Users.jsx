@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useMemo, useState } from "react";
 import {
     Box,
     Breadcrumbs,
@@ -53,7 +53,7 @@ const Users = () => {
         setPage(0);
     };
 
-    const userRows = React.useMemo(() => {
+    const userRows = useMemo(() => {
         return users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
     }, [users, page, rowsPerPage]);
 

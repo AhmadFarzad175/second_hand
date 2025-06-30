@@ -10,6 +10,7 @@ import {
     Box,
     Container,
     Collapse,
+    Button,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -17,20 +18,28 @@ import AddBusinessIcon from "@mui/icons-material/AddBusiness";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import LanguageIcon from "@mui/icons-material/Language";
+import LoginIcon from "@mui/icons-material/Login";
 import SearchIcon from "@mui/icons-material/Search";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 
-import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Logout } from "@mui/icons-material";
 import SearchInput from "./SearchInput";
 import AppDrawer from "../../../public/images/Drawer";
+import Can from "../repositories/Can";
+import { getUser, logout } from "../repositories/AuthRepository";
+import { useTranslation } from "react-i18next";
 
 function NavBar({ onSearch }) {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
+    const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
+    const isUser = Boolean(getUser());
+    const { t, i18n } = useTranslation();
+    console.log(isUser);
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -38,6 +47,14 @@ function NavBar({ onSearch }) {
 
     const handleMenuClose = () => {
         setAnchorEl(null);
+    };
+
+    const handleLanguageMenuOpen = (event) => {
+        setLanguageAnchorEl(event.currentTarget);
+    };
+
+    const handleLanguageMenuClose = () => {
+        setLanguageAnchorEl(null);
     };
 
     function toggleDrawer(open) {
@@ -66,6 +83,20 @@ function NavBar({ onSearch }) {
     const goDashboard = () => {
         handleMenuClose();
         navigate("admin/dashboard");
+    };
+
+    const handleLogout = () => {
+        handleMenuClose();
+        logout();
+        navigate("login");
+    };
+
+    const changeLanguage = (language) => {
+        handleLanguageMenuClose();
+        // Add your language change logic here
+        i18n.changeLanguage(language);
+        handleLanguageMenuClose();
+        console.log(`Language changed to ${language}`);
     };
 
     return (
@@ -140,14 +171,45 @@ function NavBar({ onSearch }) {
                         >
                             <Brightness4Icon />
                         </IconButton>
+
+                        {/* Language Dropdown */}
                         <IconButton
                             sx={{ display: { xs: "none", md: "flex" } }}
+                            onClick={handleLanguageMenuOpen}
                         >
                             <LanguageIcon />
                         </IconButton>
-                        <IconButton onClick={handleMenuOpen}>
-                            <AccountCircleIcon />
-                        </IconButton>
+                        {/* Language Dropdown */}
+          <Menu
+            anchorEl={languageAnchorEl}
+            open={Boolean(languageAnchorEl)}
+            onClose={handleLanguageMenuClose}
+          >
+            <MenuItem onClick={() => changeLanguage('en')}>
+              <ListItemText>{t('navbar.languages.english')}</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={() => changeLanguage('fa')}>
+              <ListItemText>{t('navbar.languages.dari')}</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={() => changeLanguage('ps')}>
+              <ListItemText>{t('navbar.languages.pashto')}</ListItemText>
+            </MenuItem>
+          </Menu>
+
+                        {/* Show the user dropdown or login button */}
+                        {isUser ? (
+                            <IconButton onClick={handleMenuOpen}>
+                                <AccountCircleIcon />
+                            </IconButton>
+                        ) : (
+                            <Button
+                                variant="outlined"
+                                onClick={() => navigate("/login")} // Assuming you're using react-router
+                                startIcon={<LoginIcon />}
+                            >
+                                Login
+                            </Button>
+                        )}
                     </Box>
                 </Toolbar>
             </Container>
@@ -162,37 +224,36 @@ function NavBar({ onSearch }) {
             {/* Drawer */}
             <AppDrawer open={drawerOpen} toggleDrawer={toggleDrawer} />
 
-            {/* User Menu */}
-            <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
-            >
-                <MenuItem
-                    onClick={goProfile}
+            <Can permission="view product">
+                <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={handleMenuClose}
                 >
-                    <ListItemIcon>
-                        <AccountCircleIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>Profile</ListItemText>
-                </MenuItem>
+                    <MenuItem onClick={goProfile}>
+                        <ListItemIcon>
+                            <AccountCircleIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText>{t('navbar.Profile')}</ListItemText>
+                    </MenuItem>
 
-                <MenuItem
-                    onClick={goDashboard}
-                >
-                    <ListItemIcon>
-                        <DashboardIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>Admin Panel</ListItemText>
-                </MenuItem>
+                    <Can permission="create product">
+                        <MenuItem onClick={goDashboard}>
+                            <ListItemIcon>
+                                <DashboardIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText>{t('navbar.Admin Panel')}</ListItemText>
+                        </MenuItem>
+                    </Can>
 
-                <MenuItem onClick={handleMenuClose}>
-                    <ListItemIcon>
-                        <Logout fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>Logout</ListItemText>
-                </MenuItem>
-            </Menu>
+                    <MenuItem onClick={handleLogout}>
+                        <ListItemIcon>
+                            <Logout fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText>{t('navbar.logout')}</ListItemText>
+                    </MenuItem>
+                </Menu>
+            </Can>
         </AppBar>
     );
 }

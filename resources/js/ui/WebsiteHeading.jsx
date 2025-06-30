@@ -73,7 +73,7 @@ const WebsiteHeading = ({
       {divider && (
         <Divider
           sx={{
-            width: 100,
+            width: 200,
             height: 4,
             mx: align === "center" ? "auto" : "unset",
             background: (theme) =>

@@ -6,15 +6,19 @@ import {
     Typography,
     Button,
     Paper,
-    Grid,
     Stack,
     CircularProgress,
     IconButton,
+    useTheme,
+    useMediaQuery,
 } from "@mui/material";
 import { TextField, Select, TextArea } from "../ui/InputFields";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useNavigate } from "react-router-dom";
+import AxiosSetup from "../repositories/AxiosSetup";
+import PriceDisplay from "./PriceDisplay";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 export default function ProductForm({
     onSubmit,
@@ -23,6 +27,9 @@ export default function ProductForm({
     editValues = {},
     navigateBackPath = "/",
 }) {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    // const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
     const [images, setImages] = useState(Array(6).fill(null));
     const [imageFiles, setImageFiles] = useState(Array(6).fill(null));
     const [existingImageIds, setExistingImageIds] = useState(
@@ -30,7 +37,7 @@ export default function ProductForm({
     );
     const [categories, setCategories] = useState([]);
     const [categoryAttributes, setCategoryAttributes] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    // const [isLoading, setIsLoading] = useState(false);
     const [isLoadingAttributes, setIsLoadingAttributes] = useState(false);
     const navigate = useNavigate();
 
@@ -39,12 +46,27 @@ export default function ProductForm({
         handleSubmit,
         control,
         watch,
-        getValues, // Add this
+        getValues,
+        clearErrors,
+        setValue,
+        setError,
         formState: { errors },
         reset,
     } = useForm({
-        defaultValues: isEditSession ? editValues : {},
+        defaultValues: {
+            currency: "USD", // Default value for new products
+            discount_type: "%", // Default value for new products
+            discount: 0, // Default value for new products
+            price: "", // Default value for new products
+            ...(isEditSession ? editValues : {}), // Spread editValues when in edit mode
+        },
+        mode: "onBlur",
+        reValidateMode: "onChange",
     });
+
+    useEffect(() => {
+        console.log("Edit values received:", editValues);
+    }, [editValues]);
 
     // Watch category changes
     const watchedCategory = watch("category_id");
@@ -53,11 +75,17 @@ export default function ProductForm({
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch("/api/categories");
-                const data = await response.json();
-                setCategories(data.data);
+                const response = await AxiosSetup.get(
+                    "/categoriesWithoutImage"
+                );
+                setCategories(response.data.data || []);
             } catch (error) {
                 console.error("Error fetching categories:", error);
+                setCategories([]);
+                throw new Error(
+                    error.response?.data?.message ||
+                        "Failed to fetch categories"
+                );
             }
         };
 
@@ -74,18 +102,15 @@ export default function ProductForm({
         const fetchAttributes = async () => {
             setIsLoadingAttributes(true);
             try {
-                const response = await fetch(
-                    `/api/categories/${watchedCategory}/attributes`
+                const response = await AxiosSetup.get(
+                    `/categories/${watchedCategory}/attributes`
                 );
-                const { data } = await response.json();
+                const { data } = response.data;
 
                 if (Array.isArray(data)) {
                     setCategoryAttributes(data);
 
-                    // Get current form values
                     const currentValues = getValues();
-
-                    // Parse existing attributes if in edit mode
                     let existingAttributes = {};
                     if (isEditSession && currentValues.attributes) {
                         try {
@@ -97,10 +122,8 @@ export default function ProductForm({
                         }
                     }
 
-                    // Prepare reset values - only reset attributes not present in both sets
                     const resetValues = {};
                     data.forEach((attr) => {
-                        // Preserve value if it exists in both old and new attributes
                         resetValues[attr.name] =
                             existingAttributes[attr.name] ||
                             (attr.type === "select" ? "" : "");
@@ -114,6 +137,10 @@ export default function ProductForm({
             } catch (error) {
                 console.error("Error fetching attributes:", error);
                 setCategoryAttributes([]);
+                throw new Error(
+                    error.response?.data?.message ||
+                        "Failed to fetch attributes"
+                );
             } finally {
                 setIsLoadingAttributes(false);
             }
@@ -125,28 +152,28 @@ export default function ProductForm({
     // Initialize form with edit values and fetch images if in edit mode
     useEffect(() => {
         if (!isEditSession) return;
-        setIsLoading(true);
+        // setIsLoading(true);
 
         const fetchProductImages = async () => {
             try {
-                const response = await fetch(
-                    `/api/productImages/${editValues.id}`
+                const response = await AxiosSetup.get(
+                    `/productImages/${editValues.id}`
                 );
-                const data = await response.json();
+                const images = response.data.data;
+                console.log(images);
 
                 const fetchedImages = Array(6).fill(null);
                 const fetchedImageIds = Array(6).fill(null);
-                data.data.forEach((imgObj, index) => {
+                images.forEach((imgObj, index) => {
                     if (index < 6 && imgObj.images) {
                         fetchedImages[index] = imgObj.images;
-                        fetchedImageIds[index] = imgObj.id; // Assuming your API returns image IDs
+                        fetchedImageIds[index] = imgObj.id;
                     }
                 });
 
                 setImages(fetchedImages);
                 setExistingImageIds(fetchedImageIds);
 
-                // Parse attributes from JSON string
                 let parsedAttributes = {};
                 try {
                     parsedAttributes = JSON.parse(editValues.attributes);
@@ -154,20 +181,37 @@ export default function ProductForm({
                     console.error("Error parsing attributes:", e);
                 }
 
-                // Combine all form values including parsed attributes
                 reset({
                     ...editValues,
                     ...parsedAttributes,
                 });
             } catch (error) {
                 console.error("Error fetching product images:", error);
+                throw new Error(
+                    error.response?.data?.message ||
+                        "Failed to fetch product images"
+                );
             } finally {
-                setIsLoading(false);
+                // setIsLoading(false);
             }
         };
 
         fetchProductImages();
     }, [isEditSession, editValues, reset]);
+
+    // const handleAddImage = (event, index) => {
+    //     if (event.target.files && event.target.files[0]) {
+    //         const file = event.target.files[0];
+    //         const newImage = URL.createObjectURL(file);
+    //         const newImages = [...images];
+    //         newImages[index] = newImage;
+    //         setImages(newImages);
+
+    //         const newImageFiles = [...imageFiles];
+    //         newImageFiles[index] = file;
+    //         setImageFiles(newImageFiles);
+    //     }
+    // };
 
     const handleAddImage = (event, index) => {
         if (event.target.files && event.target.files[0]) {
@@ -180,6 +224,9 @@ export default function ProductForm({
             const newImageFiles = [...imageFiles];
             newImageFiles[index] = file;
             setImageFiles(newImageFiles);
+
+            // Clear error when an image is added
+            clearErrors("images");
         }
     };
 
@@ -191,12 +238,20 @@ export default function ProductForm({
         const newImageFiles = [...imageFiles];
         newImageFiles[index] = null;
         setImageFiles(newImageFiles);
+
+        // Add validation check when removing images
+        if (!newImages.some((img) => img !== null)) {
+            setError("images", {
+                type: "manual",
+                message: "At least one product image is required",
+            });
+        } else {
+            clearErrors("images");
+        }
     };
 
-    // Modify your onFormSubmit function
     const onFormSubmit = (data) => {
         const formData = new FormData();
-        formData.append("currency", "AFN");
 
         // Build attributes object
         const attributes = {};
@@ -214,14 +269,22 @@ export default function ProductForm({
             }
         }
 
+        console.log("outside");
+        if (!images.some((img) => img !== null)) {
+            console.log("inside");
+            setError("images", {
+                type: "manual",
+                message: "At least one product image is required",
+            });
+            return;
+        }
+
         // Handle images differently for edit mode
         if (isEditSession) {
-            // Create an array to track which images to keep/delete
             const imageUpdates = [];
 
             images.forEach((image, index) => {
                 if (image === null) {
-                    // Image was removed - mark for deletion if it was an existing image
                     if (existingImageIds[index]) {
                         imageUpdates.push({
                             id: existingImageIds[index],
@@ -229,14 +292,12 @@ export default function ProductForm({
                         });
                     }
                 } else if (imageFiles[index]) {
-                    // New image was uploaded
-                    formData.append("new_images[]", imageFiles[index]);
+                    formData.append("images[]", imageFiles[index]);
                     imageUpdates.push({
                         position: index,
                         action: "add",
                     });
                 } else if (existingImageIds[index]) {
-                    // Existing image was kept
                     imageUpdates.push({
                         id: existingImageIds[index],
                         position: index,
@@ -247,7 +308,6 @@ export default function ProductForm({
 
             formData.append("image_updates", JSON.stringify(imageUpdates));
         } else {
-            // For new products, just append all non-null images
             imageFiles.forEach((file) => {
                 if (file) {
                     formData.append("images[]", file);
@@ -280,6 +340,9 @@ export default function ProductForm({
                                 value: option,
                                 label: option,
                             }))}
+                            {...register(attribute.name, {
+                                required: `${attribute.name} is required`,
+                            })}
                         />
                     );
                 case "text":
@@ -294,23 +357,32 @@ export default function ProductForm({
         { value: "1", label: "Used" },
     ];
 
-    const categoryOptions = categories.map((category) => ({
-        value: category.id,
-        label: category.name,
-    }));
+    const categoryOptions =
+        categories?.map((category) => ({
+            value: category.id,
+            label: category.name,
+        })) || [];
 
     return (
         <Box
             sx={{
-                padding: { xs: 2, md: 4 },
+                width: "100%",
                 maxWidth: "1400px",
                 margin: "0 auto",
+                // p: { xs: 1, sm: 2 },
             }}
         >
-            <Stack spacing={4}>
-                <Grid container spacing={4}>
+            <Stack spacing={{ xs: 2, md: 3 }}>
+                {/* Main content container */}
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: { xs: "column", md: "row" },
+                        gap: { xs: 2, md: 3 },
+                    }}
+                >
                     {/* Left Column - Product Details */}
-                    <Grid item xs={12} md={7}>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
                         <Paper
                             sx={{
                                 p: { xs: 2, md: 3 },
@@ -318,6 +390,7 @@ export default function ProductForm({
                                 boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.05)",
                                 border: "1px solid",
                                 borderColor: "divider",
+                                height: "100%",
                             }}
                         >
                             <Stack spacing={3}>
@@ -340,55 +413,36 @@ export default function ProductForm({
                                 />
 
                                 <Select
+                                    name="category_id"
                                     label="Category"
                                     control={control}
-                                    register={register}
-                                    name="category_id"
-                                    errors={errors}
                                     options={categoryOptions}
-                                    disabled={isWorking || isLoading}
-                                    fullWidth
-                                    required
+                                    errors={errors}
+                                    disabled={isWorking}
+                                    {...register("category_id", {
+                                        required: "Category is required",
+                                    })}
                                 />
 
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            label="Net Price ($)"
-                                            register={register}
-                                            control={control}
-                                            errors={errors}
-                                            name="net_price"
-                                            type="number"
-                                            disabled={isWorking}
-                                            fullWidth
-                                            required
-                                            inputProps={{
-                                                step: "0.01",
-                                                min: "0",
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            label="Discount (%)"
-                                            register={register}
-                                            control={control}
-                                            errors={errors}
-                                            name="discount"
-                                            type="number"
-                                            disabled={isWorking}
-                                            fullWidth
-                                            inputProps={{
-                                                min: "0",
-                                                max: "100",
-                                            }}
-                                        />
-                                    </Grid>
-                                </Grid>
-
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12} sm={6}>
+                                <PriceDisplay
+                                    control={control}
+                                    register={register}
+                                    errors={errors}
+                                    setValue={setValue}
+                                    getValues={getValues}
+                                    watch={watch}
+                                />
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        gap: 1,
+                                        flexDirection: {
+                                            xs: "column",
+                                            sm: "row",
+                                        },
+                                    }}
+                                >
+                                    <Box sx={{ flex: 1 }}>
                                         <TextField
                                             label="Stock Quantity"
                                             register={register}
@@ -401,8 +455,8 @@ export default function ProductForm({
                                             required
                                             inputProps={{ min: "0" }}
                                         />
-                                    </Grid>
-                                    <Grid item xs={12} sm={6}>
+                                    </Box>
+                                    <Box sx={{ flex: 1 }}>
                                         <Select
                                             label="Condition"
                                             defaultValue={editValues?.condition}
@@ -412,11 +466,15 @@ export default function ProductForm({
                                             errors={errors}
                                             options={conditionOptions}
                                             disabled={isWorking}
+                                            {...register("condition", {
+                                                required:
+                                                    "Condition is required",
+                                            })}
                                             fullWidth
                                             required
                                         />
-                                    </Grid>
-                                </Grid>
+                                    </Box>
+                                </Box>
 
                                 <Box>
                                     <Typography
@@ -432,16 +490,19 @@ export default function ProductForm({
                                         errors={errors}
                                         name="description"
                                         disabled={isWorking}
-                                        rows={6}
+                                        rows={isMobile ? 4 : 6}
+                                        {...register("description", {
+                                            required: "Description is required",
+                                        })}
                                         fullWidth
                                     />
                                 </Box>
                             </Stack>
                         </Paper>
-                    </Grid>
+                    </Box>
 
                     {/* Right Column - Images and Attributes */}
-                    <Grid item xs={12} md={5}>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
                         <Stack spacing={3}>
                             {/* Image Upload Section */}
                             <Paper
@@ -451,7 +512,9 @@ export default function ProductForm({
                                     boxShadow:
                                         "0px 2px 8px rgba(0, 0, 0, 0.05)",
                                     border: "1px solid",
-                                    borderColor: "divider",
+                                    borderColor: errors.images
+                                        ? "error.main"
+                                        : "divider", // Add this line
                                 }}
                             >
                                 <Stack spacing={2}>
@@ -469,108 +532,142 @@ export default function ProductForm({
                                         6)
                                     </Typography>
 
-                                    <Grid container spacing={2}>
+                                    {/* Add error message display */}
+                                    {errors.images && (
+                                        <Typography
+                                            color="error.main"
+                                            variant="body2"
+                                            sx={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: 1,
+                                                fontWeight: 500,
+                                                mt: -1, // Adjust spacing
+                                                mb: 1, // Adjust spacing
+                                            }}
+                                        >
+                                            <ErrorOutlineIcon fontSize="small" />
+                                            {errors.images.message}
+                                        </Typography>
+                                    )}
+
+                                    <Box
+                                        sx={{
+                                            display: "grid",
+                                            gridTemplateColumns:
+                                                "repeat(2, 1fr)",
+                                            gap: 1,
+                                            [theme.breakpoints.up("sm")]: {
+                                                gridTemplateColumns:
+                                                    "repeat(3, 1fr)",
+                                            },
+                                        }}
+                                    >
                                         {images.map((image, index) => (
-                                            <Grid
-                                                item
-                                                xs={6}
-                                                sm={4}
+                                            <Box
                                                 key={index}
+                                                sx={{
+                                                    position: "relative",
+                                                    height: isMobile
+                                                        ? 100
+                                                        : 120,
+                                                    borderRadius: 1,
+                                                    overflow: "hidden",
+                                                    border: "1px dashed",
+                                                    borderColor: image
+                                                        ? "transparent"
+                                                        : "divider",
+                                                    backgroundColor: image
+                                                        ? "transparent"
+                                                        : "action.hover",
+                                                }}
                                             >
-                                                <Box
-                                                    sx={{
-                                                        position: "relative",
-                                                        height: 120,
-                                                        borderRadius: 1,
-                                                        overflow: "hidden",
-                                                        border: "1px dashed",
-                                                        borderColor: image
-                                                            ? "transparent"
-                                                            : "divider",
-                                                        backgroundColor: image
-                                                            ? "transparent"
-                                                            : "action.hover",
-                                                    }}
-                                                >
-                                                    {image ? (
-                                                        <>
-                                                            <Box
-                                                                component="img"
-                                                                src={image}
-                                                                alt={`Product preview ${
-                                                                    index + 1
-                                                                }`}
-                                                                sx={{
-                                                                    width: "100%",
-                                                                    height: "100%",
-                                                                    objectFit:
-                                                                        "cover",
-                                                                }}
-                                                            />
-                                                            <IconButton
-                                                                size="small"
-                                                                onClick={() =>
-                                                                    handleRemoveImage(
-                                                                        index
-                                                                    )
-                                                                }
-                                                                sx={{
-                                                                    position:
-                                                                        "absolute",
-                                                                    top: 4,
-                                                                    right: 4,
-                                                                    backgroundColor:
-                                                                        "error.main",
-                                                                    color: "common.white",
-                                                                    "&:hover": {
-                                                                        backgroundColor:
-                                                                            "error.dark",
-                                                                    },
-                                                                }}
-                                                            >
-                                                                <DeleteOutlineIcon fontSize="small" />
-                                                            </IconButton>
-                                                        </>
-                                                    ) : (
-                                                        <Button
-                                                            component="label"
-                                                            fullWidth
+                                                {image ? (
+                                                    <>
+                                                        <Box
+                                                            component="img"
+                                                            src={image}
+                                                            alt={`Product preview ${
+                                                                index + 1
+                                                            }`}
                                                             sx={{
+                                                                width: "100%",
                                                                 height: "100%",
-                                                                display: "flex",
-                                                                flexDirection:
-                                                                    "column",
-                                                                alignItems:
-                                                                    "center",
-                                                                justifyContent:
-                                                                    "center",
-                                                                color: "text.secondary",
+                                                                objectFit:
+                                                                    "cover",
+                                                            }}
+                                                        />
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={() =>
+                                                                handleRemoveImage(
+                                                                    index
+                                                                )
+                                                            }
+                                                            sx={{
+                                                                position:
+                                                                    "absolute",
+                                                                top: 4,
+                                                                right: 4,
+                                                                backgroundColor:
+                                                                    "error.main",
+                                                                color: "common.white",
+                                                                "&:hover": {
+                                                                    backgroundColor:
+                                                                        "error.dark",
+                                                                },
                                                             }}
                                                         >
-                                                            <CloudUploadIcon fontSize="small" />
-                                                            <Typography
-                                                                variant="caption"
-                                                                display="block"
-                                                            >
-                                                                Add Image
-                                                            </Typography>
-                                                            <input
-                                                                type="file"
-                                                                accept="image/*"
-                                                                hidden
-                                                                onChange={(e) =>
-                                                                    handleAddImage(
-                                                                        e,
-                                                                        index
-                                                                    )
-                                                                }
-                                                            />
-                                                        </Button>
-                                                    )}
-                                                </Box>
-                                            </Grid>
+                                                            <DeleteOutlineIcon fontSize="small" />
+                                                        </IconButton>
+                                                    </>
+                                                ) : (
+                                                    <Button
+                                                        component="label"
+                                                        fullWidth
+                                                        sx={{
+                                                            height: "100%",
+                                                            display: "flex",
+                                                            flexDirection:
+                                                                "column",
+                                                            alignItems:
+                                                                "center",
+                                                            justifyContent:
+                                                                "center",
+                                                            color: "text.secondary",
+                                                        }}
+                                                    >
+                                                        <CloudUploadIcon fontSize="small" />
+                                                        <Typography
+                                                            variant="caption"
+                                                            display="block"
+                                                            sx={{
+                                                                fontSize:
+                                                                    isMobile
+                                                                        ? "0.65rem"
+                                                                        : "0.75rem",
+                                                                textAlign:
+                                                                    "center",
+                                                            }}
+                                                        >
+                                                            Add Image
+                                                        </Typography>
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            hidden
+                                                            onChange={(e) =>
+                                                                handleAddImage(
+                                                                    e,
+                                                                    index
+                                                                )
+                                                            }
+                                                        />
+                                                    </Button>
+                                                )}
+                                            </Box>
                                         ))}
-                                    </Grid>
+                                    </Box>
                                 </Stack>
                             </Paper>
 
@@ -615,8 +712,8 @@ export default function ProductForm({
                                 </Stack>
                             </Paper>
                         </Stack>
-                    </Grid>
-                </Grid>
+                    </Box>
+                </Box>
 
                 {/* Form Actions */}
                 <Box
@@ -624,29 +721,36 @@ export default function ProductForm({
                         display: "flex",
                         justifyContent: "flex-end",
                         gap: 2,
-                        pt: 3,
+                        pt: 2,
+                        flexDirection: { xs: "column-reverse", sm: "row" },
+                        alignItems: { xs: "stretch", sm: "center" },
                     }}
                 >
                     <Button
                         variant="outlined"
                         color="inherit"
-                        size="large"
+                        size={isMobile ? "medium" : "large"}
                         onClick={() => navigate(navigateBackPath)}
-                        sx={{ px: 4, borderRadius: 1, fontWeight: 500 }}
+                        sx={{
+                            px: 4,
+                            borderRadius: 1,
+                            fontWeight: 500,
+                            width: { xs: "100%", sm: "auto" },
+                        }}
                     >
                         Cancel
                     </Button>
                     <Button
                         variant="contained"
                         color="primary"
-                        size="large"
+                        size={isMobile ? "medium" : "large"}
                         disabled={isWorking}
                         onClick={handleSubmit(onFormSubmit)}
                         sx={{
                             px: 4,
                             borderRadius: 1,
                             fontWeight: 500,
-                            minWidth: 180,
+                            minWidth: { xs: "100%", sm: 180 },
                         }}
                         startIcon={
                             isWorking ? (

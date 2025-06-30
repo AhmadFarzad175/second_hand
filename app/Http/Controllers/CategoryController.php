@@ -95,6 +95,15 @@ public function destroy(Category $category): JsonResponse
 }
 
 
+public function CategoryWithoutImage()
+{
+    $categories = Category::select('id', 'name')->get();
+
+    return response()->json([
+        'data' => $categories
+    ]);
+}
+
     /**
      * Update the specified category.
      */

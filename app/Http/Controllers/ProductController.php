@@ -50,7 +50,7 @@ class ProductController extends Controller
             'currency'
         ]);
 
-        $perPage = $request->input('perPage', 10);
+        $perPage = $request->input('perPage');
         $search = $request->input('search');
 
         $user = Auth::user() ?? User::find(1);
@@ -60,12 +60,17 @@ class ProductController extends Controller
             ->orderBy('id', 'DESC')
             ->search($search);
 
+        $query = Product::query()
+            ->orderBy('id', 'DESC')
+            ->search($search);
+
+
 
 
         // Apply all filters, including attributes
         $filteredQuery = ProductFilter::apply($query, $filters);
 
-        $products = $perPage ? $filteredQuery->paginate($perPage) : $filteredQuery->get();
+        $products = $perPage ? $filteredQuery->paginate($perPage) : $filteredQuery->latest()->get();
 
         return ProductResource::collection($products);
     }
@@ -78,10 +83,10 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         $validated = $request->input();
-        $validated['user_id'] = Auth::user()?->id || 1;
-        // dd($validated);
+        $validated['user_id'] = Auth::id() ?? 1;
 
         // CREATE PRODUCT
+        // dd($validated );
         $product = Product::create($validated);
 
         if ($request->hasFile('images')) {
@@ -129,6 +134,7 @@ class ProductController extends Controller
         // Validate and get the validated data from the request
         $validated = $request->validated();
 
+        // dd($validated);
         // Update product fields
         $product->update($validated);
 
@@ -151,7 +157,7 @@ class ProductController extends Controller
                 $product->images()->create(['image_url' => $path]);
             }
         }
-
+// dd($request->file('new_images'));
         return response()->json([
             'message' => 'Product updated successfully',
         ]);
@@ -248,7 +254,7 @@ class ProductController extends Controller
             'distance'
         ]);
 
-        $perPage = $request->input('perPage', 10);
+        $perPage = $request->input('perPage');
         $search = $request->input('search');
 
         $query = Product::with(['images', 'favorites', 'user'])

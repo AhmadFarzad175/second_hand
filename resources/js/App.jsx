@@ -18,6 +18,8 @@ import AdminCreateProduct from "./features/product/AdminCreateProduct";
 import WebsiteCreateProduct from "./pages/WebsiteCreateProduct";
 import Profile from "./pages/Profile";
 import CreateWebsiteUser from "./pages/CreateWebsiteUser";
+import ProtectedRoute from "./repositories/ProtectedRoute";
+import RoleProtectedRoute from "./repositories/RoleProtectedRoute";
 
 function App() {
     return (
@@ -26,15 +28,51 @@ function App() {
             <Route path="/" element={<AppLayout />}>
                 <Route index element={<Home />} />
                 <Route path="product/:id" element={<Product />} />
-                <Route path="favorite" element={<Favorite />} />
-                <Route path="add-product" element={<WebsiteCreateProduct />} />
-                <Route path="profile" element={<Profile />} />
-                <Route path="/register" element={<CreateWebsiteUser />} />
-                <Route path="/profile/edit" element={<CreateWebsiteUser />} />
+
+                <Route
+                    path="favorite"
+                    element={
+                        <ProtectedRoute >
+                            <Favorite />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="add-product"
+                    element={
+                        <ProtectedRoute>
+                            <WebsiteCreateProduct />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="profile"
+                    element={
+                        <ProtectedRoute>
+                            <Profile />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/profile/edit"
+                    element={
+                        <ProtectedRoute>
+                            <CreateWebsiteUser />
+                        </ProtectedRoute>
+                    }
+                />
+
             </Route>
 
             {/* Admin Panel routes */}
-            <Route path="/admin" element={<AdminLayout />}>
+            <Route
+                path="/admin"
+                element={
+                    <RoleProtectedRoute role="admin">
+                        <AdminLayout />
+                    </RoleProtectedRoute>
+                }
+            >
                 <Route path="dashboard" element={<Dashboard />} />
 
                 {/* Product Menu */}
@@ -55,10 +93,10 @@ function App() {
             </Route>
 
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<CreateWebsiteUser />} />
             <Route path="/register" element={<Register />} />
             <Route path="*" element={<NotFound />} />
         </Routes>
     );
 }
-
 export default App;

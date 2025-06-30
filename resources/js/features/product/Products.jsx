@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useMemo, useState } from "react";
 import {
     Box,
     Breadcrumbs,
@@ -51,7 +51,7 @@ const Products = () => {
         setPage(0);
     };
 
-    const paginatedRows = React.useMemo(() => {
+    const paginatedRows = useMemo(() => {
         return products.slice(
             page * rowsPerPage,
             page * rowsPerPage + rowsPerPage
@@ -119,7 +119,7 @@ const Products = () => {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 20, 30]}
                     component="div"
-                    count={paginatedRows.length}
+                    count={products.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}

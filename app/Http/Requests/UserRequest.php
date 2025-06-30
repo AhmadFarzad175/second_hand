@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Traits\UpdateRequestRules;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UserRequest extends FormRequest
 {
@@ -17,11 +18,10 @@ class UserRequest extends FormRequest
 
     public function rules(): array
     {
-        // dd('es');
         $rules = [
             'image' => 'required',
             'name' => 'required|string|max:255',
-            'email' => 'required|email',
+'email' => 'required|email|max:255|unique:users,email,' . $this->user?->id,
             'location' => 'required',
             'phone' => 'required|string|max:20',
             'description' => 'nullable|string',

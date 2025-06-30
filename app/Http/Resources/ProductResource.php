@@ -25,9 +25,11 @@ class ProductResource extends JsonResource
             ],
             'category_id' => $this->category_id,
             'user' => $this->user?->name,
-            'net_price' => $this->net_price,
+            'price' => $this->price,
+            'final_price' => $this->final_price,
             'currency' => $this->currency,
             'discount' => $this->discount,
+            'discount_type' => $this->discount_type,
             'quantity' => $this->quantity,
             'condition' => $this->condition,
             'date' => Carbon::parse($this->created_at)->format('Y-m-d'), // Parse and format the date
@@ -36,10 +38,14 @@ class ProductResource extends JsonResource
             'attributes' => $this->attributes,
             'state' =>  $this->state,
 
+<<<<<<< HEAD
             // 'image' => asset('storage/' . $this->images[0]?->image_url),
             'images' => $this->images->map(function ($image) {
                 return asset('storage/' . $image->image_url);
             }),
+=======
+            'image' => asset('storage/' . $this->images[0]?->image_url),
+>>>>>>> e776a48f249c6e584b7fe378d6e7fc76f15f7e63
         ];
     }
 }

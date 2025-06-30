@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useMemo, useState } from "react";
 import {
     Box,
     Breadcrumbs,
@@ -69,7 +69,7 @@ const Categories = () => {
         setPage(0);
     };
 
-    const paginatedCategories = React.useMemo(() => {
+    const paginatedCategories = useMemo(() => {
         return categories.slice(
             page * rowsPerPage,
             page * rowsPerPage + rowsPerPage

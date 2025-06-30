@@ -20,8 +20,8 @@ class ShowProductResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'category' => [
-                'id' => $this->category->id,
-                'name' => $this->category->name
+                'id' => $this->category?->id,
+                'name' => $this->category?->name
             ],
             'user' => [
                 'id' => $this->user?->id,
@@ -33,7 +33,7 @@ class ShowProductResource extends JsonResource
                 'total_products' => $this->user?->products()->count(), // 👈 this line
             ],
             'category_id' => $this->category_id,
-            'net_price' => $this->net_price,
+            'price' => $this->price,
             'currency' => $this->currency,
             'discount' => $this->discount,
             'quantity' => $this->quantity,

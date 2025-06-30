@@ -69,10 +69,16 @@ class AuthController extends Controller
 
         $user = Auth::user();
         $token = $user->createToken('authToken')->plainTextToken;
-
         return response()->json([
             'message' => 'Login successful',
-            'user'    => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'image' => asset('storage/'.$user->image), // or asset('storage/'.$user->image) if needed
+'role' => $user->getRoleNames()->first(),
+'permissions' => $user->getAllPermissions()->pluck('name')->toArray(),
+            ],
             'token' => $token,
         ]);
     }
@@ -132,11 +138,21 @@ class AuthController extends Controller
                 );
                 Log::info('User processed', ['user' => $user]);
 
-                Auth::login($user);
+                // Auth::login($user);
+                $token = $user->createToken('authToken')->plainTextToken;
+
 
                 return response()->json([
                     'message' => 'Logged in successfully',
-                    'user' => $user
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'image' => $user->image, // or asset('storage/'.$user->image) if needed
+                        'role' => $user->role, // returns the first role name
+                        'permissions' => $user->getAllPermissions()->pluck('name'), // returns array of permission names
+                    ],
+                    'token' => $token,
                 ]);
             } catch (\Exception $e) {
                 Log::error('User creation failed', ['error' => $e->getMessage()]);

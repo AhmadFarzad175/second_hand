@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button, Badge, styled } from '@mui/material';
 import { Chat as ChatIcon } from '@mui/icons-material';
 

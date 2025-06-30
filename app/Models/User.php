@@ -29,7 +29,7 @@ class User extends Authenticatable
         'phone',
         'description',
         'rating',
-        'role',
+        // 'role',
         'is_active',
     ];
 

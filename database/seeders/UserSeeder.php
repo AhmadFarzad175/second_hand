@@ -11,12 +11,11 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $locations = [
-            ['lat' => 34.5553, 'lng' => 69.2075, 'address' => 'Kabul'],
-            ['lat' => 36.7090, 'lng' => 67.1109, 'address' => 'Mazar-e-Sharif'],
-            ['lat' => 34.3482, 'lng' => 62.1997, 'address' => 'Herat'],
-            ['lat' => 33.6857, 'lng' => 66.9430, 'address' => 'Ghazni'],
-            ['lat' => 31.6339, 'lng' => 65.7372, 'address' => 'Kandahar'],
-            ['lat' => 34.6339, 'lng' => 60.7372, 'address' => 'Bamyan'],
+            ['latitude' => 34.5553, 'longitude' => 69.2075 ],
+            ['latitude' => 36.7090, 'longitude' => 67.1109],
+            ['latitude' => 34.3482, 'longitude' => 62.1997],
+            ['latitude' => 33.6857, 'longitude' => 66.9430],
+            ['latitude' => 31.6339, 'longitude' => 65.7372],
         ];
 
         for ($i = 1; $i <= 6; $i++) {

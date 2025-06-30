@@ -14,13 +14,14 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     use ImageManipulation;
-    // public function __construct()
-    // {
+    public function __construct()
+    {
+        $this->middleware('can:view product');
     //     $this->middleware('can:viewUser')->only(['index', 'show']);
     //     $this->middleware('can:createUser')->only(['store']);
     //     $this->middleware('can:editUser')->only(['update', 'Status']);
     //     $this->middleware('can:deleteUser')->only(['destroy', 'bulkDelete']);
-    // }
+    }
 
     /**
      * Display a listing of the resource.
@@ -52,6 +53,8 @@ class UserController extends Controller
         }
         // dd($validated['image']);
         $user = User::create($validated);
+        // Assign a role (e.g. 'admin' or 'customer')
+$user->assignRole($validated['role']);
 
 
         // Return a success response with status code 201
@@ -97,6 +100,12 @@ class UserController extends Controller
         }
         // dd($validated);
         $user->update($validated);
+
+        // ✅ Assign or update user role
+    if (!empty($validated['role'])) {
+        $user->syncRoles($validated['role']); // replaces old role(s)
+    }
+
 
         return new UserResource($user);
     }
@@ -177,7 +186,7 @@ class UserController extends Controller
 
     public function profile()
     {
-        $id = Auth::id() || 1;
+        $id = Auth::id() ?? 1;
         $user = User::with('products')->findOrFail($id);
         return ProfileUserResource::make($user);
     }

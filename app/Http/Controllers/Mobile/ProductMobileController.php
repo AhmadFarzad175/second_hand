@@ -31,7 +31,7 @@ class ProductMobileController extends Controller
         }
 
         if ($request->filled('min_price') && $request->filled('max_price')) {
-            $query->whereBetween('net_price', [$request->min_price, $request->max_price]);
+            $query->whereBetween('price', [$request->min_price, $request->max_price]);
         }
 
         if ($request->filled('color')) {

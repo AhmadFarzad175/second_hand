@@ -1,4 +1,3 @@
-import React from "react";
 import { AppBar, Toolbar, IconButton, Box } from "@mui/material";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 

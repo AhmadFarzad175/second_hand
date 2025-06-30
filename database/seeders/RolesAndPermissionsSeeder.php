@@ -39,32 +39,70 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Create roles matching your DB enum
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
-        $managerRole = Role::firstOrCreate(['name' => 'manager']);
         $userRole = Role::firstOrCreate(['name' => 'user']);
 
         // Assign permissions to roles
         $adminRole->givePermissionTo($permissions); // Admin gets all
-        $managerRole->givePermissionTo(['create product', 'edit product', 'view product']); // Manager limited
         $userRole->givePermissionTo(['view product']); // User only view
 
         // Create a default admin user (adjust data as needed)
-        $adminUser = User::firstOrCreate(
+        $admin = User::firstOrCreate(
             ['email' => 'admin@secondhand.com'],
             [
-                'name' => 'Admin User',
+                'name' => 'Ahmad Admin',
                 'phone' => '1234567890',
                 'image' => 'default.png', // default image placeholder
-                'location' => json_encode(['lat' => 0, 'lng' => 0]), // sample JSON
-                'password' => Hash::make('password123'), // change password after seed!
-                'role' => 'admin',
+                'location' => json_encode(['latitude' => 0, 'longitude' => 0]), // sample JSON
+                'password' => Hash::make('123456'), // change password after seed!
+                // 'role' => 'admin',
+                'is_active' => true,
+            ]
+        );
+
+        $user = User::firstOrCreate(
+            ['email' => 'user@secondhand.com'],
+            [
+                'name' => 'Ahmad User',
+                'phone' => '1234567890',
+                'image' => 'default.png', // default image placeholder
+                'location' => json_encode(['latitude' => "34.4994965", 'longitude' => "69.146955"]), // sample JSON
+                'password' => Hash::make('123456'), // change password after seed!
+                // 'role' => 'admin',
                 'is_active' => true,
             ]
         );
 
         // Assign the admin role to the user
-        $adminUser->assignRole($adminRole);
+        $admin->assignRole($adminRole);
+        $user->assignRole($userRole);
     }
 }
+
+// $permissions = [
+//     // For authenticated user
+//     'create product',
+//     'edit own product',
+//     'delete own product',
+//     'add to favorites',
+//     'remove from favorites',
+//     'comment on product',
+//     'rate product',
+//     'chat with user',
+
+//     // For admin only
+//     'edit any product',
+//     'delete any product',
+//     'create category',
+//     'edit category',
+//     'delete category',
+//     'view users',
+//     'create user',
+//     'edit user',
+//     'delete user',
+//     'ban user',
+//     'view reports',
+// ];
+
 
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;

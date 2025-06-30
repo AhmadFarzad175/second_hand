@@ -16,21 +16,44 @@ class WebsiteProductsResource extends JsonResource
      * @return array<string, mixed>
      */
     public function toArray($request)
-    {
-        $userId = $request->query('user_id') || 1;
+{
+    $userId = $request->query('user_id') ?? 1; // Fixed null coalescing operator
 
-        // dd($this);
-        return [
-            'id'         => $this->id,
-            'name'       => $this->name,
-            'net_price'  => $this->net_price,
-            'discount'   => $this->discount,
-            'posted'     => Carbon::parse($this->created_at)->diffForHumans(),
-            'isFavorite' => $this->checkIsFavorite($userId),
-            'images'     => $this->getFirstImageUrl(),
-            'howFar'     => $this->getDistanceFromRequest($request),
-        ];
+    return [
+        'id' => $this->id,
+        'name' => $this->name,
+        'original_price' => $this->formatPrice($this->price), // Formatted original price
+        'final_price' => $this->formatPrice($this->final_price), // Formatted final price
+        'currency' => $this->currency === "AFN" ? "؋" : "$",
+        'discount' => $this->discount > 0 ? $this->formatDiscount() : null, // Only show if discount exists
+        'discount_type' => $this->discount_type,
+        'posted' => Carbon::parse($this->created_at)->diffForHumans(),
+        'isFavorite' => $this->checkIsFavorite($userId),
+        'images' => $this->getFirstImageUrl(),
+        'howFar' => $this->getDistanceFromRequest($request),
+        'condition' => $this->condition,
+        'state' => $this->state,
+        'has_discount' => $this->discount > 0, // Helper flag for frontend
+    ];
+}
+
+protected function formatPrice($amount)
+{
+    if ($this->currency === "AFN") {
+        return number_format($amount, 0, '.', ',') . ' ؋';
     }
+    return '$' . number_format($amount, 2);
+}
+
+protected function formatDiscount()
+{
+    if ($this->discount_type === '%') {
+        return $this->discount . '% OFF';
+    }
+    return $this->formatPrice($this->discount) . ' OFF';
+}
+
+
 
     /**
      * Check if product is marked as favorite by the user.

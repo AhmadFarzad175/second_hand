@@ -1,4 +1,3 @@
-import React from "react";
 import {
     Box,
     Typography,
@@ -21,6 +20,7 @@ import {
 } from "@mui/icons-material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid"
 import Grid from "@mui/material/Grid";
+import { cloneElement } from "react";
 
 // Styled components
 const StatCard = styled(Paper)(({ theme }) => ({
@@ -51,21 +51,21 @@ const stats = [
     {
         id: 1,
         title: "Total Products",
-        value: "1,245",
+        value: "45",
         icon: <ShoppingCart />,
         color: "#4CAF50",
     },
     {
         id: 2,
         title: "Total Users",
-        value: "568",
+        value: "17",
         icon: <People />,
         color: "#2196F3",
     },
     {
         id: 3,
         title: "Total Sales",
-        value: "$34,567",
+        value: "5670 AFN",
         icon: <AttachMoney />,
         color: "#FF9800",
     },
@@ -536,7 +536,7 @@ const Dashboard = () => {
                                             : "flex-start",
                                     }}
                                 >
-                                    {React.cloneElement(stat.icon, {
+                                    {cloneElement(stat.icon, {
                                         fontSize: isSmallScreen
                                             ? "medium"
                                             : "large",

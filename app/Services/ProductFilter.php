@@ -37,14 +37,14 @@ class ProductFilter
             $max = trim($max);
 
             if (is_numeric($min) && is_numeric($max)) {
-                $query->whereBetween('net_price', [(float)$min, (float)$max]);
+                $query->whereBetween('price', [(float)$min, (float)$max]);
             } elseif (is_numeric($min)) {
-                $query->where('net_price', '>=', (float)$min);
+                $query->where('price', '>=', (float)$min);
             } elseif (is_numeric($max)) {
-                $query->where('net_price', '<=', (float)$max);
+                $query->where('price', '<=', (float)$max);
             }
         } elseif (is_numeric($price)) {
-            $query->where('net_price', '=', (float)$price);
+            $query->where('price', '=', (float)$price);
         }
     }
 
@@ -62,22 +62,23 @@ class ProductFilter
 
     protected function condition(Builder $query, $condition)
     {
+        // dd($condition);
         $query->where('condition', $condition);
     }
 
     protected function date(Builder $query, $date)
-{
-    // Ensure the date is in the correct format
-    try {
-        $startDate = \Carbon\Carbon::parse($date)->startOfDay();
-        $endDate = now()->endOfDay(); // Current date and time
+    {
+        // Ensure the date is in the correct format
+        try {
+            $startDate = \Carbon\Carbon::parse($date)->startOfDay();
+            $endDate = now()->endOfDay(); // Current date and time
 
-        $query->whereBetween('products.created_at', [$startDate, $endDate]);
-    } catch (\Exception $e) {
-        // Handle invalid date format
-        logger()->error("Invalid date format provided: " . $date);
+            $query->whereBetween('products.created_at', [$startDate, $endDate]);
+        } catch (\Exception $e) {
+            // Handle invalid date format
+            logger()->error("Invalid date format provided: " . $date);
+        }
     }
-}
 
     protected function search(Builder $query, $term)
     {
@@ -87,7 +88,7 @@ class ProductFilter
 
         $query->where(function ($q) use ($term) {
             $q->where('products.name', 'like', "%{$term}%")
-              ->orWhere('products.description', 'like', "%{$term}%");
+                ->orWhere('products.description', 'like', "%{$term}%");
         });
     }
 
@@ -107,21 +108,21 @@ class ProductFilter
     }
 
     // 🔥 Distance filter added here
-protected function distance(Builder $query, $maxDistance)
-{
-    $user = auth()->user() ?? User::find(1);
-    if (!$user || !$user->location) return;
+    protected function distance(Builder $query, $maxDistance)
+    {
+        $user = auth()->user() ?? User::find(1);
+        if (!$user || !$user->location) return;
 
-    $userLat = $user->location["latitude"];
-    $userLng = $user->location["longitude"];
+        $userLat = $user->location["latitude"];
+        $userLng = $user->location["longitude"];
 
-    if (!is_numeric($maxDistance) || !is_numeric($userLat) || !is_numeric($userLng)) {
-        return;
-    }
+        if (!is_numeric($maxDistance) || !is_numeric($userLat) || !is_numeric($userLng)) {
+            return;
+        }
 
-    $query->join('users', 'products.user_id', '=', 'users.id')
-        ->select('products.*') // Ensure we only select product columns
-        ->whereRaw("(
+        $query->join('users', 'products.user_id', '=', 'users.id')
+            ->select('products.*') // Ensure we only select product columns
+            ->whereRaw("(
             6371 * acos(
                 cos(radians(?)) *
                 cos(radians(CAST(JSON_UNQUOTE(JSON_EXTRACT(users.location, '$.latitude')) AS DECIMAL(10,7)))) *
@@ -130,6 +131,5 @@ protected function distance(Builder $query, $maxDistance)
                 sin(radians(CAST(JSON_UNQUOTE(JSON_EXTRACT(users.location, '$.latitude')) AS DECIMAL(10,7))))
             )
         ) < ?", [$userLat, $userLng, $userLat, $maxDistance]);
-}
-
+    }
 }

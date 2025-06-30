@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef, memo } from "react";
 import {
     TextField as MuiTextField,
     InputAdornment,
@@ -17,7 +17,7 @@ import { useEffect } from "react";
 import { useController } from "react-hook-form";
 
 // Custom TextField Component
-export const TextField = React.memo(
+export const TextField = memo(
     ({ label, name, control, errors, type = "text", disabled, ...rest }) => {
         const { field, fieldState } = useController({
             name,
@@ -44,7 +44,7 @@ export const TextField = React.memo(
 );
 
 // Custom Select Component
-export const Select = React.memo(
+export const Select = memo(
     ({ label, name, control, errors, options, disabled, ...rest }) => {
         const { field, fieldState } = useController({
             name,
@@ -76,7 +76,7 @@ export const Select = React.memo(
 );
 
 // Custom TextArea Component
-export const TextArea = React.memo(
+export const TextArea = memo(
     ({ label, name, control, errors, rows = 4, disabled, ...rest }) => {
         const { field, fieldState } = useController({
             name,
@@ -102,7 +102,7 @@ export const TextArea = React.memo(
     }
 );
 
-export const LocationField = React.memo(
+export const LocationField = memo(
     ({
         label,
         name,
@@ -110,8 +110,8 @@ export const LocationField = React.memo(
         disabled = false,
         isEditMode = false,
         onEditToggle,
-        isEditing: isEditingProp, // Renamed prop
-        showButton = false, // Added missing prop
+        isEditing: isEditingProp,
+        showButton = false,
         ...props
     }) => {
         const { field, fieldState } = useController({
@@ -120,14 +120,14 @@ export const LocationField = React.memo(
             defaultValue: "",
         });
 
-        // Removed the duplicate state - using the prop instead
-        const [searchQuery, setSearchQuery] = useState("");
-        const [suggestions, setSuggestions] = useState([]);
         const [isSearching, setIsSearching] = useState(false);
-        const typingTimeoutRef = useRef(null);
+        const [locationName, setLocationName] = useState("");
 
         useEffect(() => {
-            setSearchQuery(field.value ? "Selected location" : "");
+            // Set initial display value if there's a value
+            if (field.value) {
+                setLocationName("Your current location");
+            }
         }, [field.value]);
 
         if (!control) {
@@ -143,59 +143,13 @@ export const LocationField = React.memo(
             );
         }
 
-        const performSearch = async (query) => {
-            if (query.length > 2) {
-                setIsSearching(true);
-                try {
-                    const response = await fetch(
-                        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-                            query
-                        )}&addressdetails=1&limit=5`
-                    );
-                    const data = await response.json();
-                    setSuggestions(
-                        data.map((item) => ({
-                            label: item.display_name,
-                            x: item.lon,
-                            y: item.lat,
-                        }))
-                    );
-                } catch (error) {
-                    console.error("Search error:", error);
-                    setSuggestions([]);
-                } finally {
-                    setIsSearching(false);
-                }
-            } else {
-                setSuggestions([]);
-            }
-        };
-
-        const handleSearchChange = (e) => {
-            const value = e.target.value;
-            setSearchQuery(value);
-            clearTimeout(typingTimeoutRef.current);
-            typingTimeoutRef.current = setTimeout(
-                () => performSearch(value),
-                500
-            );
-        };
-
-        const handleSelectLocation = (result) => {
-            const locationText = `${result.y},${result.x}`;
-            setSearchQuery(result.label);
-            field.onChange(locationText);
-            setSuggestions([]);
-            onEditToggle && onEditToggle(false);
-        };
-
         const handleFindLocation = () => {
             if (navigator.geolocation) {
                 setIsSearching(true);
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const locationText = `${position.coords.latitude},${position.coords.longitude}`;
-                        setSearchQuery("Your current location");
+                        setLocationName("Your current location");
                         field.onChange(locationText);
                         setIsSearching(false);
                         onEditToggle && onEditToggle(false);
@@ -208,7 +162,7 @@ export const LocationField = React.memo(
             }
         };
 
-        // In LocationField component, modify the edit mode return:
+        // Edit mode view when not editing
         if (isEditMode && !isEditingProp) {
             return (
                 <Button
@@ -229,9 +183,8 @@ export const LocationField = React.memo(
                 <MuiTextField
                     fullWidth
                     label={label}
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                    disabled={disabled || isSearching}
+                    value={locationName}
+                    disabled={true} // Always disabled since we're not allowing manual input
                     error={!!fieldState.error}
                     helperText={fieldState.error?.message}
                     InputProps={{
@@ -253,34 +206,12 @@ export const LocationField = React.memo(
                     }}
                     {...props}
                 />
-
-                {suggestions.length > 0 && (
-                    <Paper
-                        sx={{
-                            position: "absolute",
-                            zIndex: 1,
-                            width: "100%",
-                            maxHeight: 200,
-                            overflow: "auto",
-                            mt: 0.5,
-                        }}
-                    >
-                        {suggestions.map((result, index) => (
-                            <MenuItem
-                                key={`${result.label}-${index}`}
-                                onClick={() => handleSelectLocation(result)}
-                            >
-                                {result.label}
-                            </MenuItem>
-                        ))}
-                    </Paper>
-                )}
             </Box>
         );
     }
 );
 
-export const PasswordField = React.memo(
+export const PasswordField = memo(
     ({
         label,
         name,

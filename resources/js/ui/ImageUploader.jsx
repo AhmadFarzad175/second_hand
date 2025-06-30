@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Button, IconButton } from "@mui/material";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import CloseIcon from "@mui/icons-material/Close";
