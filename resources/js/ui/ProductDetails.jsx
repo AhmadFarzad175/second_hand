@@ -11,7 +11,6 @@ import {
     Snackbar,
     Tooltip,
 } from "@mui/material";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
@@ -27,6 +26,8 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useDeleteProduct } from "../features/product/useDeleteProduct";
 import FavoriteButton from "./FavoriteButton";
+import { useChat } from "../contexts/ChatContext";
+import { createProductConversation } from '../repositories/ChatRepository';
 
 function ProductDetails({ dashboard = false }) {
     const { id } = useParams(); // 👈 get the ID from the URL
@@ -34,6 +35,8 @@ function ProductDetails({ dashboard = false }) {
     const [copied, setCopied] = useState(false);
     const navigate = useNavigate();
     const { isDeleting, deletePro } = useDeleteProduct();
+    const userId = JSON.parse(localStorage.getItem("user"))?.id ?? null;
+    const { openChat } = useChat();
 
     // Fix for default icon issue
     delete L.Icon.Default.prototype._getIconUrl;
@@ -56,7 +59,7 @@ function ProductDetails({ dashboard = false }) {
 
     useEffect(() => {
         if (id) {
-            fetch(`/api/productDetails/${id}`)
+            fetch(`/api/productDetails/${id}?user_id=${userId}`)
                 .then((response) => {
                     if (!response.ok) {
                         throw new Error(
@@ -68,7 +71,29 @@ function ProductDetails({ dashboard = false }) {
                 .then((data) => setProduct(data.data))
                 .catch((err) => console.error("Failed to fetch product:", err));
         }
-    }, [id]);
+    }, [id, userId]);
+
+
+    const handleStartChat = async () => {
+        try {
+            const conversation = await createProductConversation(
+                product.id,
+                product.user.id
+            );
+            
+            openChat(conversation, {
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.images[0]
+            });
+        } catch (error) {
+            throw error("Failed to start conversation:", error);
+            // Optionally show error to user
+            // toast.error(error.message);
+        }
+    };
+
 
     //delete the product
     const handleDelete = async (event) => {
@@ -165,7 +190,7 @@ function ProductDetails({ dashboard = false }) {
                                         />
 
                                         <Typography variant="body2">
-                                            123
+                                            {product.favorites_count}
                                         </Typography>
                                     </>
                                     <Tooltip title="Share">
@@ -474,7 +499,8 @@ function ProductDetails({ dashboard = false }) {
                     </Box>
 
                     {/* Actions Section */}
-                    {dashboard ?? (
+                    {/* In the Actions Section where the Buy Now button was: */}
+                    {dashboard ? (
                         <Box sx={{ mt: 3 }}>
                             <Stack direction="row" spacing={2}>
                                 <Button
@@ -502,19 +528,21 @@ function ProductDetails({ dashboard = false }) {
                                 </Button>
                             </Stack>
                         </Box>
-                        // ) : (
-                        // <Button
-                        //     variant="contained"
-                        //     color="primary"
-                        //     fullWidth
-                        //     sx={{
-                        //         mt: 3,
-                        //         fontSize: { xs: "0.875rem", md: "1rem" },
-                        //         padding: { xs: 1, md: 2 },
-                        //     }}
-                        // >
-                        //     Buy Now
-                        // </Button>
+                    ) : (
+                        <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            startIcon={<MessageIcon />}
+            sx={{
+                mt: 3,
+                fontSize: { xs: "0.875rem", md: "1rem" },
+                padding: { xs: 1, md: 2 },
+            }}
+            onClick={handleStartChat}
+        >
+            Chat with Seller
+        </Button>
                     )}
                 </Box>
             </Stack>

@@ -104,42 +104,43 @@ class AuthController extends Controller
 
 
 
-    public function googleLogin(Request $request)
-    {
-        Log::info('Google login attempt', ['input' => $request->all()]);
+        public function googleLogin(Request $request)
+        {
+            // Log::info('Google login attempt', ['input' => $request->all()]);
 
-        $idToken = $request->input('token');
-        Log::info('Received token', ['token' => $idToken]);
+            $idToken = $request->input('token');
+            // Log::info('Received token', ['token' => $idToken]);
 
-        $client = new Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
-        $payload = $client->verifyIdToken($idToken);
-        Log::info('Payload', ['payload' => $payload]);
+            $client = new Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
+            $payload = $client->verifyIdToken($idToken);
+            // Log::info('Payload', ['payload' => $payload]);
 
-        if ($payload) {
-            $email = $payload['email'];
-            $name = $payload['name'];
-            $picture = $payload['picture'] ?? "dsvsdkfjsdafasfa.png"; // Get profile picture
+            if ($payload) {
+                $email = $payload['email'];
+                $name = $payload['name'];
+                $picture = $payload['picture'] ?? "dsvsdkfjsdafasfa.png"; // Get profile picture
 
-            Log::info('User data', ['email' => $email, 'name' => $name]);
+                // Log::info('User data', ['email' => $email, 'name' => $name]);
 
-            try {
-                $user = User::firstOrCreate(
-                    ['email' => $email],
-                    [
-                        'name' => $name,
-                        'password' => bcrypt(uniqid()),
-                        'image' => $picture,
-                        'email_verified_at' => now(),
-                        'location' => json_encode([]), // Default empty JSON
-                        'role' => 'user', // Default role
-                        'is_active' => true, // Default active status
-                        // Other fields can remain null
-                    ]
-                );
-                Log::info('User processed', ['user' => $user]);
+                try {
+                    $user = User::firstOrCreate(
+                        ['email' => $email],
+                        [
+                            'name' => $name,
+                            'password' => bcrypt(uniqid()),
+                            'image' => $picture,
+                            'email_verified_at' => now(),
+                            'location' => json_encode([]), // Default empty JSON
+                            'is_active' => true, // Default active status
+                            // Other fields can remain null
+                        ]
+                    );
+                    $user->assignRole('user');
 
-                // Auth::login($user);
-                $token = $user->createToken('authToken')->plainTextToken;
+                    // Log::info('User processed', ['user' => $user]);
+
+                    // Auth::login($user);
+                    $token = $user->createToken('authToken')->plainTextToken;
 
 
                 return response()->json([

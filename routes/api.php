@@ -43,6 +43,12 @@ Route::post('/auth/google', [AuthController::class, 'googleLogin']);
 
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+Route::get('categoriesWithoutImage', [CategoryController::class, 'CategoryWithoutImage']);
+Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
+Route::get('productImages/{id}', [ProductController::class, 'allImages']);
+Route::apiResource('categories', CategoryController::class);
+Route::get('productDetails/{product}', [ProductController::class, 'show']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
 Route::get('/user', [AuthController::class, 'getUser']);
@@ -81,8 +87,8 @@ Route::post('/logout', [AuthController::class, 'logout']);
     // Route::apiResource('categories', CategoryController::class);
     Route::Post('categories/update/{category}', [CategoryController::class, 'update']);
 
-    ///////////////////  MESSAGE  ///////////////////
 
+    ///////////////////  MESSAGE  ///////////////////
 // ✅ Conversation APIs
 Route::get('/conversations', [ConversationController::class, 'index']);
 Route::post('/conversations', [ConversationController::class, 'store']);
@@ -144,6 +150,8 @@ Route::prefix('v1/mobile')->group(function () {
     /////////////// CATEGORIES ///////////////////
 
     Route::Post('categories/update/{category}', [CategoryController::class, 'update']);
+        Route::apiResource('categories', CategoryController::class);
+
 
 
 

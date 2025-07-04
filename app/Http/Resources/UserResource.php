@@ -23,8 +23,8 @@ class UserResource extends JsonResource
             'description' => $this->description,
             'user_image' => $this->image ? url('storage/' . $this->image) : null, // Image URL if available
             'rating' => $this->rating ?? 0, // Default to 0 if no rating
-            'role' => $this->role,
             'is_active' => $this->is_active,
+            'role' => $this->getRoleNames()->first(),
             'total_products' => $this->products()->count(), // 👈 this line
         ];
     }

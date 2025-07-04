@@ -20,11 +20,12 @@ class MessageResource extends JsonResource
             'sender_id' => $this->sender_id,
             'message' => $this->message,
             'is_read' => $this->is_read,
-            'created_at' => $this->created_at,
             'sender' => [
                 'id' => $this->sender->id,
                 'name' => $this->sender->name,
-            ]
+                'image' => asset('storage/'.$this->sender->image),
+            ],
+             'created_at' => $this->created_at->diffForHumans(),
         ];
     }
 }

@@ -25,10 +25,10 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Logout } from "@mui/icons-material";
 import SearchInput from "./SearchInput";
-import AppDrawer from "../../../public/images/Drawer";
 import Can from "../repositories/Can";
 import { getUser, logout } from "../repositories/AuthRepository";
 import { useTranslation } from "react-i18next";
+import AppDrawer from "./AppDrawer";
 
 function NavBar({ onSearch }) {
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -125,7 +125,7 @@ function NavBar({ onSearch }) {
                         <Link to="/">
                             <Box
                                 component="img"
-                                src="/images/eliteValley.png"
+                                src="/eliteValley.png"
                                 alt="EliteValley"
                                 sx={{
                                     display: { xs: "none", md: "block" },

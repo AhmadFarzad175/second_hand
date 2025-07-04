@@ -9,23 +9,23 @@ const FloatingButton = styled(Button)(({ theme }) => ({
   minWidth: 'auto',
   width: 56,
   height: 56,
-  borderRadius: '28px 0 0 28px', // Half circle on left side
+  borderRadius: '28px 0 0 28px',
   backgroundColor: theme.palette.primary.main,
   color: theme.palette.primary.contrastText,
   boxShadow: theme.shadows[6],
-  transform: 'translateX(44px)', // Default hidden state
+  transform: 'translateX(44px)',
   transition: theme.transitions.create(['transform', 'background-color'], {
     duration: theme.transitions.duration.standard,
     easing: theme.transitions.easing.easeOut,
   }),
   '&:hover': {
     backgroundColor: theme.palette.primary.dark,
-    transform: 'translateX(0)', // Fully visible on hover
+    transform: 'translateX(0)',
     boxShadow: theme.shadows[8],
   },
   '&.MuiButton-root': {
-    padding: 0, // Remove default padding
-    minWidth: 'auto', // Remove minimum width
+    padding: 0,
+    minWidth: 'auto',
   },
 }));
 

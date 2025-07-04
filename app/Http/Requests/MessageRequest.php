@@ -22,6 +22,7 @@ class MessageRequest extends FormRequest
         return [
             'conversation_id' => 'required|exists:conversations,id',
             'message' => 'required|string',
+            'sender_id' => 'required',
         ];
     }
 

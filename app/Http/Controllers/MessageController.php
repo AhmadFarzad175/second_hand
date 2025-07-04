@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Events\MessageDeleted;
 use App\Http\Requests\MessageRequest;
 use App\Http\Resources\MessageResource;
+use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
@@ -26,10 +27,11 @@ class MessageController extends Controller
 
 public function store(MessageRequest $request, $conversationId)
 {
+        $validated = $request->validated();
     $message = Message::create([
-        'conversation_id' => $conversationId,
-        'sender_id' => $request->sender_id,
-        'message' => $request->message,
+        'conversation_id' => $validated['conversation_id'],
+        'sender_id' => $validated['sender_id'],
+        'message' => $validated['message'],
         'is_read' => false,
     ]);
 
@@ -56,10 +58,11 @@ public function destroy($messageId, Request $request)
 
     public function markAsRead($conversationId, Request $request)
     {
-        $conversation = Conversation::findOrFail($conversationId);
+        // $conversation = Conversation::findOrFail($conversationId);
+        $userId = Auth::id();
 
         Message::where('conversation_id', $conversationId)
-            ->where('sender_id', '!=', $request->user_id) // no Auth
+            ->where('sender_id', '!=', $userId) // no Auth
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
@@ -68,14 +71,14 @@ public function destroy($messageId, Request $request)
 
     public function unreadCount(Request $request)
     {
-        // $userId = auth()->id();
-
-        $userId = $request->user_id;
-
+        $userId = Auth::id();
+        // $userId = $request->user_id;
+        // dd($userId);
         $count = Message::whereHas('conversation', function ($q) use ($userId) {
             $q->where('user_one_id', $userId)->orWhere('user_two_id', $userId);
         })->where('sender_id', '!=', $userId)->where('is_read', false)->count();
-
+        // dd($count);
+        
         return response()->json(['unread_count' => $count]);
     }
 }

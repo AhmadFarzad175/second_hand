@@ -11,33 +11,35 @@ class ConversationController extends Controller
     /**
      * List all conversations for a test user (user_id = 1)
      */
-    public function index()
-    {
-        // $userId = auth()->id();
+   public function index()
+{
+    $userId = auth()->id();
 
-        $userId = 3; // TEMP: Hardcoded test user ID
-
-        $conversations = Conversation::with([
+    $conversations = Conversation::with([
             'userOne',
             'userTwo',
             'messages' => fn($query) => $query->latest()->limit(1)
         ])
+        ->withCount(['messages as unread_count' => function ($query) use ($userId) {
+            $query->where('is_read', false)
+            ->where('sender_id', '!=', $userId);
+        }])
         ->where('user_one_id', $userId)
         ->orWhere('user_two_id', $userId)
         ->orderByDesc('updated_at')
         ->get();
 
-        return ConversationResource::collection($conversations);
-    }
+    return ConversationResource::collection($conversations);
+}
+
 
     /**
      * Start or fetch existing conversation between user 1 and another user
      */
     public function store(Request $request)
     {
-        // $userId = auth()->id();
+        $userId = auth()->id();
 
-        $userId = 3; // TEMP: Hardcoded user ID for testing
 
         $request->validate([
             'user_id' => 'required|exists:users,id|not_in:' . $userId,
@@ -78,7 +80,7 @@ class ConversationController extends Controller
         return response()->json(['message' => 'Conversation deleted']);
     }
 }
-
+/////////////////////////////////////
 // <?php
 
 // namespace App\Http\Controllers;

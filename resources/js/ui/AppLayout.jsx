@@ -4,7 +4,6 @@ import Navbar from "./NavBar";
 import Footer from "./Footer";
 import { useState } from "react";
 import ChatSystem from "./ChatSystem";
-import Can from "../repositories/Can";
 
 function AppLayout() {
     const [searchTerm, setSearchTerm] = useState("");
