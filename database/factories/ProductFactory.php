@@ -34,7 +34,8 @@ class ProductFactory extends Factory
                 'color' => $this->faker->colorName,
             ]),
             // 'date' => $this->faker->date,
-            // "currency_id" => 1
+            "currency" => 1,
+            "state" => 0, // 0 == available, 1 == sold
         ];
     }
 }

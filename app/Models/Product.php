@@ -138,7 +138,7 @@ return number_format(max(0, $this->price - ($this->price * ($this->discount / 10
     // {
     //     return $this->attributes['currency'] === "AFN" ? "؋" : "$";
     // }
-    
+
 
     public function getStateAttribute()
     {

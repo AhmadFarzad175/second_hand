@@ -41,39 +41,12 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/auth/google', [AuthController::class, 'googleLogin']);
 
-<<<<<<< HEAD
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-=======
-Route::get('categoriesWithoutImage', [CategoryController::class, 'CategoryWithoutImage']);
-Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
-Route::get('productImages/{id}', [ProductController::class, 'allImages']);
-Route::get('productDetails/{product}', [ProductController::class, 'show']);
-Route::apiResource('categories', CategoryController::class);
 
-Route::get('categoriesWithoutImage', [CategoryController::class, 'CategoryWithoutImage']);
-Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
-Route::get('productImages/{id}', [ProductController::class, 'allImages']);
-Route::get('productDetails/{product}', [ProductController::class, 'show']);
-Route::apiResource('categories', CategoryController::class);
-
->>>>>>> e776a48f249c6e584b7fe378d6e7fc76f15f7e63
-
-Route::middleware('auth:sanctum')->group(function () {});
+Route::middleware('auth:sanctum')->group(function () {
 Route::get('/user', [AuthController::class, 'getUser']);
 Route::post('/logout', [AuthController::class, 'logout']);
-// Route::get('/reset-password/{token}', function ($token) {
-//     return response()->json([
-//         'message' => 'Dummy API reset password route.',
-//         'token' => $token
-//     ]);
-// })->name('password.reset');
-
-
-// Route::post('/forgot-password/send-code', [AuthController::class, 'sendResetCode']);
-
-// // Forgot password: verify code + reset password
-// Route::post('/forgot-password/verify-code', [AuthController::class, 'verifyCodeAndReset']);
 
 
 
@@ -140,7 +113,7 @@ Route::apiResource('reviews', ReviewController::class);
     Route::get('/profile', [UserController::class, 'profile']);
 
 
-
+});
 
 
 ////////////////////  API FOR MOBILE   ////////////////////////////////

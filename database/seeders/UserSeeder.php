@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
         ];
 
         for ($i = 1; $i <= 6; $i++) {
-            User::create([
+            $user = User::create([
                 'name' => "Test User $i",
                 'email' => "user$i@example.com",
                 'phone' => "07000000$i",
@@ -28,10 +28,11 @@ class UserSeeder extends Seeder
                 'location' => json_encode($locations[$i - 1]),
                 'description' => "This is user $i description.",
                 'rating' => rand(3, 5),
-                'role' => 'user',
+                // 'role' => 'user',
                 'is_active' => true,
                 'google_id' => null,
             ]);
+            $user->assignRole('user'); // Assign default role to user
         }
     }
 }
