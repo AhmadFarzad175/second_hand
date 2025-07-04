@@ -1,11 +1,13 @@
 <?php
 namespace Database\Seeders;
 
+use App\Models\Conversation;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Message;
 use App\Models\Review;
 use App\Models\Favorite;
+use App\Models\Product;
 use App\Models\Report;
 use Illuminate\Support\Facades\Hash;
 
@@ -13,7 +15,9 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // User::factory(5)->create();
+           // Step 1: Seed users and products first
+        User::factory(10)->create();
+        Product::factory(10)->create();
 
         // Users and categories
         // User::create([
@@ -30,8 +34,11 @@ class DatabaseSeeder extends Seeder
         //     'is_active' => true,
         // ]);
 
-        // User::factory(10)->create();
+        // Step 3: Now seed messages and reviews safely
+        Message::factory(10)->create();
+        Review::factory(5)->create();
 
+        // Optional additional seeders
         $this->call([
             CategorySeeder::class,
             ProductAttributesSeeder::class,

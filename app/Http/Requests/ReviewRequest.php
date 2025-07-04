@@ -28,31 +28,9 @@ class ReviewRequest extends FormRequest
             'product_id' => 'required|exists:products,id',
             'rating' => 'required|numeric|min:1|max:5', // Assuming a 1-5 rating scale
             'comment' => 'nullable|string|max:255',
-            'date' => 'nullable|date',
+            // 'date' => 'nullable|date',
         ];
         $this->isMethod('PUT') && $this->validate($rules);
         return $rules;
-    }
-
-    /**
-     * Customize the error messages for the validation rules.
-     *
-     * @return array
-     */
-    public function messages()
-    {
-        return [
-            'user_id.required' => 'User ID is required.',
-            'user_id.exists' => 'User with the specified ID does not exist.',
-            'product_id.required' => 'Product ID is required.',
-            'product_id.exists' => 'Product with the specified ID does not exist.',
-            'rating.required' => 'Rating is required.',
-            'rating.numeric' => 'Rating must be a number.',
-            'rating.min' => 'Rating must be at least 1.',
-            'rating.max' => 'Rating must not exceed 5.',
-            'comment.required' => 'Comment is required.',
-            'comment.string' => 'Comment must be a string.',
-            'comment.max' => 'Comment may not be greater than 255 characters.',
-        ];
     }
 }
