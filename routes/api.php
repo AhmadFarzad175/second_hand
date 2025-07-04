@@ -44,17 +44,11 @@ Route::post('/auth/google', [AuthController::class, 'googleLogin']);
 Route::get('categoriesWithoutImage', [CategoryController::class, 'CategoryWithoutImage']);
 Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
 Route::get('productImages/{id}', [ProductController::class, 'allImages']);
-Route::get('productDetails/{product}', [ProductController::class, 'show']);
 Route::apiResource('categories', CategoryController::class);
-
-Route::get('categoriesWithoutImage', [CategoryController::class, 'CategoryWithoutImage']);
-Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
-Route::get('productImages/{id}', [ProductController::class, 'allImages']);
 Route::get('productDetails/{product}', [ProductController::class, 'show']);
-Route::apiResource('categories', CategoryController::class);
 
 
-Route::middleware('auth:sanctum')->group(function () {});
+Route::middleware('auth:sanctum')->group(function () {
 Route::get('/user', [AuthController::class, 'getUser']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
@@ -91,9 +85,9 @@ Route::post('/logout', [AuthController::class, 'logout']);
     // Route::apiResource('categories', CategoryController::class);
     Route::Post('categories/update/{category}', [CategoryController::class, 'update']);
 
-    ///////////////////  MESSAGE  ///////////////////
 
-// ✅ Conversation APIs
+    ///////////////////  MESSAGE  ///////////////////
+// ✅ Conversation APIs 
 Route::get('/conversations', [ConversationController::class, 'index']);
 Route::post('/conversations', [ConversationController::class, 'store']);
 Route::get('/conversations/{conversation}', [ConversationController::class, 'show']);
@@ -123,7 +117,7 @@ Route::apiResource('reviews', ReviewController::class);
     Route::get('/profile', [UserController::class, 'profile']);
 
 
-
+});
 
 
 ////////////////////  API FOR MOBILE   ////////////////////////////////

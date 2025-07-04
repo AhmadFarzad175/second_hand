@@ -29,7 +29,7 @@ return new class extends Migration
             $table->integer('quantity')->default(1);
             $table->boolean('condition')->default(false); // 0 == New, 1 == Old
             $table->boolean('state')->default(0); // 0 == available, 1 == sold
-            $table->string('description');
+            $table->text('description');
             $table->index('description');
             $table->json('attributes')->nullable();
             $table->timestamps();

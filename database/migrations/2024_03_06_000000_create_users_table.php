@@ -20,7 +20,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable()->default(now());
             $table->json('location');
             $table->string('phone')->nullable();
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->string('rating')->nullable();
             // $table->enum('role', ['admin', 'user', 'manager'])->nullable()->default('user');
             $table->boolean('is_active')->default(true);

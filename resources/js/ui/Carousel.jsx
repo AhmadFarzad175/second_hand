@@ -3,7 +3,7 @@ import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TuneIcon from "@mui/icons-material/Tune";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getCategories } from "../repositories/CategoryRepository";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -11,12 +11,14 @@ import FilterDialog from "./FilterDialog";
 import { useTranslation } from "react-i18next";
 
 export default function Carousel() {
-    const [value, setValue] = useState(null);
+    const [value, setValue] = useState(0); // Initialize with 0 instead of null
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const [filterOpen, setFilterOpen] = useState(false);
-        const { t } = useTranslation();
+    const { t } = useTranslation();
     
+    // Get category from URL if exists
+    const urlCategory = searchParams.get("category");
 
     const currentFilters = {
         price: searchParams.get("price") || "",
@@ -24,6 +26,27 @@ export default function Carousel() {
         condition: searchParams.get("condition") || "",
         date: searchParams.get("date") || "",
     };
+
+    // Fetch categories
+    const {
+        data: categories = [], // Default to empty array
+        isLoading,
+        isError,
+        error,
+    } = useQuery({
+        queryKey: ["categories"],
+        queryFn: getCategories,
+    });
+
+    // Sync tab selection with URL category
+    useEffect(() => {
+        if (categories.length > 0 && urlCategory) {
+            const categoryIndex = categories.findIndex(cat => cat.id === urlCategory);
+            if (categoryIndex !== -1) {
+                setValue(categoryIndex);
+            }
+        }
+    }, [categories, urlCategory]);
 
     const handleApplyFilters = (newFilters) => {
         const params = new URLSearchParams(searchParams);
@@ -37,33 +60,26 @@ export default function Carousel() {
         navigate(`?${params.toString()}`);
     };
 
-    // when user click on the category
     const handleChange = (event, newValue) => {
         setValue(newValue);
         const selectedCategory = categories[newValue];
 
         if (selectedCategory?.id) {
-            // Create a NEW searchParams instance with only the category
             const params = new URLSearchParams();
             params.set("category", selectedCategory.id);
+
+            // Preserve existing filters
+            Object.entries(currentFilters).forEach(([key, value]) => {
+                if (value) params.set(key, value);
+            });
 
             navigate(`?${params.toString()}`);
         }
     };
 
-    //fetching categories
-    const {
-        data: categories,
-        isLoading,
-        isError,
-        error,
-    } = useQuery({
-        queryKey: ["categories"],
-        queryFn: getCategories,
-    });
-
     if (isLoading) return <div>Loading...</div>;
     if (isError) return <div>Error: {error.message}</div>;
+    if (categories.length === 0) return <div>No categories available</div>;
 
     return (
         <Box
@@ -81,12 +97,12 @@ export default function Carousel() {
                 sx={{
                     flexGrow: 1,
                     overflowX: "auto",
-                    scrollbarWidth: "none", // Hide scrollbar for Firefox
-                    "&::-webkit-scrollbar": { display: "none" }, // Hide scrollbar for Chrome/Safari
+                    scrollbarWidth: "none",
+                    "&::-webkit-scrollbar": { display: "none" },
                 }}
             >
                 <Tabs
-                    value={value}
+                    value={Math.min(value, categories.length - 1)} // Ensure value is within bounds
                     onChange={handleChange}
                     variant="scrollable"
                     scrollButtons="auto"
@@ -103,7 +119,7 @@ export default function Carousel() {
                 >
                     {categories.map((category, index) => (
                         <Tab
-                            key={index}
+                            key={category.id} // Better to use category.id instead of index
                             sx={{
                                 backgroundColor: "transparent",
                                 background: "transparent",
@@ -115,11 +131,9 @@ export default function Carousel() {
                                     style={{
                                         width: 60,
                                         height: 60,
-                                        // borderRadius: "50%",
                                         objectFit: "cover",
                                         borderRadius: 5,
                                         backgroundColor: "transparent",
-                                        background: "transparent",
                                     }}
                                 />
                             }

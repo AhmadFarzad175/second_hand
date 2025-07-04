@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class WebsiteProductsResource extends JsonResource
 {
@@ -17,7 +18,7 @@ class WebsiteProductsResource extends JsonResource
      */
     public function toArray($request)
 {
-    $userId = $request->query('user_id') ?? 1; // Fixed null coalescing operator
+    $userId = Auth::Id(); // Fixed null coalescing operator
 
     return [
         'id' => $this->id,

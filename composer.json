@@ -7,7 +7,7 @@
     "require": {
         "php": "^8.1",
         "beyondcode/laravel-websockets": "^1.14",
-        "google/apiclient": "*",
+        "google/apiclient": "^2.18",
         "google/apiclient-services": "^0.397.0",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",

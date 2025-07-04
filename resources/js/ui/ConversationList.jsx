@@ -1,87 +1,142 @@
-import { 
-  Box, 
-  Typography, 
-  IconButton, 
-  Divider, 
-  List, 
-  ListItem, 
-  ListItemAvatar, 
-  Avatar, 
-  ListItemText 
-} from '@mui/material';
-import { Close as CloseIcon, Person as PersonIcon, CheckCircle as CheckCircleIcon } from '@mui/icons-material';
-import { Fragment } from 'react';
+import { useQuery } from "@tanstack/react-query";
+import {
+    List,
+    ListItem,
+    Avatar,
+    Typography,
+    Box,
+    CircularProgress,
+    IconButton,
+    Divider,
+    Badge,
+} from "@mui/material";
+import { Close as CloseIcon } from "@mui/icons-material";
+import { fetchConversations } from "../repositories/ChatRepository";
 
-const ConversationList = ({ onClose, onSelectChat, setUnreadCount }) => {
-  const chats = [
-    {
-      id: 1,
-      name: 'John Doe',
-      lastMessage: 'Is this item still available?',
-      time: '10:30 AM',
-      unread: true,
-      item: 'iPhone 13 Pro',
-      itemImage: 'https://images.unsplash.com/photo-1633891120687-539a316f0e5c?w=200'
-    },
-    // Add more chats as needed
-  ];
+const ConversationList = ({ onClose, onSelectChat }) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const { data: conversations, isLoading } = useQuery({
+        queryKey: ["conversations"],
+        queryFn: fetchConversations,
+    });
 
-  const handleChatSelect = (chatId) => {
-    onSelectChat(chatId);
-    setUnreadCount(prev => prev - (chats.find(c => c.id === chatId)?.unread ? 1 : 0));
-  };
+    if (isLoading) {
+        return (
+            <Box display="flex" justifyContent="center" p={4}>
+                <CircularProgress />
+            </Box>
+        );
+    }
 
-  return (
-    <>
-      <Box display="flex" justifyContent="space-between" alignItems="center" p={2}>
-        <Typography variant="h6" component="div">
-          Your Messages
-        </Typography>
-        <IconButton onClick={onClose}>
-          <CloseIcon />
-        </IconButton>
-      </Box>
-      <Divider />
-      <List sx={{ flex: 1, overflowY: 'auto' }}>
-        {chats.map((chat) => (
-          <Fragment key={chat.id}>
-            <ListItem
-              alignItems="flex-start"
-              sx={{
-                cursor: 'pointer',
-                '&:hover': { backgroundColor: 'action.hover' }
-              }}
-              onClick={() => handleChatSelect(chat.id)}
+    return (
+        <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+            <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                p={2}
+                sx={{ borderBottom: "1px solid", borderColor: "divider" }}
             >
-              <ListItemAvatar>
-                <Avatar src={chat.itemImage}>
-                  <PersonIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary={chat.name}
-                secondary={
-                  <>
-                    <Typography component="span" variant="body2" color="text.primary">
-                      {chat.item}
-                    </Typography>
-                    <br />
-                    <Box display="flex" alignItems="center">
-                      {chat.unread && (
-                        <CheckCircleIcon color="primary" fontSize="small" sx={{ mr: 0.5 }} />
-                      )}
-                      {chat.lastMessage}
+                <Typography variant="h6" fontWeight="bold">
+                    Messages
+                </Typography>
+                <IconButton onClick={onClose}>
+                    <CloseIcon />
+                </IconButton>
+            </Box>
+
+            <List sx={{ flex: 1, overflowY: "auto" }}>
+                {conversations?.length > 0 ? (
+                    conversations.map((conversation) => {
+                        const otherUser =
+                            conversation.user_one.id === user.id
+                                ? conversation.user_two
+                                : conversation.user_one;
+                        return (
+                            <div key={conversation.id}>
+                                <ListItem
+                                    button
+                                    onClick={() =>
+                                        onSelectChat(conversation.id)
+                                    }
+                                    sx={{
+                                        "&:hover": {
+                                            backgroundColor: "action.hover",
+                                        },
+                                        py: 2,
+                                    }}
+                                >
+                                    <Avatar
+                                        src={otherUser.image}
+                                        sx={{ width: 48, height: 48 }}
+                                    >
+                                        {otherUser.name.charAt(0)}
+                                    </Avatar>
+                                    <Box ml={2} sx={{ flex: 1 }}>
+                                        <Box
+                                            display="flex"
+                                            justifyContent="space-between"
+                                        >
+                                            <Typography fontWeight="bold">
+                                                {otherUser.name}
+                                            </Typography>
+                                            {conversation.last_message && (
+                                                <Typography
+                                                    variant="caption"
+                                                    color="text.secondary"
+                                                >
+                                                    {
+                                                        conversation
+                                                            .last_message.time
+                                                    }
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                        <Box
+                                            display="flex"
+                                            justifyContent="space-between"
+                                        >
+                                            <Typography
+                                                variant="body2"
+                                                color="text.secondary"
+                                                noWrap
+                                                sx={{
+                                                    maxWidth: "100%",
+                                                    textOverflow: "ellipsis",
+                                                }}
+                                            >
+                                                {conversation.last_message
+                                                    ?.content ||
+                                                    "No messages yet"}
+                                            </Typography>
+
+                                            {conversation.unread_count > 0 && (
+                                                <Badge
+                                                    badgeContent={
+                                                        conversation.unread_count
+                                                    }
+                                                    color="primary"
+                                                    overlap="circular"
+                                                    sx={{ mt: 1, mr:1 }}
+                                                />
+                                            )}
+                                        </Box>
+                                    </Box>
+                                </ListItem>
+                                <Divider />
+                            </div>
+                        );
+                    })
+                ) : (
+                    <Box p={4} textAlign="center">
+                        <Typography color="text.secondary">
+                            No conversations yet
+                        </Typography>
                     </Box>
-                  </>
-                }
-              />
-            </ListItem>
-            <Divider variant="inset" component="li" />
-          </Fragment>
-        ))}
-      </List>
-    </>
-  );
+                )}
+            </List>
+        </Box>
+    );
 };
 
 export default ConversationList;

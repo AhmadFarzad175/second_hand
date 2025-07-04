@@ -16,7 +16,7 @@ class UserController extends Controller
     use ImageManipulation;
     public function __construct()
     {
-        $this->middleware('can:view product');
+        // $this->middleware('can:view product');
     //     $this->middleware('can:viewUser')->only(['index', 'show']);
     //     $this->middleware('can:createUser')->only(['store']);
     //     $this->middleware('can:editUser')->only(['update', 'Status']);

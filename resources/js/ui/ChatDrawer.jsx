@@ -1,4 +1,3 @@
-import  { useState } from 'react';
 import { Drawer, styled } from '@mui/material';
 import ChatWindow from './ChatWindow';
 import ConversationList from './ConversationList';
@@ -12,11 +11,22 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
     flexDirection: 'column',
     transition: 'transform 0.3s ease-in-out',
   },
+  [theme.breakpoints.down('sm')]: {
+    '& .MuiDrawer-paper': {
+      width: '100%',
+    },
+  },
 }));
 
-const ChatDrawer = ({ open, onClose, unreadCount, setUnreadCount }) => {
-  const [selectedChat, setSelectedChat] = useState(null);
-
+const ChatDrawer = ({ 
+  open, 
+  onClose, 
+  selectedChat, 
+  productDetails,
+  onSelectChat, 
+  onBackToList,
+  currentUserId
+}) => {
   return (
     <StyledDrawer
       anchor="right"
@@ -25,15 +35,16 @@ const ChatDrawer = ({ open, onClose, unreadCount, setUnreadCount }) => {
     >
       {!selectedChat ? (
         <ConversationList
-          onClose={onClose} 
-          onSelectChat={setSelectedChat}
-          setUnreadCount={setUnreadCount}
+          onClose={onClose}
+          onSelectChat={onSelectChat}
         />
       ) : (
         <ChatWindow 
-          selectedChat={selectedChat} 
-          onBack={() => setSelectedChat(null)}
+          selectedChat={selectedChat}
+          productDetails={productDetails}
+          onBack={onBackToList}
           onClose={onClose}
+          currentUserId={currentUserId}
         />
       )}
     </StyledDrawer>

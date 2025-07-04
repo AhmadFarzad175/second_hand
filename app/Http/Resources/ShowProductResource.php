@@ -5,6 +5,8 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ShowProductResource extends JsonResource
 {
@@ -16,6 +18,8 @@ class ShowProductResource extends JsonResource
      */
     public function toArray($request)
     {
+            $userId = $request->input('user_id') ?? null; // Fixed null coalescing operator
+// dd($userId);
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -40,6 +44,7 @@ class ShowProductResource extends JsonResource
             'condition' => $this->condition,
             'date' => Carbon::parse($this->created_at)->format('Y-m-d'), // Parse and format the date
             'favorites_count' => $this->favorites->count(),
+        'isFavorite' => $this->checkIsFavorite($userId),
             'description' => $this->description,
 
             'location' => $this->user->location,
@@ -80,5 +85,17 @@ class ShowProductResource extends JsonResource
         $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
 
         return $earthRadius * $c; // Distance in kilometers
+    }
+
+    protected function checkIsFavorite($userId): bool
+    {
+        if (!$userId) {
+            return false;
+        }
+
+        return DB::table('favorites')
+            ->where('user_id', $userId)
+            ->where('product_id', $this->id)
+            ->exists();
     }
 }
