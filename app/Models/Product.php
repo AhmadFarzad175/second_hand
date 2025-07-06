@@ -19,7 +19,6 @@ class Product extends Model
         'quantity',
         'condition',
         'attributes',
-        'stock',
         'description',
         'state',
         'currency'

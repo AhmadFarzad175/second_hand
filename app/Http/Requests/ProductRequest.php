@@ -24,14 +24,13 @@ class ProductRequest extends FormRequest
      */
     public function rules(): array
     {
-            return  [
+        return  [
             'name' => 'required|string|max:255',
             'images' => 'sometimes',
             'category_id' => 'required',
             'price' => 'required|numeric|gte:0',
             'discount' => 'nullable|numeric|gte:0',
             'quantity' => 'required|integer|min:1',
-            'stock' => 'required|integer|min:1',
             'condition' => 'nullable|boolean',
             'attributes' => 'nullable|json',
             'description' => 'required|string|min:10',
