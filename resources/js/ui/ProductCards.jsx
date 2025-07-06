@@ -8,6 +8,7 @@ function ProductCards({ isLoading, error, products }) {
 
     // Show error message if there's an issue fetching data
     if (error) {
+        console.log(error)
         return <p>Error: {error.message}</p>;
     }
 

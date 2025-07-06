@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -18,8 +19,7 @@ class WebsiteProductsResource extends JsonResource
      */
     public function toArray($request)
 {
-    $userId = Auth::Id(); // Fixed null coalescing operator
-
+    $userId = $request->input('user_id'); // Fixed null coalescing operator
     return [
         'id' => $this->id,
         'name' => $this->name,
@@ -31,7 +31,7 @@ class WebsiteProductsResource extends JsonResource
         'posted' => Carbon::parse($this->created_at)->diffForHumans(),
         'isFavorite' => $this->checkIsFavorite($userId),
         'images' => $this->getFirstImageUrl(),
-        'howFar' => $this->getDistanceFromRequest($request),
+        'howFar' => $this->getDistanceFromRequest($userId),
         'condition' => $this->condition,
         'state' => $this->state,
         'has_discount' => $this->discount > 0, // Helper flag for frontend
@@ -59,7 +59,7 @@ protected function formatDiscount()
     /**
      * Check if product is marked as favorite by the user.
      */
-    protected function checkIsFavorite(?int $userId): bool
+    protected function checkIsFavorite($userId)
     {
         if (!$userId) {
             return false;
@@ -74,7 +74,7 @@ protected function formatDiscount()
     /**
      * Get the first image URL or null.
      */
-    protected function getFirstImageUrl(): ?string
+    protected function getFirstImageUrl()
     {
         if ($this->images?->isNotEmpty()) {
             return asset('storage/' . $this->images->first()->image_url);
@@ -86,13 +86,19 @@ protected function formatDiscount()
     /**
      * Calculate how far the product is from the user.
      */
-    protected function getDistanceFromRequest(Request $request): ?string
+    protected function getDistanceFromRequest($userId)
     {
-        $userLat = $request->query('latitude', 34.5034699);
-        $userLng = $request->query('longitude', 69.1350106);
+ // Check if $userId is "undefined" or invalid
+    if ($userId === "undefined" || !is_numeric($userId)) {
+        return null; // or throw an exception
+    }   
+$user = User::find($userId);
+$AuthLocation = json_decode($user->location, true);
+$userLat = $AuthLocation['latitude'] ?? null;       // Use array access
+$userLng = $AuthLocation['longitude'] ?? null;
 
-        $location = $this->user?->location;
 
+        $location = json_decode($this->user?->location, true );
         if (
             !isset($location['latitude'], $location['longitude']) ||
             !$userLat || !$userLng

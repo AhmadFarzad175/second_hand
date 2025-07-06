@@ -55,7 +55,11 @@ const ChatSystem = () => {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             },
+            // Add this to disable unload handler
+    disableStats: true,
+    enabledTransports: ['ws', 'wss'] // Explicitly enable only WebSocket transports
         });
+
 
         // Listen for new messages
         echo.private(`conversations.${user.id}`).listen(
@@ -87,12 +91,12 @@ const ChatSystem = () => {
         };
     }, [user, queryClient]);
 
-    const toggleDrawer = () => {
-        setOpen(!open);
-        if (!open && unreadCount > 0) {
-            queryClient.invalidateQueries(["unreadCount"]);
-        }
-    };
+    // const toggleDrawer = () => {
+    //     setOpen(!open);
+    //     if (!open && unreadCount > 0) {
+    //         queryClient.invalidateQueries(["unreadCount"]);
+    //     }
+    // };
 
     const handleSelectChat = (chatId) => {
         setSelectedChat(chatId);

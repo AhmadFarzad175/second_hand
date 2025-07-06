@@ -19,23 +19,13 @@ class Product extends Model
         'quantity',
         'condition',
         'attributes',
+        'stock',
         'description',
         'state',
         'currency'
     ];
 
 
-    // public function getWhatsappLinkAttribute()
-    // {
-    //     // Ensure user relationship is loaded and phone is not null
-    //     if (!$this->user || !$this->user->phone) {
-    //         return null; // Return null if user or phone is missing
-    //     }
-
-    //     $phone = $this->user->phone; // Access the user's phone
-    //     $message = "Hello, I'm interested in your product '{$this->name}' listed for {$this->price}.";
-    //     return "https://wa.me/{$phone}?text=" . urlencode($message);
-    // }
 
     public function user()
     {
@@ -56,10 +46,7 @@ class Product extends Model
             ->withTimestamps();
     }
 
-    // public function currency()
-    // {
-    //     return $this->belongsTo(Currency::class);
-    // }
+
     public function images()
     {
         return $this->hasMany(Image::class); // Define a hasMany relationship
@@ -84,6 +71,16 @@ class Product extends Model
         return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
     }
 
+    public function transactions()
+    {
+        return $this->hasMany(ProductTransaction::class);
+    }
+
+    public function pendingTransactions()
+    {
+        return $this->transactions()->pending();
+    }
+
     public function scopeSearch($query, $search)
     {
         if (!$search) {
@@ -104,18 +101,18 @@ class Product extends Model
     protected $casts = [
         'attributes' => 'array', // Ensures JSON data is treated as an array
     ];
-        protected static function booted()
-        {
-            static::deleting(function ($product) {
-                foreach ($product->images as $image) {
-                    if ($image->image_path && Storage::disk('public')->exists($image->image_path)) {
-                        Storage::disk('public')->delete($image->image_path);
-                    }
+    protected static function booted()
+    {
+        static::deleting(function ($product) {
+            foreach ($product->images as $image) {
+                if ($image->image_path && Storage::disk('public')->exists($image->image_path)) {
+                    Storage::disk('public')->delete($image->image_path);
                 }
+            }
 
-                $product->images()->delete();
-            });
-        }
+            $product->images()->delete();
+        });
+    }
 
 
 
@@ -127,7 +124,7 @@ class Product extends Model
         } elseif ($this->discount_type === 'fixed') {
             return max(0, $this->price - $this->discount);
         } elseif ($this->discount_type === '%') {
-return number_format(max(0, $this->price - ($this->price * ($this->discount / 100))), 2);
+            return number_format(max(0, $this->price - ($this->price * ($this->discount / 100))), 2);
         }
         return $this->price;
     }
