@@ -38,7 +38,11 @@ class ProductResource extends JsonResource
             'attributes' => $this->attributes,
             'state' =>  $this->state,
 
-            'image' => asset('storage/' . $this->images[0]?->image_url),
+            // 'image' => asset('storage/' . $this->images[0]?->image_url),
+                        'image' => $this->image ? url('storage/' . $this->image) : null,
+            // 'image' => $this->image ? asset('storage/images/categories/cat' . rand(1, 4) . '.jpg')  : null,
+            // 'image' => $this->image ? asset($this->image) : null,
+
         ];
     }
 }

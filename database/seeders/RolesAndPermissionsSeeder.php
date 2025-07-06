@@ -54,7 +54,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'image' => 'default.png', // default image placeholder
                 'location' => json_encode(['latitude' => 0, 'longitude' => 0]), // sample JSON
                 'password' => Hash::make('123456'), // change password after seed!
-                'role' => 'admin',
+                // 'role' => 'admin',
                 'is_active' => true,
             ]
         );
@@ -67,7 +67,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'image' => 'default.png', // default image placeholder
                 'location' => json_encode(['latitude' => "34.4994965", 'longitude' => "69.146955"]), // sample JSON
                 'password' => Hash::make('123456'), // change password after seed!
-                'role' => 'admin',
+                // 'role' => 'admin',
                 'is_active' => true,
             ]
         );

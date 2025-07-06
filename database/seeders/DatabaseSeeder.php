@@ -42,10 +42,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CategorySeeder::class,
             ProductAttributesSeeder::class,
-            // ProductSeeder::class,
+            ProductSeeder::class,
             RolesAndPermissionsSeeder::class,
-            // UserSeeder::class,
-            // ConversationSeeder::class,
+            UserSeeder::class,
+            ConversationSeeder::class,
         ]);
 
         // Seed other related models
