@@ -16,8 +16,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
            // Step 1: Seed users and products first
-        User::factory(10)->create();
-        Product::factory(10)->create();
+        // User::factory(10)->create();
+        // Product::factory(10)->create();
 
         // Users and categories
         // User::create([
@@ -35,8 +35,8 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         // Step 3: Now seed messages and reviews safely
-        Message::factory(10)->create();
-        Review::factory(5)->create();
+        // Message::factory(10)->create();
+        // Review::factory(5)->create();
 
         // Optional additional seeders
         $this->call([

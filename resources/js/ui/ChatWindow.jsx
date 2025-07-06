@@ -41,6 +41,17 @@ const ChatWindow = ({
         enabled: !!selectedChat,
     });
 
+    // ... other state and refs
+
+    // Set default message when product details are available
+    useEffect(() => {
+        if (productDetails) {
+            setNewMessage(
+                `Hi, I'm interested in your ${productDetails.name} ($${productDetails.price})`
+            );
+        }
+    }, [productDetails]);
+
     // Mark as read when opening chat
     useEffect(() => {
         if (selectedChat) {
@@ -157,39 +168,45 @@ const ChatWindow = ({
             </Box>
 
             {/* Product Info Section */}
-      {productDetails && (
-        <Box sx={{ 
-          p: 2, 
-          borderBottom: "1px solid", 
-          borderColor: "divider",
-          backgroundColor: "background.paper"
-        }}>
-          <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold' }}>
-            About the product:
-          </Typography>
-          <Stack direction="row" spacing={2} alignItems="center">
-            <Box 
-              component="img" 
-              src={productDetails.image} 
-              sx={{ 
-                width: 60, 
-                height: 60, 
-                borderRadius: 1,
-                objectFit: 'cover' 
-              }} 
-              alt={productDetails.name}
-            />
-            <Box>
-              <Typography variant="body1" fontWeight="bold">
-                {productDetails.name}
-              </Typography>
-              <Typography variant="body2">
-                ${productDetails.price}
-              </Typography>
-            </Box>
-          </Stack>
-        </Box>
-      )}
+            {productDetails && (
+                <Box
+                    sx={{
+                        p: 2,
+                        borderBottom: "1px solid",
+                        borderColor: "divider",
+                        backgroundColor: "background.paper",
+                    }}
+                >
+                    <Typography
+                        variant="subtitle2"
+                        gutterBottom
+                        sx={{ fontWeight: "bold" }}
+                    >
+                        About the product:
+                    </Typography>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <Box
+                            component="img"
+                            src={productDetails.image}
+                            sx={{
+                                width: 60,
+                                height: 60,
+                                borderRadius: 1,
+                                objectFit: "cover",
+                            }}
+                            alt={productDetails.name}
+                        />
+                        <Box>
+                            <Typography variant="body1" fontWeight="bold">
+                                {productDetails.name}
+                            </Typography>
+                            <Typography variant="body2">
+                                ${productDetails.price}
+                            </Typography>
+                        </Box>
+                    </Stack>
+                </Box>
+            )}
 
             {/* Messages */}
             <Box

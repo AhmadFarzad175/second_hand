@@ -27,7 +27,7 @@ import L from "leaflet";
 import { useDeleteProduct } from "../features/product/useDeleteProduct";
 import FavoriteButton from "./FavoriteButton";
 import { useChat } from "../contexts/ChatContext";
-import { createProductConversation } from '../repositories/ChatRepository';
+import { createProductConversation } from "../repositories/ChatRepository";
 
 function ProductDetails({ dashboard = false }) {
     const { id } = useParams(); // 👈 get the ID from the URL
@@ -36,6 +36,7 @@ function ProductDetails({ dashboard = false }) {
     const navigate = useNavigate();
     const { isDeleting, deletePro } = useDeleteProduct();
     const userId = JSON.parse(localStorage.getItem("user"))?.id ?? null;
+    const [newMessage, setNewMessage] = useState("");
     const { openChat } = useChat();
 
     // Fix for default icon issue
@@ -73,27 +74,31 @@ function ProductDetails({ dashboard = false }) {
         }
     }, [id, userId]);
 
-
     const handleStartChat = async () => {
         try {
             const conversation = await createProductConversation(
                 product.id,
                 product.user.id
             );
-            
-            openChat(conversation, {
+
+            // Open chat with the conversation ID and product details
+            openChat(conversation.id, {
                 id: product.id,
                 name: product.name,
                 price: product.price,
-                image: product.images[0]
+                image: product.images[0],
             });
+ setNewMessage(`Hi, I'm interested in your ${product.name} ($${product.price})`);
+
+            // Optional: Add a default message with product info
+            const defaultMessage = `Hi, I'm interested in your product "${product.name}" ($${product.price})`;
+            setNewMessage(defaultMessage); // If you have access to setNewMessage
         } catch (error) {
-            throw error("Failed to start conversation:", error);
+            console.error("Failed to start conversation:", error);
             // Optionally show error to user
             // toast.error(error.message);
         }
     };
-
 
     //delete the product
     const handleDelete = async (event) => {
@@ -530,19 +535,19 @@ function ProductDetails({ dashboard = false }) {
                         </Box>
                     ) : (
                         <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            startIcon={<MessageIcon />}
-            sx={{
-                mt: 3,
-                fontSize: { xs: "0.875rem", md: "1rem" },
-                padding: { xs: 1, md: 2 },
-            }}
-            onClick={handleStartChat}
-        >
-            Chat with Seller
-        </Button>
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            startIcon={<MessageIcon />}
+                            sx={{
+                                mt: 3,
+                                fontSize: { xs: "0.875rem", md: "1rem" },
+                                padding: { xs: 1, md: 2 },
+                            }}
+                            onClick={handleStartChat}
+                        >
+                            Chat with Seller
+                        </Button>
                     )}
                 </Box>
             </Stack>

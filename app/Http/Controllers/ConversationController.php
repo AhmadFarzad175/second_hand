@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ConversationResource;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ConversationController extends Controller
 {
@@ -38,8 +39,8 @@ class ConversationController extends Controller
      */
     public function store(Request $request)
     {
-        $userId = auth()->id();
-
+        $userId = Auth::id();
+// dd($request->input('user_id'), $userId);
 
         $request->validate([
             'user_id' => 'required|exists:users,id|not_in:' . $userId,

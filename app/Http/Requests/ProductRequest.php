@@ -31,6 +31,7 @@ class ProductRequest extends FormRequest
             'price' => 'required|numeric|gte:0',
             'discount' => 'nullable|numeric|gte:0',
             'quantity' => 'required|integer|min:1',
+            'stock' => 'required|integer|min:1',
             'condition' => 'nullable|boolean',
             'attributes' => 'nullable|json',
             'description' => 'required|string|min:10',

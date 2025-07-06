@@ -1,54 +1,45 @@
-import { Button, Badge, styled } from '@mui/material';
-import { Chat as ChatIcon } from '@mui/icons-material';
+// components/ChatButton.jsx
+import { Badge, IconButton, Tooltip } from '@mui/material';
+import MessageIcon from '@mui/icons-material/Message';
+import { useChat } from '../contexts/ChatContext';
 
-const FloatingButton = styled(Button)(({ theme }) => ({
-  position: 'fixed',
-  right: 0,
-  bottom: '40%',
-  zIndex: theme.zIndex.modal,
-  minWidth: 'auto',
-  width: 56,
-  height: 56,
-  borderRadius: '28px 0 0 28px',
-  backgroundColor: theme.palette.primary.main,
-  color: theme.palette.primary.contrastText,
-  boxShadow: theme.shadows[6],
-  transform: 'translateX(44px)',
-  transition: theme.transitions.create(['transform', 'background-color'], {
-    duration: theme.transitions.duration.standard,
-    easing: theme.transitions.easing.easeOut,
-  }),
-  '&:hover': {
-    backgroundColor: theme.palette.primary.dark,
-    transform: 'translateX(0)',
-    boxShadow: theme.shadows[8],
-  },
-  '&.MuiButton-root': {
-    padding: 0,
-    minWidth: 'auto',
-  },
-}));
-
-const ChatButton = ({ unreadCount, onClick }) => {
+function ChatButton({ unreadCount = 0 }) {
+  const { openChat } = useChat();
+  
   return (
-    <FloatingButton 
-      onClick={onClick}
-      onMouseEnter={(e) => e.currentTarget.style.transform = 'translateX(0)'}
-      onMouseLeave={(e) => e.currentTarget.style.transform = 'translateX(44px)'}
-    >
-      <Badge
-        badgeContent={unreadCount}
-        color="error"
-        overlap="circular"
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+    <Tooltip title={unreadCount > 0 ? 
+      `You have ${unreadCount} unread message${unreadCount > 1 ? 's' : ''}` : 
+      "Open chat"
+    }>
+      <IconButton
+        color="inherit"
+        onClick={() => openChat(null, null)}
+        sx={{
+          position: 'fixed',
+          bottom: 24,
+          right: 24,
+          backgroundColor: 'primary.main',
+          color: 'white',
+          '&:hover': {
+            backgroundColor: 'primary.dark',
+          },
+          width: 56,
+          height: 56,
+          boxShadow: 3,
         }}
+        size="large"
       >
-        <ChatIcon fontSize="medium" />
-      </Badge>
-    </FloatingButton>
+        <Badge 
+          badgeContent={unreadCount} 
+          color="error"
+          overlap="circular"
+          invisible={unreadCount === 0}
+        >
+          <MessageIcon />
+        </Badge>
+      </IconButton>
+    </Tooltip>
   );
-};
+}
 
 export default ChatButton;

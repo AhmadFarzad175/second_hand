@@ -20,6 +20,8 @@ import Profile from "./pages/Profile";
 import CreateWebsiteUser from "./pages/CreateWebsiteUser";
 import ProtectedRoute from "./repositories/ProtectedRoute";
 import RoleProtectedRoute from "./repositories/RoleProtectedRoute";
+import ForgetPassword from "./ui/ForgetPassword";
+import ResetPassword from "./ui/ResetPassword";
 
 function App() {
     return (
@@ -93,6 +95,8 @@ function App() {
             </Route>
 
             <Route path="/login" element={<Login />} />
+            <Route path="/ForgetPassword" element={<ForgetPassword />} />
+            <Route path="/reset-password/:id" element={<ResetPassword />} />
             <Route path="/register" element={<CreateWebsiteUser />} />
             <Route path="/register" element={<Register />} />
             <Route path="*" element={<NotFound />} />

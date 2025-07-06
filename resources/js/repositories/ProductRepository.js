@@ -2,7 +2,10 @@ import AxiosSetup from './AxiosSetup';
 
 export async function getProducts(params = {}) {
     const { website = false, ...filters } = params;
-    const endpoint = website ? '/websiteProducts' : '/products';
+        const user = JSON.parse(localStorage.getItem("user"));
+        console.log('user id ',user?.id)
+
+    const endpoint = website ? `/websiteProducts?user_id=${user?.id}` : '/products';
 
     try {
         const response = await AxiosSetup.get(endpoint, {

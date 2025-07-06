@@ -192,6 +192,7 @@ const LoginPage = () => {
                         variant="text"
                         size="small"
                         sx={{ textTransform: "none", mt: 1 }}
+                        onClick={() => navigate('/ForgetPassword')}
                     >
                         Forgot password?
                     </Button>

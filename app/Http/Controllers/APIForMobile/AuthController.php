@@ -75,9 +75,9 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'image' => asset('storage/'.$user->image), // or asset('storage/'.$user->image) if needed
-'role' => $user->getRoleNames()->first(),
-'permissions' => $user->getAllPermissions()->pluck('name')->toArray(),
+                'image' => asset('storage/' . $user->image), // or asset('storage/'.$user->image) if needed
+                'role' => $user->getRoleNames()->first(),
+                'permissions' => $user->getAllPermissions()->pluck('name')->toArray(),
             ],
             'token' => $token,
         ]);
@@ -104,43 +104,43 @@ class AuthController extends Controller
 
 
 
-        public function googleLogin(Request $request)
-        {
-            // Log::info('Google login attempt', ['input' => $request->all()]);
+    public function googleLogin(Request $request)
+    {
+        // Log::info('Google login attempt', ['input' => $request->all()]);
 
-            $idToken = $request->input('token');
-            // Log::info('Received token', ['token' => $idToken]);
+        $idToken = $request->input('token');
+        // Log::info('Received token', ['token' => $idToken]);
 
-            $client = new Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
-            $payload = $client->verifyIdToken($idToken);
-            // Log::info('Payload', ['payload' => $payload]);
+        $client = new Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
+        $payload = $client->verifyIdToken($idToken);
+        // Log::info('Payload', ['payload' => $payload]);
 
-            if ($payload) {
-                $email = $payload['email'];
-                $name = $payload['name'];
-                $picture = $payload['picture'] ?? "dsvsdkfjsdafasfa.png"; // Get profile picture
+        if ($payload) {
+            $email = $payload['email'];
+            $name = $payload['name'];
+            $picture = $payload['picture'] ?? "dsvsdkfjsdafasfa.png"; // Get profile picture
 
-                // Log::info('User data', ['email' => $email, 'name' => $name]);
+            // Log::info('User data', ['email' => $email, 'name' => $name]);
 
-                try {
-                    $user = User::firstOrCreate(
-                        ['email' => $email],
-                        [
-                            'name' => $name,
-                            'password' => bcrypt(uniqid()),
-                            'image' => $picture,
-                            'email_verified_at' => now(),
-                            'location' => json_encode([]), // Default empty JSON
-                            'is_active' => true, // Default active status
-                            // Other fields can remain null
-                        ]
-                    );
-                    $user->assignRole('user');
+            try {
+                $user = User::firstOrCreate(
+                    ['email' => $email],
+                    [
+                        'name' => $name,
+                        'password' => bcrypt(uniqid()),
+                        'image' => $picture,
+                        'email_verified_at' => now(),
+                        'location' => json_encode([]), // Default empty JSON
+                        'is_active' => true, // Default active status
+                        // Other fields can remain null
+                    ]
+                );
+                $user->assignRole('user');
 
-                    // Log::info('User processed', ['user' => $user]);
+                // Log::info('User processed', ['user' => $user]);
 
-                    // Auth::login($user);
-                    $token = $user->createToken('authToken')->plainTextToken;
+                // Auth::login($user);
+                $token = $user->createToken('authToken')->plainTextToken;
 
 
                 return response()->json([
@@ -150,7 +150,7 @@ class AuthController extends Controller
                         'name' => $user->name,
                         'email' => $user->email,
                         'image' => $user->image, // or asset('storage/'.$user->image) if needed
-                        'role' => $user->role, // returns the first role name
+                        'role' => $user->getRoleNames()->first(),
                         'permissions' => $user->getAllPermissions()->pluck('name'), // returns array of permission names
                     ],
                     'token' => $token,
@@ -166,56 +166,56 @@ class AuthController extends Controller
     }
 
     // Fixed password reset methods
-   public function sendResetLink(Request $request)
-{
-    $request->validate(['email' => 'required|email']);
+    public function sendResetLink(Request $request)
+    {
+        $request->validate(['email' => 'required|email|exists:users,email']);
 
-    $status = Password::sendResetLink(
-        $request->only('email')
-    );
+        $user = User::where('email', $request->email)->first();
 
-    // API-friendly response
-    if ($status === Password::RESET_LINK_SENT) {
-        return response()->json([
-            'message' => __($status),
-            'status' => 'success'
-        ]);
-    }
-
-    return response()->json([
-        'message' => __($status),
-        'status' => 'error'
-    ], 400);
-}
-
-public function resetPassword(Request $request)
-{
-    $request->validate([
-        'token' => 'required',
-        'email' => 'required|email',
-        'password' => 'required|min:8|confirmed',
-    ]);
-
-    $status = Password::reset(
-        $request->only('email', 'password', 'password_confirmation', 'token'),
-        function ($user, $password) {
-            $user->forceFill([
-                'password' => Hash::make($password),
-                'remember_token' => Str::random(60),
-            ])->save();
+        if (!$user) {
+            return response()->json([
+                'message' => 'We could not find a user with that email address.',
+                'status' => 'error'
+            ], 404);
         }
-    );
 
-    if ($status === Password::PASSWORD_RESET) {
+        $status = Password::sendResetLink($request->only('email'));
+
         return response()->json([
             'message' => __($status),
-            'status' => 'success'
-        ]);
+            'status' => $status === Password::RESET_LINK_SENT ? 'success' : 'error'
+        ], $status === Password::RESET_LINK_SENT ? 200 : 400);
     }
 
-    return response()->json([
-        'message' => __($status),
-        'status' => 'error'
-    ], 400);
-}
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password),
+                    'remember_token' => Str::random(60),
+                ])->save();
+            }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            return response()->json([
+                'message' => __($status),
+                'status' => 'success'
+            ]);
+        }
+
+        return response()->json([
+            'message' => __($status),
+            'status' => 'error'
+        ], 400);
+    }
 }
