@@ -28,6 +28,9 @@ import { useDeleteProduct } from "../features/product/useDeleteProduct";
 import FavoriteButton from "./FavoriteButton";
 import { useChat } from "../contexts/ChatContext";
 import { createProductConversation } from "../repositories/ChatRepository";
+import TransactionButton from "./TransactionButton";
+import TransactionStatus from "./TransactionStatus";
+import TransactionDialog from "./TransactionDialog";
 
 function ProductDetails({ dashboard = false }) {
     const { id } = useParams(); // 👈 get the ID from the URL
@@ -36,8 +39,26 @@ function ProductDetails({ dashboard = false }) {
     const navigate = useNavigate();
     const { isDeleting, deletePro } = useDeleteProduct();
     const userId = JSON.parse(localStorage.getItem("user"))?.id ?? null;
-    const [newMessage, setNewMessage] = useState("");
+    const [setNewMessage] = useState("");
     const { openChat } = useChat();
+    const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
+
+
+    // Update your product details fetch to include transaction info
+useEffect(() => {
+  if (id) {
+    fetch(`/api/productDetails/${id}?user_id=${userId}&include_transactions=true`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => setProduct(data.data))
+      .catch((err) => console.error("Failed to fetch product:", err));
+  }
+}, [id, userId]);
+
 
     // Fix for default icon issue
     delete L.Icon.Default.prototype._getIconUrl;
@@ -88,7 +109,9 @@ function ProductDetails({ dashboard = false }) {
                 price: product.price,
                 image: product.images[0],
             });
- setNewMessage(`Hi, I'm interested in your ${product.name} ($${product.price})`);
+            setNewMessage(
+                `Hi, I'm interested in your ${product.name} ($${product.price})`
+            );
 
             // Optional: Add a default message with product info
             const defaultMessage = `Hi, I'm interested in your product "${product.name}" ($${product.price})`;
@@ -505,6 +528,7 @@ function ProductDetails({ dashboard = false }) {
 
                     {/* Actions Section */}
                     {/* In the Actions Section where the Buy Now button was: */}
+                    {/* // Replace it with this: */}
                     {dashboard ? (
                         <Box sx={{ mt: 3 }}>
                             <Stack direction="row" spacing={2}>
@@ -516,7 +540,7 @@ function ProductDetails({ dashboard = false }) {
                                         navigate(
                                             `/admin/edit-product/${product.id}`,
                                             {
-                                                state: { product }, // Pass the entire user object
+                                                state: { product },
                                             }
                                         );
                                     }}
@@ -534,20 +558,47 @@ function ProductDetails({ dashboard = false }) {
                             </Stack>
                         </Box>
                     ) : (
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            fullWidth
-                            startIcon={<MessageIcon />}
+                        <Box
                             sx={{
                                 mt: 3,
-                                fontSize: { xs: "0.875rem", md: "1rem" },
-                                padding: { xs: 1, md: 2 },
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 2,
                             }}
-                            onClick={handleStartChat}
                         >
-                            Chat with Seller
-                        </Button>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                fullWidth
+                                startIcon={<MessageIcon />}
+                                sx={{
+                                    fontSize: { xs: "0.875rem", md: "1rem" },
+                                    padding: { xs: 1, md: 2 },
+                                }}
+                                onClick={handleStartChat}
+                            >
+                                Chat with Seller
+                            </Button>
+
+                            {/* Add the TransactionButton component here */}
+                            <TransactionButton
+                                product={product}
+                                userId={userId}
+                            />
+
+                            {/* Add the conditional seller button here */}
+                            {product.user.id === userId && (
+                                <Button
+                                    variant="outlined"
+                                    onClick={() =>
+                                        setTransactionDialogOpen(true)
+                                    }
+                                    sx={{ mt: 1 }}
+                                >
+                                    View Purchase Requests
+                                </Button>
+                            )}
+                        </Box>
                     )}
                 </Box>
             </Stack>
@@ -584,6 +635,12 @@ function ProductDetails({ dashboard = false }) {
                     </MapContainer>
                 </Box>
             )}
+
+            <TransactionDialog
+                open={transactionDialogOpen}
+                onClose={() => setTransactionDialogOpen(false)}
+                userId={userId}
+            />
         </Box>
     );
 }
