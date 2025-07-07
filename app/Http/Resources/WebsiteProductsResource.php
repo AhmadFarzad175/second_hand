@@ -19,6 +19,7 @@ class WebsiteProductsResource extends JsonResource
      */
     public function toArray($request)
 {
+    // dd($request->all()); // Debugging line to check request data
     $userId = $request->input('user_id'); // Fixed null coalescing operator
     return [
         'id' => $this->id,
@@ -40,6 +41,8 @@ class WebsiteProductsResource extends JsonResource
 
 protected function formatPrice($amount)
 {
+    $amount = (float) $amount;
+
     if ($this->currency === "AFN") {
         return number_format($amount, 0, '.', ',') . ' ؋';
     }
@@ -91,7 +94,7 @@ protected function formatDiscount()
  // Check if $userId is "undefined" or invalid
     if ($userId === "undefined" || !is_numeric($userId)) {
         return null; // or throw an exception
-    }   
+    }
 $user = User::find($userId);
 $AuthLocation = json_decode($user->location, true);
 $userLat = $AuthLocation['latitude'] ?? null;       // Use array access

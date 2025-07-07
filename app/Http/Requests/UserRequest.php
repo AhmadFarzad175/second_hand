@@ -23,7 +23,7 @@ class UserRequest extends FormRequest
             'name' => 'required|string|max:255',
 'email' => 'required|email|max:255|unique:users,email,' . $this->user?->id,
             'location' => 'required',
-            'phone' => 'required|string|max:20',
+            'phone' => 'required|string|max:10|min:10',
             'description' => 'nullable|string',
             'role' => 'nullable|in:admin,user',
             'google_id'  => 'nullable|string|unique:users,google_id',

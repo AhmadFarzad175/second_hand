@@ -34,7 +34,7 @@ class ProductSeeder extends Seeder
             for ($j = 1; $j <= 2; $j++) {
                 Image::create([
                     'product_id' => $product->id,
-                    'image_url' => "images/products/image{$i}_{$j}.jpg",
+                    'image_url' => "products/image{$i}_{$j}.jpg",
                 ]);
             }
         }
