@@ -25,13 +25,13 @@ class ProductController extends Controller
 {
     use ImageManipulation;
 
-//     public function __construct()
-// {
-//     $this->middleware('can:viewProduct')->only(['index', 'show']);
-//     $this->middleware('can:createProduct')->only(['store']);
-//     $this->middleware('can:editProduct')->only(['update']);
-//     $this->middleware('can:deleteProduct')->only(['destroy']);
-// }
+    //     public function __construct()
+    // {
+    //     $this->middleware('can:viewProduct')->only(['index', 'show']);
+    //     $this->middleware('can:createProduct')->only(['store']);
+    //     $this->middleware('can:editProduct')->only(['update']);
+    //     $this->middleware('can:deleteProduct')->only(['destroy']);
+    // }
 
     /**
      * Display a listing of the resource with filtering.
@@ -157,7 +157,7 @@ class ProductController extends Controller
                 $product->images()->create(['image_url' => $path]);
             }
         }
-// dd($request->file('new_images'));
+        // dd($request->file('new_images'));
         return response()->json([
             'message' => 'Product updated successfully',
         ]);

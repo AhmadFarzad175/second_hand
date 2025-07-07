@@ -3,7 +3,6 @@ import {
     TextField,
     Button,
     Box,
-    Typography,
     Paper,
     styled,
 } from "@mui/material";
@@ -32,8 +31,8 @@ const ForgetPassword = () => {
 
     const forgotPasswordMutation = useMutation({
         mutationFn: (email) => axios.post("api/forgot-password", { email }),
-        onSuccess: (data) => {
-            toast.success('Link has sent to your email!');
+        onSuccess: () => {
+            toast.success("Link has been sent to your email!");
         },
         onError: (error) => {
             toast.error(error.response?.data?.message || "Error occurred");
@@ -54,47 +53,47 @@ const ForgetPassword = () => {
     };
 
     return (
-        <FormWrapper>
-            <Box
-                component="form"
-                onSubmit={handleSubmit}
-                sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 2,
-                }}
-            >
-                <TextField
-                    label="Email"
-                    variant="outlined"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    error={!!emailError}
-                    helperText={emailError}
-                    required
-                />
-
-                <Button
-                    type="submit"
-                    variant="contained"
-                    disabled={forgotPasswordMutation.isLoading}
+        <Box
+            sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "100vh",
+                background: "linear-gradient(to right, #ece9e6, #ffffff)",
+            }}
+        >
+            <FormWrapper>
+                <Box
+                    component="form"
+                    onSubmit={handleSubmit}
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                    }}
                 >
-                    {forgotPasswordMutation.isLoading
-                        ? "Sending..."
-                        : "Send Reset Link"}
-                </Button>
+                    <TextField
+                        label="Email"
+                        variant="outlined"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        error={!!emailError}
+                        helperText={emailError}
+                        required
+                    />
 
-                {/* {message && (
-                    <Typography
-                        color={
-                            forgotPasswordMutation.isError ? "error" : "primary"
-                        }
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        disabled={forgotPasswordMutation.isLoading}
                     >
-                        {message}
-                    </Typography>
-                )} */}
-            </Box>
-        </FormWrapper>
+                        {forgotPasswordMutation.isLoading
+                            ? "Sending..."
+                            : "Send Reset Link"}
+                    </Button>
+                </Box>
+            </FormWrapper>
+        </Box>
     );
 };
 

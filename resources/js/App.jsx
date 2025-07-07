@@ -48,6 +48,10 @@ function App() {
                     }
                 />
                 <Route
+                    path="edit-product/:id"
+                    element={<WebsiteCreateProduct />}
+                />
+                <Route
                     path="profile"
                     element={
                         <ProtectedRoute>

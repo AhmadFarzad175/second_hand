@@ -18,6 +18,7 @@ class Product extends Model
         'discount_type',
         'quantity',
         'condition',
+        // 'reserved_stock',
         'attributes',
         'description',
         'state',

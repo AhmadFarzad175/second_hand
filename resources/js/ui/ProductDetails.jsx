@@ -43,22 +43,24 @@ function ProductDetails({ dashboard = false }) {
     const { openChat } = useChat();
     const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
 
-
     // Update your product details fetch to include transaction info
-useEffect(() => {
-  if (id) {
-    fetch(`/api/productDetails/${id}?user_id=${userId}&include_transactions=true`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+    useEffect(() => {
+        if (id) {
+            fetch(
+                `/api/productDetails/${id}?user_id=${userId}&include_transactions=true`
+            )
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(
+                            `HTTP error! Status: ${response.status}`
+                        );
+                    }
+                    return response.json();
+                })
+                .then((data) => setProduct(data.data))
+                .catch((err) => console.error("Failed to fetch product:", err));
         }
-        return response.json();
-      })
-      .then((data) => setProduct(data.data))
-      .catch((err) => console.error("Failed to fetch product:", err));
-  }
-}, [id, userId]);
-
+    }, [id, userId]);
 
     // Fix for default icon issue
     delete L.Icon.Default.prototype._getIconUrl;
@@ -124,10 +126,22 @@ useEffect(() => {
     };
 
     //delete the product
+    const handleEdit = (event) => {
+        event.stopPropagation();
+        const isAdminRoute = window.location.pathname.includes("/admin");
+        navigate(
+            isAdminRoute
+                ? `/admin/edit-product/${product.id}`
+                : `/edit-product/${product.id}`,
+            { state: { product } }
+        );
+    };
+
     const handleDelete = async (event) => {
-        event.stopPropagation(); // Prevent row selection when clicking delete
+        event.stopPropagation();
         deletePro(id);
-        navigate("/admin/products");
+        const isAdminRoute = window.location.pathname.includes("/admin");
+        navigate(isAdminRoute ? "/admin/products" : "/");
     };
 
     // Optional fallback for loading state
@@ -463,22 +477,6 @@ useEffect(() => {
                         )}
                     </Box>
 
-                    {/* Location & Distance */}
-                    {/* <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ fontSize: { xs: "0.8rem", md: "0.9rem" } }}
-                    >
-                        Location: {product.location}
-                    </Typography> */}
-                    <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ fontSize: { xs: "0.8rem", md: "0.9rem" }, mb: 2 }}
-                    >
-                        {/* {product.distance ?? 'insert '} */}
-                    </Typography>
-
                     <Divider sx={{ my: 2 }} />
 
                     {/* Attributes Section */}
@@ -526,24 +524,15 @@ useEffect(() => {
                         )}
                     </Box>
 
-                    {/* Actions Section */}
                     {/* In the Actions Section where the Buy Now button was: */}
-                    {/* // Replace it with this: */}
                     {dashboard ? (
+                        // Dashboard view - only show edit/delete buttons
                         <Box sx={{ mt: 3 }}>
                             <Stack direction="row" spacing={2}>
                                 <Button
                                     variant="outlined"
                                     color="primary"
-                                    onClick={(event) => {
-                                        event.stopPropagation();
-                                        navigate(
-                                            `/admin/edit-product/${product.id}`,
-                                            {
-                                                state: { product },
-                                            }
-                                        );
-                                    }}
+                                    onClick={handleEdit}
                                 >
                                     Edit Product
                                 </Button>
@@ -557,7 +546,39 @@ useEffect(() => {
                                 </Button>
                             </Stack>
                         </Box>
+                    ) : product.user.id === userId ? (
+                        // Product owner view (non-dashboard) - show edit/delete + purchase requests
+                        <Box sx={{ mt: 3 }}>
+                            <Stack direction="column" spacing={2}>
+                                <Stack direction="row" spacing={2}>
+                                    <Button
+                                        variant="outlined"
+                                        color="primary"
+                                        onClick={handleEdit}
+                                    >
+                                        Edit Product
+                                    </Button>
+                                    <Button
+                                        variant="outlined"
+                                        color="error"
+                                        onClick={handleDelete}
+                                        disabled={isDeleting}
+                                    >
+                                        Delete Product
+                                    </Button>
+                                </Stack>
+                                <Button
+                                    variant="outlined"
+                                    onClick={() =>
+                                        setTransactionDialogOpen(true)
+                                    }
+                                >
+                                    View Purchase Requests
+                                </Button>
+                            </Stack>
+                        </Box>
                     ) : (
+                        // Regular user view - show chat and buy buttons
                         <Box
                             sx={{
                                 mt: 3,
@@ -579,25 +600,10 @@ useEffect(() => {
                             >
                                 Chat with Seller
                             </Button>
-
-                            {/* Add the TransactionButton component here */}
                             <TransactionButton
                                 product={product}
                                 userId={userId}
                             />
-
-                            {/* Add the conditional seller button here */}
-                            {product.user.id === userId && (
-                                <Button
-                                    variant="outlined"
-                                    onClick={() =>
-                                        setTransactionDialogOpen(true)
-                                    }
-                                    sx={{ mt: 1 }}
-                                >
-                                    View Purchase Requests
-                                </Button>
-                            )}
                         </Box>
                     )}
                 </Box>

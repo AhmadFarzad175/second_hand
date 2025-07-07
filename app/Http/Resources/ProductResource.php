@@ -39,7 +39,7 @@ class ProductResource extends JsonResource
             'state' =>  $this->state,
 
             'image' => asset('storage/' . $this->images[0]?->image_url),
-         
+
         ];
     }
 }
