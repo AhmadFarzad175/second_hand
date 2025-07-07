@@ -32,6 +32,7 @@ class ProductRequest extends FormRequest
             'discount' => 'nullable|numeric|gte:0',
             'quantity' => 'required|integer|min:1',
             'condition' => 'nullable|boolean',
+            // 'reserved_stock' => 'nullable',
             'attributes' => 'nullable|json',
             'description' => 'required|string|min:10',
             'currency' => 'required|string|in:AFN,USD,EUR',

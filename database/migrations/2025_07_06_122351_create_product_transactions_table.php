@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'buyer_id');
             $table->foreignIdFor(User::class, 'seller_id');
             $table->integer('quantity')->default(1);
-            $table->enum('status', ['pending', 'completed'])->default('pending');
+            $table->enum('status', ['pending', 'completed', 'cancelled'])->default('pending');
             $table->timestamps();
         });
     }

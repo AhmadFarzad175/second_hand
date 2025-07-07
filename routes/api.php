@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\APIForMobile\AuthController;
 use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\ProductTransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -51,20 +52,17 @@ Route::get('productDetails/{product}', [ProductController::class, 'show']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
-Route::get('/user', [AuthController::class, 'getUser']);
-Route::post('/logout', [AuthController::class, 'logout']);
-// Route::get('/reset-password/{token}', function ($token) {
-//     return response()->json([
-//         'message' => 'Dummy API reset password route.',
-//         'token' => $token
-//     ]);
-// })->name('password.reset');
+    Route::get('/user', [AuthController::class, 'getUser']);
+    Route::post('/logout', [AuthController::class, 'logout']);
 
-
-// Route::post('/forgot-password/send-code', [AuthController::class, 'sendResetCode']);
-
-// // Forgot password: verify code + reset password
-// Route::post('/forgot-password/verify-code', [AuthController::class, 'verifyCodeAndReset']);
+    // Transaction routes
+    Route::prefix('transactions')->group(function () {
+        Route::post('/', [ProductTransactionController::class, 'store']);
+        Route::get('/', [ProductTransactionController::class, 'index']);
+        Route::get('/pending', [ProductTransactionController::class, 'pending']);
+        Route::patch('/{transaction}/status', [ProductTransactionController::class, 'updateStatus']);
+        Route::delete('/{transaction}', [ProductTransactionController::class, 'destroy']);
+    });
 
 
 
@@ -101,24 +99,24 @@ Route::post('/logout', [AuthController::class, 'logout']);
 
 
     ///////////////////  MESSAGE  ///////////////////
-// ✅ Conversation APIs 
-Route::get('/conversations', [ConversationController::class, 'index']);
-Route::post('/conversations', [ConversationController::class, 'store']);
-Route::get('/conversations/{conversation}', [ConversationController::class, 'show']);
-Route::delete('/conversations/{conversation}', [ConversationController::class, 'destroy']);
+    // ✅ Conversation APIs 
+    Route::get('/conversations', [ConversationController::class, 'index']);
+    Route::post('/conversations', [ConversationController::class, 'store']);
+    Route::get('/conversations/{conversation}', [ConversationController::class, 'show']);
+    Route::delete('/conversations/{conversation}', [ConversationController::class, 'destroy']);
 
-// ✅ Message APIs — reorder static routes FIRST
-Route::get('/messages/unread-count', [MessageController::class, 'unreadCount']);
-Route::post('/messages/mark-read/{conversationId}', [MessageController::class, 'markAsRead']);
-Route::get('/messages/{conversationId}', [MessageController::class, 'index']);
-Route::post('/messages/{conversationId}', [MessageController::class, 'store']);
-Route::delete('/messages/{messageId}', [MessageController::class, 'destroy']);
+    // ✅ Message APIs — reorder static routes FIRST
+    Route::get('/messages/unread-count', [MessageController::class, 'unreadCount']);
+    Route::post('/messages/mark-read/{conversationId}', [MessageController::class, 'markAsRead']);
+    Route::get('/messages/{conversationId}', [MessageController::class, 'index']);
+    Route::post('/messages/{conversationId}', [MessageController::class, 'store']);
+    Route::delete('/messages/{messageId}', [MessageController::class, 'destroy']);
 
 
-// Route::apiResource('/messages', MessageController::class);
+    // Route::apiResource('/messages', MessageController::class);
 
-Route::apiResource('reports', ReportController::class);
-Route::apiResource('reviews', ReviewController::class);
+    Route::apiResource('reports', ReportController::class);
+    Route::apiResource('reviews', ReviewController::class);
 
     ///////////////////  USERS  ///////////////////
 
@@ -129,8 +127,6 @@ Route::apiResource('reviews', ReviewController::class);
 
     Route::get('users/{user}/location', [UserController::class, 'userLocation']);
     Route::get('/profile', [UserController::class, 'profile']);
-
-
 });
 
 
@@ -162,7 +158,7 @@ Route::prefix('v1/mobile')->group(function () {
     /////////////// CATEGORIES ///////////////////
 
     Route::Post('categories/update/{category}', [CategoryController::class, 'update']);
-        Route::apiResource('categories', CategoryController::class);
+    Route::apiResource('categories', CategoryController::class);
 
 
 

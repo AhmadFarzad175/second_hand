@@ -1,14 +1,44 @@
-// components/TransactionStatus.jsx
-import { Button, Chip, CircularProgress, Stack, Typography } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
-import { getProductTransactions } from "../repositories/TransactionRepository";
+import { 
+  Button, 
+  Chip, 
+  CircularProgress, 
+  Stack, 
+  Typography 
+} from "@mui/material";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { 
+  getProductTransactions,
+  updateTransactionStatus
+} from "../repositories/TransactionRepository";
+import toast from "react-hot-toast";
 
 function TransactionStatus({ productId, userId }) {
+  const queryClient = useQueryClient();
+  
   const { data: transactions, isLoading } = useQuery({
     queryKey: ['productTransactions', productId],
     queryFn: () => getProductTransactions(productId),
     enabled: !!productId
   });
+
+  const { mutate: updateStatus, isPending } = useMutation({
+    mutationFn: ({ id, status }) => updateTransactionStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['productTransactions', productId]);
+      toast.success('Transaction status updated');
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to update transaction');
+    }
+  });
+
+  const handleApprove = (transactionId) => {
+    updateStatus({ id: transactionId, status: 'completed' });
+  };
+
+  const handleReject = (transactionId) => {
+    updateStatus({ id: transactionId, status: 'cancelled' });
+  };
 
   if (isLoading) return <CircularProgress size={24} />;
 
@@ -37,10 +67,22 @@ function TransactionStatus({ productId, userId }) {
           </Typography>
           {transaction.seller_id === userId && transaction.status === 'pending' && (
             <Stack direction="row" spacing={1}>
-              <Button size="small" variant="outlined" color="success">
+              <Button 
+                size="small" 
+                variant="outlined" 
+                color="success"
+                disabled={isPending}
+                onClick={() => handleApprove(transaction.id)}
+              >
                 Approve
               </Button>
-              <Button size="small" variant="outlined" color="error">
+              <Button 
+                size="small" 
+                variant="outlined" 
+                color="error"
+                disabled={isPending}
+                onClick={() => handleReject(transaction.id)}
+              >
                 Reject
               </Button>
             </Stack>
