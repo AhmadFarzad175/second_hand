@@ -14,7 +14,6 @@ export default function AdminCreateProduct() {
     const { isCreating, createProduct } = useCreateProduct();
     const { isUpdating, updateProduct } = useUpdateProduct();
 
-    console.log('admin edit ', editValues);
     const handleSubmit = (formData) => {
 
         if (isEditSession) {

@@ -129,39 +129,31 @@ class ProductController extends Controller
      * Update the specified resource in storage.
      */
 
-    public function update(ProductRequest $request, Product $product)
-    {
-        // Validate and get the validated data from the request
-        $validated = $request->validated();
+   public function update(ProductRequest $request, Product $product)
+{
+    dd();   
+    // Update product fields
+    $product->update($request->validated());
 
-        // dd($validated);
-        // Update product fields
-        $product->update($validated);
-
-        // Handle images (if new images are uploaded)
-        if ($request->hasFile('images')) {
-            // Optional: delete old images from storage and database
-            foreach ($product->images as $oldImage) {
-                // Delete the file from storage
-                if (Storage::disk('public')->exists(str_replace('storage/', '', $oldImage->image_url))) {
-                    Storage::disk('public')->delete(str_replace('storage/', '', $oldImage->image_url));
-                }
-
-                // Delete from DB
-                $oldImage->delete();
-            }
-
-            // Store new images
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('images/products', 'public');
-                $product->images()->create(['image_url' => $path]);
-            }
-        }
-        // dd($request->file('new_images'));
-        return response()->json([
-            'message' => 'Product updated successfully',
-        ]);
+    // Handle deleted images
+    if ($request->has('deleted_images')) {
+        $deletedIds = json_decode($request->input('deleted_images'), true);
+        $product->images()->whereIn('id', $deletedIds)->delete();
     }
+
+    // Handle new images
+    if ($request->hasFile('images')) {
+        foreach ($request->file('images') as $image) {
+            $path = $image->store('images/products', 'public');
+            $product->images()->create(['image_url' => $path]);
+        }
+    }
+
+    return response()->json([
+        'message' => 'Product updated successfully',
+        'product' => new ProductResource($product->fresh())
+    ]);
+}
 
 
     /**
