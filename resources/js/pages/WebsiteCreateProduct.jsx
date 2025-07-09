@@ -13,7 +13,6 @@ export default function WebsiteCreateProduct() {
 
     const { isCreating, createProduct } = useCreateProduct();
     const { isUpdating, updateProduct } = useUpdateProduct();
-                    console.log('weeb edit ', editValues);
 
 
     const handleSubmit = (formData) => {

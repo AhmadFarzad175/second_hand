@@ -31,6 +31,8 @@ import { createProductConversation } from "../repositories/ChatRepository";
 import TransactionButton from "./TransactionButton";
 import TransactionStatus from "./TransactionStatus";
 import TransactionDialog from "./TransactionDialog";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 function ProductDetails({ dashboard = false }) {
     const { id } = useParams(); // 👈 get the ID from the URL
@@ -42,25 +44,6 @@ function ProductDetails({ dashboard = false }) {
     const [setNewMessage] = useState("");
     const { openChat } = useChat();
     const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
-
-    // Update your product details fetch to include transaction info
-    useEffect(() => {
-        if (id) {
-            fetch(
-                `/api/productDetails/${id}?user_id=${userId}&include_transactions=true`
-            )
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error(
-                            `HTTP error! Status: ${response.status}`
-                        );
-                    }
-                    return response.json();
-                })
-                .then((data) => setProduct(data.data))
-                .catch((err) => console.error("Failed to fetch product:", err));
-        }
-    }, [id, userId]);
 
     // Fix for default icon issue
     delete L.Icon.Default.prototype._getIconUrl;
@@ -83,17 +66,17 @@ function ProductDetails({ dashboard = false }) {
 
     useEffect(() => {
         if (id) {
-            fetch(`/api/productDetails/${id}?user_id=${userId}`)
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error(
-                            `HTTP error! Status: ${response.status}`
-                        );
-                    }
-                    return response.json();
+            axios
+                .get(`/api/productDetails/${id}`, {
+                    params: { user_id: userId },
                 })
-                .then((data) => setProduct(data.data))
-                .catch((err) => console.error("Failed to fetch product:", err));
+                .then((response) => {
+                    setProduct(response.data.data);
+                    console.log(response.data.data);
+                })
+                .catch((error) => {
+                    console.error("Failed to fetch product:", error);
+                });
         }
     }, [id, userId]);
 
@@ -119,9 +102,7 @@ function ProductDetails({ dashboard = false }) {
             const defaultMessage = `Hi, I'm interested in your product "${product.name}" ($${product.price})`;
             setNewMessage(defaultMessage); // If you have access to setNewMessage
         } catch (error) {
-            console.error("Failed to start conversation:", error);
-            // Optionally show error to user
-            // toast.error(error.message);
+            toast.error("Failed to start conversation:", error);
         }
     };
 
@@ -151,7 +132,7 @@ function ProductDetails({ dashboard = false }) {
     }
 
     let coordinates = product.location ? JSON.parse(product.location) : null;
-    console.log(coordinates);
+    let attributes = product.attributes ? JSON.parse(product.attributes) : {};
 
     return (
         <Box sx={{ width: "100%" }}>
@@ -189,7 +170,7 @@ function ProductDetails({ dashboard = false }) {
                                     <SwiperSlide key={index}>
                                         <Box
                                             component="img"
-                                            src={image}
+                                            src={image.url}
                                             alt={`Slide ${index + 1}`}
                                             sx={{
                                                 width: "100%",
@@ -405,7 +386,8 @@ function ProductDetails({ dashboard = false }) {
                         <Chip
                             label={product.category.name}
                             size="small"
-                            variant="outlined"
+                            color="primary"
+                            // variant="outlined"
                         />
                     </Box>
 
@@ -421,60 +403,79 @@ function ProductDetails({ dashboard = false }) {
                     <Divider sx={{ my: 2 }} />
 
                     {/* Price Section */}
-                    <Box sx={{ mb: 2, display: "flex", alignItems: "center" }}>
-                        <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ fontSize: { xs: "0.8rem", md: "0.9rem" } }}
-                        >
-                            Price:
-                        </Typography>{" "}
-                        {parseFloat(product.discount) > 0 ? (
+                    <Box sx={{ mb: 2 }}>
+                        {/* Discount Badge (Only if discount exists) */}
+                        {product.discount && (
+                            <Box
+                                sx={{
+                                    display: "inline-block",
+                                    bgcolor: "error.main",
+                                    color: "white",
+                                    px: 1.5,
+                                    py: 0.5,
+                                    borderRadius: "4px",
+                                    mb: 1,
+                                    fontSize: { xs: "0.7rem", sm: "0.8rem" },
+                                    fontWeight: "bold",
+                                    boxShadow: 1,
+                                }}
+                            >
+                                {product.formattedDiscount}
+                            </Box>
+                        )}
+
+                        {/* Price Section - Premium Version */}
+                        <Box sx={{ mb: 3 }}>
+                            {/* Price Stack */}
                             <Stack
                                 direction="row"
-                                spacing={2}
-                                alignItems="center"
+                                alignItems="baseline"
+                                spacing={1.5}
                             >
-                                {/* Original Price with Line-Through */}
+                                {/* Original Price */}
                                 <Typography
                                     variant="body1"
-                                    color="error"
+                                    color="text.disabled"
                                     sx={{
-                                        textDecoration: "line-through",
-                                        fontSize: { xs: "1rem", md: "1.25rem" },
-                                    }}
-                                >
-                                    ${parseFloat(product.price).toFixed(2)}
-                                </Typography>
-
-                                {/* Discounted Price in Bold */}
-                                <Typography
-                                    variant="h6"
-                                    fontWeight="bold"
-                                    sx={{
-                                        fontSize: {
-                                            xs: "1.25rem",
-                                            md: "1.5rem",
+                                        position: "relative",
+                                        fontSize: { xs: "1rem", sm: "1.1rem" },
+                                        "&:before": {
+                                            content: '""',
+                                            position: "absolute",
+                                            top: "50%",
+                                            width: "100%",
+                                            height: "1px",
+                                            bgcolor: "error.main",
+                                            transform: "rotate(-5deg)",
                                         },
                                     }}
                                 >
-                                    $
-                                    {parseFloat(
-                                        product.price - product.discount
-                                    ).toFixed(2)}
+                                    {product.original_price}
+                                </Typography>
+
+                                {/* Final Price */}
+                                <Typography
+                                    variant="h4"
+                                    fontWeight={800}
+                                    sx={{
+                                        color: "primary.main",
+                                        fontSize: {
+                                            xs: "1.8rem",
+                                            sm: "2.1rem",
+                                        },
+                                        background:
+                                            "linear-gradient(15deg, #1976d2 0%, #4dabf5 100%)",
+                                        WebkitBackgroundClip: "text",
+                                        WebkitTextFillColor: "transparent",
+                                        textShadow:
+                                            "0 2px 4px rgba(25, 118, 210, 0.2)",
+                                        lineHeight: 1,
+                                    }}
+                                >
+                                    {product.final_price}
                                 </Typography>
                             </Stack>
-                        ) : (
-                            <Typography
-                                variant="h6"
-                                fontWeight="bold"
-                                sx={{
-                                    fontSize: { xs: "1.25rem", md: "1.5rem" },
-                                }}
-                            >
-                                ${parseFloat(product.price).toFixed(2)}
-                            </Typography>
-                        )}
+                        </Box>
                     </Box>
 
                     <Divider sx={{ my: 2 }} />
@@ -488,10 +489,28 @@ function ProductDetails({ dashboard = false }) {
                         >
                             Attributes
                         </Typography>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                mb: 1,
+                            }}
+                        >
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ textTransform: "capitalize" }}
+                            >
+                                Quantity:
+                            </Typography>
+                            <Typography variant="body2" fontWeight="bold">
+                                {product.quantity}
+                            </Typography>
+                        </Box>
 
-                        {product.attributes &&
-                        Object.keys(product.attributes).length > 0 ? (
-                            Object.entries(product.attributes).map(
+                        {attributes &&
+                            Object.keys(attributes).length > 0 &&
+                            Object.entries(attributes).map(
                                 ([key, value]) => (
                                     <Box
                                         key={key}
@@ -516,13 +535,10 @@ function ProductDetails({ dashboard = false }) {
                                         </Typography>
                                     </Box>
                                 )
-                            )
-                        ) : (
-                            <Typography variant="body2" color="text.secondary">
-                                No attributes available
-                            </Typography>
-                        )}
+                            )}
                     </Box>
+
+                    <Divider sx={{ my: 2 }} />
 
                     {/* In the Actions Section where the Buy Now button was: */}
                     {dashboard ? (

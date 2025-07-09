@@ -40,7 +40,7 @@ export default function ProductForm({
     // const [isLoading, setIsLoading] = useState(false);
     const [isLoadingAttributes, setIsLoadingAttributes] = useState(false);
     const navigate = useNavigate();
-
+const [deletedImageIds, setDeletedImageIds] = useState([]);
     const {
         register,
         handleSubmit,
@@ -173,6 +173,7 @@ export default function ProductForm({
 
                 setImages(fetchedImages);
                 setExistingImageIds(fetchedImageIds);
+                console.log('fetchedImageIds ',fetchedImageIds );
 
                 let parsedAttributes = {};
                 try {
@@ -231,29 +232,35 @@ export default function ProductForm({
     };
 
     const handleRemoveImage = (index) => {
-        const newImages = [...images];
-        newImages[index] = null;
-        setImages(newImages);
+    // If it's an existing image (has ID), add to deleted array
+    console.log(index, existingImageIds[index])
+    if (existingImageIds[index]) {
+        setDeletedImageIds([...deletedImageIds, existingImageIds[index]]);
+    }
 
-        const newImageFiles = [...imageFiles];
-        newImageFiles[index] = null;
-        setImageFiles(newImageFiles);
+    // Clear the image from state
+    const newImages = [...images];
+    newImages[index] = null;
+    setImages(newImages);
 
-        // Add validation check when removing images
-        if (!newImages.some((img) => img !== null)) {
-            setError("images", {
-                type: "manual",
-                message: "At least one product image is required",
-            });
-        } else {
-            clearErrors("images");
-        }
-    };
+    const newImageFiles = [...imageFiles];
+    newImageFiles[index] = null;
+    setImageFiles(newImageFiles);
+
+    // Validation
+    if (!newImages.some(img => img !== null)) {
+        setError("images", {
+            type: "manual",
+            message: "At least one product image is required"
+        });
+    }
+};
+
 
     const onFormSubmit = (data) => {
-        const formData = new FormData();
-
-        // Build attributes object
+    const formData = new FormData();
+    
+     // Build attributes object
         const attributes = {};
         categoryAttributes.forEach((attr) => {
             if (data[attr.name] !== undefined && data[attr.name] !== "") {
@@ -269,54 +276,19 @@ export default function ProductForm({
             }
         }
 
-        console.log("outside");
-        if (!images.some((img) => img !== null)) {
-            console.log("inside");
-            setError("images", {
-                type: "manual",
-                message: "At least one product image is required",
-            });
-            return;
-        }
 
-        // Handle images differently for edit mode
-        if (isEditSession) {
-            const imageUpdates = [];
+    // Add new images
+    imageFiles.forEach(file => {
+        if (file) formData.append('images[]', file);
+    });
 
-            images.forEach((image, index) => {
-                if (image === null) {
-                    if (existingImageIds[index]) {
-                        imageUpdates.push({
-                            id: existingImageIds[index],
-                            action: "delete",
-                        });
-                    }
-                } else if (imageFiles[index]) {
-                    formData.append("images[]", imageFiles[index]);
-                    imageUpdates.push({
-                        position: index,
-                        action: "add",
-                    });
-                } else if (existingImageIds[index]) {
-                    imageUpdates.push({
-                        id: existingImageIds[index],
-                        position: index,
-                        action: "keep",
-                    });
-                }
-            });
+    // Add deleted image IDs
+    if (deletedImageIds.length > 0) {
+        formData.append('deleted_images', JSON.stringify(deletedImageIds));
+    }
 
-            formData.append("image_updates", JSON.stringify(imageUpdates));
-        } else {
-            imageFiles.forEach((file) => {
-                if (file) {
-                    formData.append("images[]", file);
-                }
-            });
-        }
-
-        onSubmit(formData);
-    };
+    onSubmit(formData);
+};
 
     const renderAttributeFields = () => {
         return categoryAttributes.map((attribute) => {
@@ -552,122 +524,110 @@ export default function ProductForm({
                                     )}
 
                                     <Box
-                                        sx={{
-                                            display: "grid",
-                                            gridTemplateColumns:
-                                                "repeat(2, 1fr)",
-                                            gap: 1,
-                                            [theme.breakpoints.up("sm")]: {
-                                                gridTemplateColumns:
-                                                    "repeat(3, 1fr)",
-                                            },
-                                        }}
-                                    >
-                                        {images.map((image, index) => (
-                                            <Box
-                                                key={index}
-                                                sx={{
-                                                    position: "relative",
-                                                    height: isMobile
-                                                        ? 100
-                                                        : 120,
-                                                    borderRadius: 1,
-                                                    overflow: "hidden",
-                                                    border: "1px dashed",
-                                                    borderColor: image
-                                                        ? "transparent"
-                                                        : "divider",
-                                                    backgroundColor: image
-                                                        ? "transparent"
-                                                        : "action.hover",
-                                                }}
-                                            >
-                                                {image ? (
-                                                    <>
-                                                        <Box
-                                                            component="img"
-                                                            src={image}
-                                                            alt={`Product preview ${
-                                                                index + 1
-                                                            }`}
-                                                            sx={{
-                                                                width: "100%",
-                                                                height: "100%",
-                                                                objectFit:
-                                                                    "cover",
-                                                            }}
-                                                        />
-                                                        <IconButton
-                                                            size="small"
-                                                            onClick={() =>
-                                                                handleRemoveImage(
-                                                                    index
-                                                                )
-                                                            }
-                                                            sx={{
-                                                                position:
-                                                                    "absolute",
-                                                                top: 4,
-                                                                right: 4,
-                                                                backgroundColor:
-                                                                    "error.main",
-                                                                color: "common.white",
-                                                                "&:hover": {
-                                                                    backgroundColor:
-                                                                        "error.dark",
-                                                                },
-                                                            }}
-                                                        >
-                                                            <DeleteOutlineIcon fontSize="small" />
-                                                        </IconButton>
-                                                    </>
-                                                ) : (
-                                                    <Button
-                                                        component="label"
-                                                        fullWidth
-                                                        sx={{
-                                                            height: "100%",
-                                                            display: "flex",
-                                                            flexDirection:
-                                                                "column",
-                                                            alignItems:
-                                                                "center",
-                                                            justifyContent:
-                                                                "center",
-                                                            color: "text.secondary",
-                                                        }}
-                                                    >
-                                                        <CloudUploadIcon fontSize="small" />
-                                                        <Typography
-                                                            variant="caption"
-                                                            display="block"
-                                                            sx={{
-                                                                fontSize:
-                                                                    isMobile
-                                                                        ? "0.65rem"
-                                                                        : "0.75rem",
-                                                                textAlign:
-                                                                    "center",
-                                                            }}
-                                                        >
-                                                            Add Image
-                                                        </Typography>
-                                                        <input
-                                                            type="file"
-                                                            accept="image/*"
-                                                            hidden
-                                                            onChange={(e) =>
-                                                                handleAddImage(
-                                                                    e,
-                                                                    index
-                                                                )
-                                                            }
-                                                        />
-                                                    </Button>
-                                                )}
-                                            </Box>
-                                        ))}
-                                    </Box>
+    sx={{
+        display: "grid",
+        gridTemplateColumns: "repeat(2, 1fr)",
+        gap: 1,
+        [theme.breakpoints.up("sm")]: {
+            gridTemplateColumns: "repeat(3, 1fr)",
+        },
+    }}
+>
+    {images.map((image, index) => (
+        <Box
+            key={index}
+            sx={{
+                position: "relative",
+                height: isMobile ? 100 : 120,
+                borderRadius: 1,
+                overflow: "hidden",
+                border: "1px dashed",
+                borderColor: image ? "transparent" : "divider",
+                backgroundColor: image ? "transparent" : "action.hover",
+            }}
+        >
+            {image ? (
+                <>
+                    <Box
+                        component="img"
+                        src={image}
+                        alt={`Product preview ${index + 1}`}
+                        sx={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                        }}
+                    />
+                    <IconButton
+                        size="small"
+                        onClick={() => handleRemoveImage(index)}
+                        sx={{
+                            position: "absolute",
+                            top: 4,
+                            right: 4,
+                            backgroundColor: "error.main",
+                            color: "common.white",
+                            "&:hover": {
+                                backgroundColor: "error.dark",
+                            },
+                        }}
+                    >
+                        <DeleteOutlineIcon fontSize="small" />
+                    </IconButton>
+                    {/* Existing Image Badge */}
+                    {existingImageIds[index] && (
+                        <Box
+                            sx={{
+                                position: "absolute",
+                                top: 4,
+                                left: 4,
+                                backgroundColor: "primary.main",
+                                color: "common.white",
+                                px: 1,
+                                borderRadius: 1,
+                                fontSize: '0.6rem',
+                                fontWeight: 'bold'
+                            }}
+                        >
+                            Existing
+                        </Box>
+                    )}
+                </>
+            ) : (
+                <Button
+                    component="label"
+                    fullWidth
+                    sx={{
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "text.secondary",
+                    }}
+                >
+                    <CloudUploadIcon fontSize="small" />
+                    <Typography
+                        variant="caption"
+                        display="block"
+                        sx={{
+                            fontSize: isMobile ? "0.65rem" : "0.75rem",
+                            textAlign: "center",
+                        }}
+                    >
+                        Add Image
+                    </Typography>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        hidden
+                        onChange={(e) => handleAddImage(e, index)}
+                    />
+                </Button>
+            )}
+        </Box>
+    ))}
+</Box>
                                 </Stack>
                             </Paper>
 
