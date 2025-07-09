@@ -49,6 +49,7 @@ Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
 Route::get('productImages/{id}', [ProductController::class, 'allImages']);
 Route::apiResource('categories', CategoryController::class);
 Route::get('productDetails/{product}', [ProductController::class, 'show']);
+Route::get('categoryProducts/{category}', [CategoryController::class, 'categoryProducts']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
