@@ -52,6 +52,7 @@ class WebsiteProductsResource extends JsonResource
      */
     protected function getDistanceFromRequest($userId)
     {
+
         // Check if $userId is "undefined" or invalid
         if ($userId === "undefined" || !is_numeric($userId)) {
             return null; // or throw an exception

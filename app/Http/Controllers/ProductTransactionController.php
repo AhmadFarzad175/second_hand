@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TransactionNotificationEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductTransactionResource;
 use App\Models\Product;
 use App\Models\ProductTransaction;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class ProductTransactionController extends Controller
 {
-
-    // Get transactions (filterable by product_id)
     public function index(Request $request)
     {
         $validated = $request->validate([
@@ -44,8 +44,6 @@ class ProductTransactionController extends Controller
         ]);
     }
 
-
-    // Create a new transaction
     public function store(Request $request)
     {
         $product = Product::findOrFail($request->product_id);
@@ -57,21 +55,18 @@ class ProductTransactionController extends Controller
             'quantity' => "required|integer|min:1|max:{$product->quantity}",
         ]);
 
-        // Verify the product belongs to the seller
         if ($product->user_id != $validated['seller_id']) {
             return response()->json([
                 'message' => 'This product does not belong to the specified seller'
             ], 403);
         }
 
-        // Check product availability
         if ($product->quantity < $validated['quantity']) {
             return response()->json([
                 'message' => 'Not enough stock available'
             ], 422);
         }
 
-        // Prevent buying your own product
         if ($validated['buyer_id'] === $validated['seller_id']) {
             return response()->json([
                 'message' => 'You cannot request to buy your own product'
@@ -81,7 +76,6 @@ class ProductTransactionController extends Controller
         try {
             DB::beginTransaction();
 
-            // Create the transaction
             $transaction = ProductTransaction::create([
                 'product_id' => $validated['product_id'],
                 'buyer_id' => $validated['buyer_id'],
@@ -90,8 +84,8 @@ class ProductTransactionController extends Controller
                 'status' => 'pending',
             ]);
 
-            // Reserve the stock (optional - you can do this when approving)
-            // $product->decrement('stock', $validated['quantity']);
+            // Only use NotificationService (removed duplicate event dispatch)
+            NotificationService::notifyTransactionRequest($transaction);
 
             DB::commit();
 
@@ -108,9 +102,6 @@ class ProductTransactionController extends Controller
         }
     }
 
-
-
-    // Get pending transactions for a seller
     public function pending(Request $request)
     {
         $request->validate([
@@ -126,25 +117,25 @@ class ProductTransactionController extends Controller
         return ProductTransactionResource::collection($transactions);
     }
 
-    // Update transaction status
     public function updateStatus(Request $request, ProductTransaction $transaction)
     {
         $validated = $request->validate([
-            'status' => ['required', Rule::in(['completed', 'cancelled'])],
+            'status' => [
+                'required',
+                'string',
+                Rule::in(['completed', 'cancelled']),
+                function ($attribute, $value, $fail) use ($transaction) {
+                    if ($transaction->status !== 'pending') {
+                        $fail('Only pending transactions can be updated');
+                    }
+                }
+            ]
         ]);
 
-        // Verify the authenticated user is the seller
         if (auth()->id() != $transaction->seller_id) {
             return response()->json([
                 'message' => 'You are not authorized to update this transaction'
             ], 403);
-        }
-
-        // Check if transaction is already completed/cancelled
-        if ($transaction->status != 'pending') {
-            return response()->json([
-                'message' => 'Transaction status cannot be changed anymore'
-            ], 422);
         }
 
         try {
@@ -152,13 +143,14 @@ class ProductTransactionController extends Controller
 
             $transaction->update(['status' => $validated['status']]);
 
-            // Update product stock if completed
+            // Use NotificationService instead of manual event
+            NotificationService::notifyTransactionStatusUpdate($transaction);
+
             if ($validated['status'] === 'completed') {
                 $transaction->product->decrement('quantity', $transaction->quantity);
 
-                // Mark product as sold if quantity reaches 0
                 if ($transaction->product->quantity <= 0) {
-                    $transaction->product->update(['state' => 1]); // 1 = sold
+                    $transaction->product->update(['state' => 1]);
                 }
             }
 
@@ -176,50 +168,205 @@ class ProductTransactionController extends Controller
             ], 500);
         }
     }
-
-    // Delete a transaction
-    // public function destroy(ProductTransaction $transaction)
-    // {
-    //     // Verify the authenticated user is either buyer or seller
-    //     if (!in_array(auth()->id(), [$transaction->buyer_id, $transaction->seller_id])) {
-    //         return response()->json([
-    //             'message' => 'You are not authorized to delete this transaction'
-    //         ], 403);
-    //     }
-
-    //     // Only allow deletion of pending transactions
-    //     if ($transaction->status != 'pending') {
-    //         return response()->json([
-    //             'message' => 'Only pending transactions can be deleted'
-    //         ], 422);
-    //     }
-
-    //     $transaction->delete();
-
-    //     return response()->json([
-    //         'message' => 'Transaction deleted successfully'
-    //     ]);
-    // }
 }
+// namespace App\Http\Controllers;
 
-    // public function confirmSale(ProductTransaction $transaction)
-    // {
-    //     // Verify seller owns the product
-    //     if ($transaction->product->user_id !== auth()->id()) {
-    //         abort(403);
-    //     }
+// use App\Events\TransactionNotificationEvent;
+// use App\Http\Controllers\Controller;
+// use App\Http\Resources\ProductTransactionResource;
+// use App\Models\Product;
+// use App\Models\ProductTransaction;
+// use App\Services\NotificationService;
+// use Illuminate\Http\Request;
+// use Illuminate\Support\Facades\DB;
+// use Illuminate\Validation\Rule;
 
-    //     DB::transaction(function () use ($transaction) {
-    //         $transaction->update(['status' => 'completed']);
+// class ProductTransactionController extends Controller
+// {
 
-    //         $product = $transaction->product;
-    //         $product->decrement('stock', $transaction->quantity);
-    //         $product->decrement('reserved_stock', $transaction->quantity);
+//     // Get transactions (filterable by product_id)
+//     public function index(Request $request)
+//     {
+//         $validated = $request->validate([
+//             'product_id' => 'nullable|exists:products,id',
+//             'seller_id' => 'nullable|exists:users,id',
+//             'buyer_id' => 'nullable|exists:users,id',
+//         ]);
 
-    //         if ($product->stock <= 0) {
-    //             $product->update(['status' => 'sold']);
-    //         }
-    //     });
+//         $query = ProductTransaction::with(['product', 'buyer', 'seller'])
+//             ->latest();
 
-    //     return redirect()->back()->with('success', 'Sale confirmed');
-    // }
+//         if (isset($validated['product_id'])) {
+//             $query->where('product_id', $validated['product_id']);
+//         }
+
+//         if (isset($validated['seller_id'])) {
+//             $query->where('seller_id', $validated['seller_id']);
+//         }
+
+//         if (isset($validated['buyer_id'])) {
+//             $query->where('buyer_id', $validated['buyer_id']);
+//         }
+
+//         $transactions = $query->paginate(10);
+
+//         return response()->json([
+//             'data' => $transactions
+//         ]);
+//     }
+
+
+//     // Create a new transaction
+//     public function store(Request $request)
+//     {
+//         $product = Product::findOrFail($request->product_id);
+
+//         $validated = $request->validate([
+//             'product_id' => 'required|exists:products,id',
+//             'buyer_id' => 'required|exists:users,id',
+//             'seller_id' => 'required|exists:users,id',
+//             'quantity' => "required|integer|min:1|max:{$product->quantity}",
+//         ]);
+
+//         // Verify the product belongs to the seller
+//         if ($product->user_id != $validated['seller_id']) {
+//             return response()->json([
+//                 'message' => 'This product does not belong to the specified seller'
+//             ], 403);
+//         }
+
+//         // Check product availability
+//         if ($product->quantity < $validated['quantity']) {
+//             return response()->json([
+//                 'message' => 'Not enough stock available'
+//             ], 422);
+//         }
+
+//         // Prevent buying your own product
+//         if ($validated['buyer_id'] === $validated['seller_id']) {
+//             return response()->json([
+//                 'message' => 'You cannot request to buy your own product'
+//             ], 422);
+//         }
+
+//         try {
+//             DB::beginTransaction();
+
+//             // Create the transaction
+//             $transaction = ProductTransaction::create([
+//                 'product_id' => $validated['product_id'],
+//                 'buyer_id' => $validated['buyer_id'],
+//                 'seller_id' => $validated['seller_id'],
+//                 'quantity' => $validated['quantity'],
+//                 'status' => 'pending',
+//             ]);
+//             NotificationService::notifyTransactionRequest($transaction);
+
+//             // event(new TransactionNotificationEvent(
+//             //     $transaction->seller_id,
+//             //     "New purchase request for {$transaction->product->name}",
+//             //     $transaction->id
+//             // ));
+//             event(new TransactionNotificationEvent(
+//                 $transaction->seller_id,
+//                 "New purchase request for {$transaction->product->name}",
+//                 $transaction->id,
+//                 'transaction_request'
+//             ));
+
+//             // Reserve the stock (optional - you can do this when approving)
+//             // $product->decrement('stock', $validated['quantity']);
+
+//             DB::commit();
+
+//             return response()->json([
+//                 'message' => 'Transaction created successfully',
+//                 'data' => $transaction
+//             ], 201);
+//         } catch (\Exception $e) {
+//             DB::rollBack();
+//             return response()->json([
+//                 'message' => 'Failed to create transaction',
+//                 'error' => $e->getMessage()
+//             ], 500);
+//         }
+//     }
+
+
+
+//     // Get pending transactions for a seller
+//     public function pending(Request $request)
+//     {
+//         $request->validate([
+//             'seller_id' => 'required|exists:users,id',
+//         ]);
+
+//         $transactions = ProductTransaction::with(['product', 'buyer'])
+//             ->where('seller_id', $request->seller_id)
+//             ->where('status', 'pending')
+//             ->latest()
+//             ->get();
+
+//         return ProductTransactionResource::collection($transactions);
+//     }
+
+//     // Update transaction status
+//    public function updateStatus(Request $request, ProductTransaction $transaction)
+// {
+//     $validated = $request->validate([
+//         'status' => ['required', 'string', Rule::in(['completed', 'cancelled'])]
+//     ]);
+
+//     // Verify the authenticated user is the seller
+//     if (auth()->id() != $transaction->seller_id) {
+//         return response()->json([
+//             'message' => 'You are not authorized to update this transaction'
+//         ], 403);
+//     }
+
+//     // Check if transaction is already completed/cancelled
+//     if ($transaction->status != 'pending') {
+//         return response()->json([
+//             'message' => 'Transaction status cannot be changed anymore'
+//         ], 422);
+//     }
+
+//     try {
+//         DB::beginTransaction();
+
+//         // Use the validated status value directly
+//         $transaction->update(['status' => $validated['status']]);
+
+//         $action = $validated['status'] === 'completed' ? 'accepted' : 'cancelled';
+//         event(new TransactionNotificationEvent(
+//             $transaction->buyer_id,
+//             "Your request for {$transaction->product->name} has been {$action}",
+//             $transaction->id,
+//             "transaction_{$action}"
+//         ));
+
+//         // Update product stock if completed
+//         if ($validated['status'] === 'completed') {
+//             $transaction->product->decrement('quantity', $transaction->quantity);
+
+//             // Mark product as sold if quantity reaches 0
+//             if ($transaction->product->quantity <= 0) {
+//                 $transaction->product->update(['state' => 1]);
+//             }
+//         }
+
+//         DB::commit();
+
+//         return response()->json([
+//             'message' => 'Transaction status updated successfully',
+//             'data' => $transaction
+//         ]);
+//     } catch (\Exception $e) {
+//         DB::rollBack();
+//         return response()->json([
+//             'message' => 'Failed to update transaction status',
+//             'error' => $e->getMessage()
+//         ], 500);
+//     }
+// }
+// }

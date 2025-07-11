@@ -8,6 +8,7 @@ trait ProjectFormatTrait
 {
     protected function formatPrice($amount)
     {
+        $amount = (float) $amount;
         if ($this->currency === "AFN") {
             return number_format($amount, 0, '.', ',') . ' ؋';
         }
