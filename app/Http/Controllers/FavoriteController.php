@@ -16,8 +16,6 @@ class FavoriteController extends Controller
     {
         // Get the authenticated user
         $user = Auth::user();
-        $user = User::find(1);
-
         // Check if the user already has this product favorite
         $isFavorite = $user->favorites()->where('product_id', $productId)->exists();
 
@@ -43,7 +41,6 @@ class FavoriteController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $user = User::find(1);
         $search = $request->input('search');
 
         // Step 1: Get the product IDs that the user has favorited

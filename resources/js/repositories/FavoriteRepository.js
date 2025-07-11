@@ -1,8 +1,10 @@
 import AxiosSetup from './AxiosSetup';
 
 export async function getFavorites(search = "") {
+    const user = JSON.parse(localStorage.getItem("user"));
+
     try {
-        const response = await AxiosSetup.get('/favorites', {
+        const response = await AxiosSetup.get(`/favorites?user_id=${user?.id}`, {
             params: { search }
         });
         return response.data.data || [];

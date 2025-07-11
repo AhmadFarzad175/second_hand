@@ -25,10 +25,10 @@ class WebsiteProductsResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'original_price' => $this->formatPrice($this->price), 
-            'final_price' => $this->formatPrice($this->final_price), 
+            'original_price' => $this->formatPrice($this->price),
+            'final_price' => $this->formatPrice($this->final_price),
             'currency' => $this->currency === "AFN" ? "؋" : "$",
-            'discount' => $this->discount > 0 ? $this->formatDiscount() : null, 
+            'discount' => $this->discount > 0 ? $this->formatDiscount() : null,
             'posted' => Carbon::parse($this->created_at)->diffForHumans(),
             'isFavorite' => $this->checkIsFavorite($userId),
             'images' => $this->getFirstImageUrl(),

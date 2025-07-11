@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductTransactionResource;
+use App\Models\Conversation;
+use App\Models\Message;
 use App\Models\Product;
 use App\Models\ProductTransaction;
 use Illuminate\Http\Request;
@@ -55,6 +57,7 @@ class ProductTransactionController extends Controller
             'buyer_id' => 'required|exists:users,id',
             'seller_id' => 'required|exists:users,id',
             'quantity' => "required|integer|min:1|max:{$product->quantity}",
+            'message' => 'nullable|string', // Make message optional
         ]);
 
         // Verify the product belongs to the seller
@@ -90,14 +93,40 @@ class ProductTransactionController extends Controller
                 'status' => 'pending',
             ]);
 
-            // Reserve the stock (optional - you can do this when approving)
-            // $product->decrement('stock', $validated['quantity']);
+            // Find or create conversation between buyer and seller
+            $conversation = Conversation::firstOrCreate(
+                [
+                    'user_one_id' => min($validated['buyer_id'], $validated['seller_id']),
+                    'user_two_id' => max($validated['buyer_id'], $validated['seller_id']),
+                ],
+                [
+                    'product_id' => $validated['product_id'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
+
+            // Include product reference in the message
+            $fullMessage = "product: {$product->name}\n\n " . ($validated['message'] ?? '');
+
+            // Add message if provided
+            if (!empty($validated['message'])) {
+                Message::create([
+                    'conversation_id' => $conversation->id,
+                    'sender_id' => $validated['buyer_id'],
+                    'message' => $fullMessage,
+                    'is_read' => false,
+                ]);
+            }
 
             DB::commit();
 
             return response()->json([
                 'message' => 'Transaction created successfully',
-                'data' => $transaction
+                'data' => [
+                    'transaction' => $transaction,
+                    'conversation_id' => $conversation->id,
+                ]
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
