@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Support\Facades\Log;
 
 use App\Http\Controllers\APIForMobile\AuthController;
 use Illuminate\Support\Facades\Route;
@@ -39,3 +40,14 @@ Route::get('/reset-password/{token}', function ($token) {
 Route::get('/{any}', function () {
     return view('welcome');
 })->where('any', '.*');
+// Route::get('/test-broadcast', function() {
+//     Log::debug('Attempting to broadcast event'); // Check laravel.log
+
+//     event(new \App\Events\TransactionNotificationEvent(
+//         1, // Hardcoded user ID for testing
+//         'BACKEND TEST MESSAGE',
+//         12345
+//     ));
+
+//     return 'Event fired - check Pusher Debug Console';
+// });

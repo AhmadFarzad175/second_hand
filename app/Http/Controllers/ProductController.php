@@ -92,7 +92,7 @@ class ProductController extends Controller
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
                 // Store the image and get the path
-                $path = $image->store('images/products', 'public');
+                $path = $image->store('products', 'public');
 
                 // Save the path to the images table
                 $product->images()->create(['image_url' => $path]);
@@ -161,7 +161,7 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         foreach ($product->images as $image) {
-            $this->deleteImage($image, 'images/products', 'image_url');
+            $this->deleteImage($image, 'products', 'image_url');
         }
 
         $product->images()->delete();

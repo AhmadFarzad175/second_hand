@@ -1,8 +1,5 @@
 <?php
 
-use App\Http\Controllers\APIForMobile\AuthController;
-use App\Http\Controllers\ConversationController;
-use App\Http\Controllers\ProductTransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -13,12 +10,16 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CurrencyController;
-
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\NotificationController;
+
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\ProductAttributeController;
+use App\Http\Controllers\APIForMobile\AuthController;
+use App\Http\Controllers\ProductTransactionController;
 use App\Http\Controllers\ProductAttributeValueController;
-
+use Illuminate\Log\Logger;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +50,7 @@ Route::get('websiteProducts', [ProductController::class, 'websiteProducts']);
 Route::get('productImages/{id}', [ProductController::class, 'allImages']);
 Route::apiResource('categories', CategoryController::class);
 Route::get('productDetails/{product}', [ProductController::class, 'show']);
+Route::get('categoryProducts/{category}', [CategoryController::class, 'categoryProducts']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -63,6 +65,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/{transaction}/status', [ProductTransactionController::class, 'updateStatus']);
         Route::delete('/{transaction}', [ProductTransactionController::class, 'destroy']);
     });
+// In routes/web.php (temporary test route)
+
+    Route::prefix('notifications')->group(function () {
+    Route::get('/', [NotificationController::class, 'index']);
+    Route::patch('/{notification}/read', [NotificationController::class, 'markAsRead']);
+    Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
+});
 
 
 
@@ -99,7 +108,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     ///////////////////  MESSAGE  ///////////////////
-    // ✅ Conversation APIs 
+    // ✅ Conversation APIs
     Route::get('/conversations', [ConversationController::class, 'index']);
     Route::post('/conversations', [ConversationController::class, 'store']);
     Route::get('/conversations/{conversation}', [ConversationController::class, 'show']);
@@ -127,7 +136,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('users/{user}/location', [UserController::class, 'userLocation']);
     Route::get('/profile', [UserController::class, 'profile']);
-});
+// });
 
 
 ////////////////////  API FOR MOBILE   ////////////////////////////////
@@ -186,4 +195,5 @@ Route::prefix('v1/mobile')->group(function () {
     Route::get('/products/filter', [ProductController::class, 'index']); // Uses request filters
 
 
+});
 });

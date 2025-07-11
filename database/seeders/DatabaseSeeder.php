@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
             ProductAttributesSeeder::class,
             // ProductSeeder::class,
             RolesAndPermissionsSeeder::class,
-            // UserSeeder::class,
+            UserSeeder::class,
             // ConversationSeeder::class,
         ]);
 

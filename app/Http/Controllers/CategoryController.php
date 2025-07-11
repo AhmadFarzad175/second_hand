@@ -9,6 +9,8 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Requests\CategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\CategoryAttributesResource;
+use App\Http\Resources\UserProducts;
+use App\Models\Product;
 
 class CategoryController extends Controller
 {
@@ -102,6 +104,13 @@ public function CategoryWithoutImage()
     return response()->json([
         'data' => $categories
     ]);
+}
+
+    public function categoryProducts($categoryId)
+    {
+        $product = Product::with('category')->where('category_id',$categoryId)->get();
+        return UserProducts::collection($product);
+
 }
 
     /**

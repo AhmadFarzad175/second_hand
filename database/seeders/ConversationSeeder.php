@@ -63,13 +63,13 @@ class ConversationSeeder extends Seeder
             : User::factory(10)->create();
 
         // Get active products (minimum 20)
-        $products = Product::where('state', 'available')
+        $products = Product::where('state', '1')
             ->inRandomOrder()
             ->take(20)
             ->get();
 
         if ($products->count() < 20) {
-            $products = Product::factory(20)->create(['state' => 'available']);
+            $products = Product::factory(20)->create(['state' => '1']);
         }
 
         // Create unique conversations
