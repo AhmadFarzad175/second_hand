@@ -21,12 +21,12 @@ import {
 } from "../repositories/TransactionRepository";
 import toast from "react-hot-toast";
 
-function TransactionDialog({ open, onClose, userId }) {
+function TransactionDialog({ open, onClose, userId, productId }) {
     const queryClient = useQueryClient();
 
     const { data, isLoading } = useQuery({
         queryKey: ["pendingTransactions", userId],
-        queryFn: () => getPendingTransactions(userId),
+        queryFn: () => getPendingTransactions(userId, productId),
         enabled: open && !!userId,
     });
 

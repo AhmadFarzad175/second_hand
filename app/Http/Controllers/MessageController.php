@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UnreadCountUpdated;
 use App\Models\Message;
 use App\Events\MessageSent;
 use App\Models\Conversation;
@@ -25,34 +26,41 @@ class MessageController extends Controller
         return MessageResource::collection($messages);
     }
 
-public function store(MessageRequest $request, $conversationId)
-{
+    public function store(MessageRequest $request, $conversationId)
+    {
         $validated = $request->validated();
-    $message = Message::create([
-        'conversation_id' => $validated['conversation_id'],
-        'sender_id' => $validated['sender_id'],
-        'message' => $validated['message'],
-        'is_read' => false,
-    ]);
+        $message = Message::create([
+            'conversation_id' => $validated['conversation_id'],
+            'sender_id' => $validated['sender_id'],
+            'message' => $validated['message'],
+            'is_read' => false,
+        ]);
 
-    broadcast(new MessageSent($message))->toOthers();
+        broadcast(new MessageSent($message))->toOthers();
 
-    return new MessageResource($message->load('sender'));
-}
-public function destroy($messageId, Request $request)
-{
-    $message = Message::findOrFail($messageId);
+        // Broadcast unread count update to the recipient
+        $recipientId = $message->conversation->user_one_id == auth()->id()
+            ? $message->conversation->user_two_id
+            : $message->conversation->user_one_id;
 
-    // if ($message->sender_id !== $request->user_id) {
-    //     return response()->json(['error' => 'Unauthorized'], 403);
-    // }
+        broadcast(new UnreadCountUpdated($recipientId, $this->calculateUnreadCount($recipientId)));
 
-    broadcast(new MessageDeleted($message))->toOthers();
+        return new MessageResource($message->load('sender'));
+    }
+    public function destroy($messageId, Request $request)
+    {
+        $message = Message::findOrFail($messageId);
 
-    $message->delete();
+        // if ($message->sender_id !== $request->user_id) {
+        //     return response()->json(['error' => 'Unauthorized'], 403);
+        // }
 
-    return response()->json(['message' => 'Message deleted successfully.']);
-}
+        broadcast(new MessageDeleted($message))->toOthers();
+
+        $message->delete();
+
+        return response()->json(['message' => 'Message deleted successfully.']);
+    }
 
 
 
@@ -78,8 +86,18 @@ public function destroy($messageId, Request $request)
             $q->where('user_one_id', $userId)->orWhere('user_two_id', $userId);
         })->where('sender_id', '!=', $userId)->where('is_read', false)->count();
         // dd($count);
-        
+
         return response()->json(['unread_count' => $count]);
+    }
+
+    protected function calculateUnreadCount($userId)
+    {
+        return Message::whereHas('conversation', function ($q) use ($userId) {
+            $q->where('user_one_id', $userId)
+                ->orWhere('user_two_id', $userId);
+        })->where('sender_id', '!=', $userId)
+            ->where('is_read', false)
+            ->count();
     }
 }
 

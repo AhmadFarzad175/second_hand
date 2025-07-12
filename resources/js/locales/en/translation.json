@@ -9,13 +9,15 @@
             "english": "English",
             "dari": "Dari",
             "pashto": "Pashto"
-        }
+        },
+        "Notifications": "Notifications",
+        "No notifications": "No new notifications"
     },
     "home": {
         "Filter": "Filter"
     },
     "favorite": {
-      "h1": "Your Treasured Favorites",
-      "h3": "A collection of products you've loved and saved for later"
+        "h1": "Your Treasured Favorites",
+        "h3": "A collection of products you've loved and saved for later"
     }
 }

@@ -24,10 +24,10 @@ export const getProductTransactions = async (productId) => {
   }
 };
 
-export const getPendingTransactions = async (userId) => {
+export const getPendingTransactions = async (userId, productId) => {
   try {
     const response = await AxiosSetup.get('/transactions/pending', {
-      params: { seller_id: userId }
+      params: { seller_id: userId, product_id: productId }
     });
     return response.data;
   } catch (error) {

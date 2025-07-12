@@ -10,7 +10,9 @@
             "english": "انگلیسی",
             "dari": "دری",
             "pashto": "پشتو"
-        }
+        },
+        "Notifications": "اطلاعیه ها",
+        "No notifications": "اطلاعیه جدید نیست"
     },
     "home": {
         "Filter": "فیلتر"

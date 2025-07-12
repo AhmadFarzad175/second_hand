@@ -662,6 +662,7 @@ function ProductDetails({ dashboard = false }) {
                 open={transactionDialogOpen}
                 onClose={() => setTransactionDialogOpen(false)}
                 userId={userId}
+                productId={product.id}
             />
         </Box>
     );

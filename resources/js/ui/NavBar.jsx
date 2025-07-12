@@ -21,14 +21,17 @@ import LanguageIcon from "@mui/icons-material/Language";
 import LoginIcon from "@mui/icons-material/Login";
 import SearchIcon from "@mui/icons-material/Search";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import { Logout } from "@mui/icons-material";
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Logout } from "@mui/icons-material";
-import SearchInput from "./SearchInput";
 import Can from "../repositories/Can";
 import { getUser, logout } from "../repositories/AuthRepository";
 import { useTranslation } from "react-i18next";
 import AppDrawer from "./AppDrawer";
+import SearchInput from "./SearchInput";
+import NotificationMenu from "./NotificationMenu";
+
+
 
 function NavBar({ onSearch }) {
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -39,7 +42,6 @@ function NavBar({ onSearch }) {
     const location = useLocation();
     const isUser = Boolean(getUser());
     const { t, i18n } = useTranslation();
-    console.log(isUser);
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -66,15 +68,14 @@ function NavBar({ onSearch }) {
     };
 
     const handleSearch = (term) => {
-        // Get current path without search params
         const currentPath = location.pathname;
-
         if (term) {
             navigate(`${currentPath}?search=${encodeURIComponent(term)}`);
         } else {
-            navigate(currentPath); // Clear search if term is empty
+            navigate(currentPath);
         }
     };
+
     const goProfile = () => {
         handleMenuClose();
         navigate("profile");
@@ -92,22 +93,16 @@ function NavBar({ onSearch }) {
     };
 
     const changeLanguage = (language) => {
-        handleLanguageMenuClose();
-        // Add your language change logic here
         i18n.changeLanguage(language);
         handleLanguageMenuClose();
-        console.log(`Language changed to ${language}`);
     };
 
     return (
         <AppBar
             position="sticky"
-            // color="default"
-            // elevation={1}
             sx={{
                 bgcolor: "#eee",
                 boxShadow: "none",
-                // backdropFilter: "blur(10px)",
             }}
         >
             <Container maxWidth="xl">
@@ -154,6 +149,9 @@ function NavBar({ onSearch }) {
                             <SearchIcon />
                         </IconButton>
 
+                        {/* Notification Icon */}
+                        {isUser && <NotificationMenu />}
+
                         <IconButton
                             sx={{ display: { xs: "none", sm: "flex" } }}
                             onClick={() => navigate("add-product")}
@@ -179,24 +177,29 @@ function NavBar({ onSearch }) {
                         >
                             <LanguageIcon />
                         </IconButton>
-                        {/* Language Dropdown */}
-          <Menu
-            anchorEl={languageAnchorEl}
-            open={Boolean(languageAnchorEl)}
-            onClose={handleLanguageMenuClose}
-          >
-            <MenuItem onClick={() => changeLanguage('en')}>
-              <ListItemText>{t('navbar.languages.english')}</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={() => changeLanguage('fa')}>
-              <ListItemText>{t('navbar.languages.dari')}</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={() => changeLanguage('ps')}>
-              <ListItemText>{t('navbar.languages.pashto')}</ListItemText>
-            </MenuItem>
-          </Menu>
+                        <Menu
+                            anchorEl={languageAnchorEl}
+                            open={Boolean(languageAnchorEl)}
+                            onClose={handleLanguageMenuClose}
+                        >
+                            <MenuItem onClick={() => changeLanguage("en")}>
+                                <ListItemText>
+                                    {t("navbar.languages.english")}
+                                </ListItemText>
+                            </MenuItem>
+                            <MenuItem onClick={() => changeLanguage("fa")}>
+                                <ListItemText>
+                                    {t("navbar.languages.dari")}
+                                </ListItemText>
+                            </MenuItem>
+                            <MenuItem onClick={() => changeLanguage("ps")}>
+                                <ListItemText>
+                                    {t("navbar.languages.pashto")}
+                                </ListItemText>
+                            </MenuItem>
+                        </Menu>
 
-                        {/* Show the user dropdown or login button */}
+                        {/* User dropdown or login button */}
                         {isUser ? (
                             <IconButton onClick={handleMenuOpen}>
                                 <AccountCircleIcon />
@@ -204,10 +207,10 @@ function NavBar({ onSearch }) {
                         ) : (
                             <Button
                                 variant="outlined"
-                                onClick={() => navigate("/login")} // Assuming you're using react-router
+                                onClick={() => navigate("/login")}
                                 startIcon={<LoginIcon />}
                             >
-                                Login
+                                {t("navbar.Login")}
                             </Button>
                         )}
                     </Box>
@@ -234,7 +237,7 @@ function NavBar({ onSearch }) {
                         <ListItemIcon>
                             <AccountCircleIcon fontSize="small" />
                         </ListItemIcon>
-                        <ListItemText>{t('navbar.Profile')}</ListItemText>
+                        <ListItemText>{t("navbar.Profile")}</ListItemText>
                     </MenuItem>
 
                     <Can permission="create product">
@@ -242,7 +245,9 @@ function NavBar({ onSearch }) {
                             <ListItemIcon>
                                 <DashboardIcon fontSize="small" />
                             </ListItemIcon>
-                            <ListItemText>{t('navbar.Admin Panel')}</ListItemText>
+                            <ListItemText>
+                                {t("navbar.Admin Panel")}
+                            </ListItemText>
                         </MenuItem>
                     </Can>
 
@@ -250,7 +255,7 @@ function NavBar({ onSearch }) {
                         <ListItemIcon>
                             <Logout fontSize="small" />
                         </ListItemIcon>
-                        <ListItemText>{t('navbar.logout')}</ListItemText>
+                        <ListItemText>{t("navbar.logout")}</ListItemText>
                     </MenuItem>
                 </Menu>
             </Can>

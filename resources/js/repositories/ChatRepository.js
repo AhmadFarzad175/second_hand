@@ -72,6 +72,7 @@ export async function markMessagesAsRead(conversationId) {
     }
 }
 
+
 export async function getUnreadCount() {
     try {
         const response = await AxiosSetup.get('/messages/unread-count');

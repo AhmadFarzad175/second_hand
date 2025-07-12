@@ -16,6 +16,18 @@ class FavoriteController extends Controller
     {
         // Get the authenticated user
         $user = Auth::user();
+
+        // Get the product with owner information
+        $product = Product::findOrFail($productId);
+
+        // Check if the product belongs to the current user
+        if ($product->user_id == $user->id) {
+        return response()->json([
+                'message' => 'You cannot favorite your own product',
+                'isFavorite' => false
+            ], 403);
+        }
+
         // Check if the user already has this product favorite
         $isFavorite = $user->favorites()->where('product_id', $productId)->exists();
 

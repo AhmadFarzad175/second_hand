@@ -137,10 +137,12 @@ class ProductTransactionController extends Controller
     {
         $request->validate([
             'seller_id' => 'required|exists:users,id',
+            'product_id' => 'required|exists:products,id',
         ]);
 
         $transactions = ProductTransaction::with(['product', 'buyer'])
             ->where('seller_id', $request->seller_id)
+            ->where('product_id', $request->product_id)
             ->where('status', 'pending')
             ->latest()
             ->get();
