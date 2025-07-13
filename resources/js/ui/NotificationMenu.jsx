@@ -62,7 +62,7 @@ function NotificationMenu() {
     // Mark all as read mutation
     const markAllAsReadMutation = useMutation({
         mutationFn: async () => {
-            await AxiosSetup.patch(`/notifications/mark-all-read`, {
+            await AxiosSetup.put(`notifications/mark-all-read`, {
                 user_id: userId,
             });
         },
@@ -96,10 +96,10 @@ function NotificationMenu() {
         handleMenuClose();
         switch (notification.type) {
             case "transaction_request":
-                navigate(`/transactions/${notification.notifiable_id}`);
+                navigate(`/product/${notification.product_id}`);
                 break;
             case "favorite":
-                navigate(`/products/${notification.notifiable_id}`);
+                navigate(`/products/${notification.product_id}`);
                 break;
             case "profile_update":
                 navigate("/profile");
