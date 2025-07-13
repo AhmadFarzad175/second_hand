@@ -187,9 +187,9 @@ const image = user?.image;
 
             {/* User Profile Section at the bottom with menu expanding upwards */}
             <Box sx={{ mt: "auto" }}>
-                <Collapse 
-                    in={userMenuOpen} 
-                    timeout="auto" 
+                <Collapse
+                    in={userMenuOpen}
+                    timeout="auto"
                     unmountOnExit
                     sx={{
                         transformOrigin: 'bottom', // Makes the collapse expand upwards
@@ -228,7 +228,7 @@ const image = user?.image;
                         ))}
                     </List>
                 </Collapse>
-                
+
                 <Divider />
                 <ListItem
                     button
@@ -249,7 +249,7 @@ const image = user?.image;
   )}
 </ListItemIcon>
 
-                    <ListItemText 
+                    <ListItemText
                         primary={name}
                         secondary={email}
                     />

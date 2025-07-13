@@ -11,7 +11,7 @@ class CategorySeeder extends Seeder
     {
         $categories = [
             ['name' => 'Phones',         'image' => 'tablet.webp'],
-            ['name' => 'Computers',  'image' => 'computer.webp'],
+            ['name' => 'Computers',  'image' => 'computer.jpg'],
             ['name' => 'electronics',        'image' => 'electronics.jpg'],
             // ['name' => 'Home ',          'image' => 'image5.jpg'],
             ['name' => 'Clothing',       'image' => 'clothes.jpg'],
