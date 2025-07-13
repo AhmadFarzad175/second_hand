@@ -55,7 +55,7 @@ const TableToolbar = ({ numSelected }) => {
                     sx={{ whiteSpace: 'nowrap', p: "10px 20px" }}
 
                 >
-                  {t("Admin.Product.AddProduct", "Add Product")}
+                  {t("Admin.Product.Add")}
                 </Button>
             )}
         </Toolbar>

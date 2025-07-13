@@ -84,7 +84,7 @@ const Users = () => {
                            {t("Admin.Home")}
                         </Typography>
                     </Link>
-                    <Typography color="text.primary">{t("Admin.Users")}</Typography>
+                    <Typography color="text.primary">{t("AdminUser.Users")}</Typography>
                 </Breadcrumbs>
                 <Tooltip title={t("Common.FilterList")}>
                     <IconButton>

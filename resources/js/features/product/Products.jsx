@@ -82,7 +82,7 @@ const Products = () => {
                         <Typography
                             sx={{ "&:hover": { textDecoration: "underline" } }}
                         >
-                             {t("Common.home")}
+                             {t("Admin.Home")}
                         </Typography>
                     </Link>
                     <Typography color="text.primary">{t("Admin.Product.ProductInformation", "Products")}</Typography>

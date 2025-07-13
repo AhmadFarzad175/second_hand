@@ -22,10 +22,11 @@
         "h3": "A collection of products you've loved and saved for later"
 
     },
-    
+
    "Admin": {
+    "Add": " افزودن کاربر",
     "Product": {
-        "Add": "افزودن",
+        "Add": " افزودن محصول",
     "Home": "خانه",
         "ProductInformation": "اطلاعات محصول",
         "Image": "تصویر",
@@ -89,6 +90,8 @@
       "DeleteBtn": "حذف"
     },
    "AdminUser": {
+   "Users": "کاربر ها",
+
     "EditTitle": "ویرایش کاربر",
     "CreateTitle": "ایجاد کاربر",
     "EditDescription": "اطلاعات کاربر را به‌روزرسانی کنید",
