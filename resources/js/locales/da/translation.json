@@ -21,5 +21,113 @@
         "h1": "گنجینه ای از علایق",
         "h3": "A collection of products you've loved and saved for later"
 
-    }
-}
+    },
+    
+   "Admin": {
+    "Product": {
+        "Add": "افزودن",
+    "Home": "خانه",
+        "ProductInformation": "اطلاعات محصول",
+        "Image": "تصویر",
+        "Name": "نام محصول",
+        "Category": "دسته‌بندی",
+        "Price": "قیمت",
+        "Condition": "وضعیت",
+        "Date": "تاریخ",
+        "Favorites": "علاقه‌مندی‌ها",
+        "Actions": "عملیات",
+        "Show": "نمایش",
+        "Edit": "ویرایش",
+        "Delete": "حذف",
+         "Discount": "تخفیف",
+        "PriceBreakdown": "جزئیات قیمت",
+        "OriginalPrice": "قیمت اصلی",
+        "Fixed": "ثابت",
+        "YouPay": "قیمت نهایی",
+        "NoDiscount": "تخفیفی اعمال نشده است",
+        "PriceRequired": "قیمت ضروری است",
+        "PricePositive": "قیمت باید مثبت باشد",
+        "DiscountPositive": "تخفیف باید مثبت باشد",
+        "DiscountMax": "تخفیف نمی‌تواند بیشتر از ۱۰۰٪ باشد",
+         "StockQuantity": "تعداد موجودی",
+    "Description": "توضیحات کامل محصول",
+    "ProductImages": "تصاویر محصول",
+    "UploadMessage": "تصاویر با کیفیت بالا بارگذاری کنید (حداکثر ۶ عدد)",
+    "AddImage": "افزودن تصویر",
+    "ProductAttributes": "ویژگی‌های محصول",
+    "NoAttributes": "هیچ ویژگی‌ای برای این دسته‌بندی تعریف نشده است",
+    "SelectCategoryFirst": "برای مشاهده ویژگی‌ها ابتدا دسته‌بندی را انتخاب کنید",
+    "SaveChanges": "ذخیره تغییرات",
+    "CreateProduct": "ایجاد محصول"
+
+    },
+    "Common": {
+  "Cancel": "لغو",
+  "Processing": "در حال پردازش..."},
+   "Home": "خانه",
+    "Name": "نام",
+    "Image": "تصویر",
+    "Action": "عملیات",
+    "FilterList": "فیلتر لیست",
+    "Selected": "{{count}} مورد انتخاب شده",
+    "Delete": "حذف",
+    "Show": "نمایش",
+        "Edit": "ویرایش"
+
+    },
+    "Category": {
+      "Title": "دسته‌بندی‌ها",
+      "Add": "افزودن دسته‌بندی",
+      "Edit": "ویرایش دسته‌بندی",
+      "Create": "ایجاد",
+      "Update": "به‌روزرسانی",
+      "CategoryName": "نام دسته‌بندی",
+      "UploadImage": "آپلود تصویر",
+      "NoImage": "بدون تصویر",
+      "TotalProducts": "مجموع محصولات",
+      "EditBtn": "ویرایش",
+      "DeleteBtn": "حذف"
+    },
+   "AdminUser": {
+    "EditTitle": "ویرایش کاربر",
+    "CreateTitle": "ایجاد کاربر",
+    "EditDescription": "اطلاعات کاربر را به‌روزرسانی کنید",
+    "CreateDescription": "اطلاعات کاربر را وارد کنید"
+  },
+  "Form": {
+    "FullName": "نام کامل",
+    "Email": "ایمیل",
+    "Phone": "شماره تماس",
+    "Role": "نقش",
+    "Admin": "مدیر",
+    "User": "کاربر",
+    "Password": "رمز عبور",
+    "Location": "موقعیت",
+    "Description": "توضیحات",
+    "UploadPhoto": "بارگذاری عکس",
+    "ImageNote": "فرمت JPG یا PNG (حداکثر ۵ مگابایت)",
+    "CreateUser": "ایجاد کاربر",
+    "About": "درباره",
+    "ProfilePicture": "عکس پروفایل"
+  },
+   "Users": {
+    "Title": "پروفایل",
+    "Subtitle": "خلاصه‌ای از فعالیت‌های تجاری او/وی",
+
+        "Image": "تصویر",
+        "Name": "نام کاربر",
+        "Phone": "شماره تماس",
+        "Products": "محصولات",
+        "Rating": "امتیاز",
+        "Role": "نقش",
+        "Active": "فعال",
+        "Actions": "عملیات",
+        "Edit": "ویرایش",
+        "Delete": "حذف"
+
+  }
+  }
+
+
+
+

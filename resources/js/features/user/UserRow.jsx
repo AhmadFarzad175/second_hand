@@ -18,8 +18,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useDeleteUser } from "./useDeleteUser";
 import { useUpdateUserStatus } from "./toggleSwitch";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const UserRow = ({ user, isSelected, handleClick }) => {
+    const { t } = useTranslation();
+
     const [anchorEl, setAnchorEl] = useState(null);
     const { isDeleting, deleteUse } = useDeleteUser();
     const { mutate: updateStatus } = useUpdateUserStatus();
@@ -98,7 +101,7 @@ const UserRow = ({ user, isSelected, handleClick }) => {
                         }}
                     >
                         <Typography variant="caption" color="text.secondary">
-                            No Image
+                            {t("Common.NoImage")}
                         </Typography>
                     </Box>
                 )}
@@ -146,7 +149,7 @@ const UserRow = ({ user, isSelected, handleClick }) => {
                         }}
                     >
                         <VisibilityIcon sx={{ mr: 1 }} />
-                        Show
+                         {t("Admin.Show")}
                     </MenuItem>
                     <MenuItem
                         onClick={(event) => {
@@ -158,11 +161,11 @@ const UserRow = ({ user, isSelected, handleClick }) => {
                         }}
                     >
                         <EditIcon sx={{ mr: 1 }} />
-                        Edit
+                        {t("Admin.Edit")}
                     </MenuItem>
                     <MenuItem onClick={handleDelete} disabled={isDeleting}>
                         <DeleteIcon sx={{ mr: 1 }} />
-                        Delete
+                        {t("Admin.Delete")}
                     </MenuItem>
                 </Menu>
             </TableCell>

@@ -16,8 +16,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useDeleteProduct } from "./useDeleteProduct";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const ProductRow = ({ product, isSelected, handleClick }) => {
+            const { t, i18n } = useTranslation();
+
     const [anchorEl, setAnchorEl] = useState(null);
     const navigate = useNavigate();
     const { isDeleting, deletePro } = useDeleteProduct();
@@ -110,7 +113,7 @@ const ProductRow = ({ product, isSelected, handleClick }) => {
             <TableCell align="left">
                 <Box display="flex" flexDirection="column">
                     <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                        {`${product.final_price} 
+                        {`${product.final_price}
                             ${product.currency ===
                         "AFN"
                             ? "؋"
@@ -164,7 +167,7 @@ const ProductRow = ({ product, isSelected, handleClick }) => {
                         }}
                     >
                         <VisibilityIcon sx={{ mr: 1 }} />
-                        Show
+                        {t("Admin.Product.Show")}
                     </MenuItem>
                     <MenuItem
                         onClick={(event) => {
@@ -176,11 +179,13 @@ const ProductRow = ({ product, isSelected, handleClick }) => {
                         }}
                     >
                         <EditIcon sx={{ mr: 1 }} />
-                        Edit
+                        {t("Admin.Product.Edit")}
+
+
                     </MenuItem>
                     <MenuItem onClick={handleDelete} disabled={isDeleting}>
                         <DeleteIcon sx={{ mr: 1 }} />
-                        Delete
+                        {t("Admin.Product.Delete")}
                     </MenuItem>
                 </Menu>
             </TableCell>

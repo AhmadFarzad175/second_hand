@@ -10,6 +10,7 @@ import {
     Divider,
     Chip,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const PriceDisplay = ({
     control,
@@ -20,6 +21,8 @@ const PriceDisplay = ({
     watch,
 }) => {
     // Get current values
+        const { t, i18n } = useTranslation();
+
     const price = parseFloat(watch("price")) || 0;
     const discount = parseFloat(watch("discount")) || 0;
     const discountType = watch("discount_type");
@@ -60,7 +63,7 @@ const PriceDisplay = ({
                 <Box sx={{ flex: 1 }}>
                     <MuiTextField
                         fullWidth
-                        label="Price"
+                        label={t("Admin.Product.Price")}
                         type="number"
                         {...register("price", {
                             required: "Price is required",
@@ -104,7 +107,7 @@ const PriceDisplay = ({
                 <Box sx={{ flex: 1 }}>
                     <MuiTextField
                         fullWidth
-                        label="Discount"
+                        label={t("Admin.Product.Discount")}
                         type="number"
                         {...register("discount", {
                             min: {
@@ -144,9 +147,7 @@ const PriceDisplay = ({
                                             backgroundColor: "background.paper",
                                         }}
                                     >
-                                        {discountType === "fixed"
-                                            ? "Fixed"
-                                            : "%"}
+                                        {discountType === "fixed" ? t("Admin.Product.Fixed") : "%"}
                                     </Button>
                                 </InputAdornment>
                             ),
@@ -175,12 +176,12 @@ const PriceDisplay = ({
                         fontWeight="bold"
                         gutterBottom
                     >
-                        Price Breakdown
+                        {t("Admin.Product.PriceBreakdown")}
                     </Typography>
 
                     <Stack spacing={1}>
                         <Box display="flex" justifyContent="space-between">
-                            <Typography>Original Price:</Typography>
+                            <Typography>{t("Admin.Product.OriginalPrice")}:</Typography>
                             <Typography>
                                 {currency === "AFN" ? "؋" : "$"}
                                 {original.toFixed(2)}
@@ -193,13 +194,8 @@ const PriceDisplay = ({
                                     display="flex"
                                     justifyContent="space-between"
                                 >
-                                    <Typography>
-                                        Discount (
-                                        {discountType === "%"
-                                            ? `${discount}%`
-                                            : "Fixed"}
-                                        ):
-                                    </Typography>
+                                    {t("Admin.Product.Discount")} (
+    {discountType === "%" ? `${discount}%` : t("Admin.Product.Fixed")}):
                                     <Typography color="error.main">
                                         -{currency === "AFN" ? "؋" : "$"}
                                         {discountAmount.toFixed(2)}
@@ -213,7 +209,7 @@ const PriceDisplay = ({
                                     justifyContent="space-between"
                                 >
                                     <Typography fontWeight="bold">
-                                        You Pay:
+                                         {t("Admin.Product.YouPay")}:
                                     </Typography>
                                     <Typography
                                         fontWeight="bold"
@@ -240,7 +236,8 @@ const PriceDisplay = ({
                                 color="text.secondary"
                                 fontStyle="italic"
                             >
-                                No discount applied
+                              {t("Admin.Product.NoDiscount")}
+
                             </Typography>
                         )}
                     </Stack>

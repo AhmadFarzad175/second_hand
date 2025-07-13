@@ -4,17 +4,20 @@ import UserDetails from "../../ui/UserDetails";
 import { useProfile } from "./useProfile";
 import WebsiteHeading from "../../ui/WebsiteHeading";
 import { Alert, Box, CircularProgress } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 // export default ShowUser;
 function ShowUser() {
+        const { t } = useTranslation();
+
     const { id } = useParams();
     console.log("id ", id);
     const { user, isLoading, error } = useProfile(id);
     return (
         <>
             <WebsiteHeading
-                title="Profile"
-                subtitle="A summary of his/her Business"
+                 title={t("UserProfile.Title")}
+        subtitle={t("UserProfile.Subtitle")}
                 // Optional props (defaults shown):
                 // align="center"
                 //   gradient={true}

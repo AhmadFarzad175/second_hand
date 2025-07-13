@@ -15,8 +15,11 @@ import { Close, CloudUpload } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 import { useCreateCategory } from "./useCreateCategory";
 import { useUpdateCategory } from "./useUpdateCategory";
+import { useTranslation } from "react-i18next";
 
 const CategoryModal = ({ category = {}, open, handleClose }) => {
+    const { t } = useTranslation();
+
     const { isCreating, createCategory } = useCreateCategory();
     const { isUpdating, updateCategory } = useUpdateCategory();
 
@@ -96,7 +99,7 @@ const CategoryModal = ({ category = {}, open, handleClose }) => {
                 }}
             >
                 <DialogTitle sx={{ fontWeight: "bold", fontSize: "1.4rem" }}>
-                    {isEditSession ? "Edit Category" : "Add New Category"}
+                     {isEditSession ? t("Category.Edit") : t("Category.Create")}
                 </DialogTitle>
                 <IconButton onClick={callHandleClose} sx={{ color: "#555" }}>
                     <Close />
@@ -124,12 +127,12 @@ const CategoryModal = ({ category = {}, open, handleClose }) => {
                         }}
                     >
                         <TextField
-                            label="Category Name"
+                             label={t("Category.CategoryName")}
                             fullWidth
                             variant="outlined"
                             {...register("name", {
-                                required: "Category name is required",
-                            })}
+                                required: t("Category.CategoryName") + " " + t("Common.Required"),
+  })}
                             error={!!errors.name}
                             helperText={errors.name?.message}
                         />
@@ -146,13 +149,7 @@ const CategoryModal = ({ category = {}, open, handleClose }) => {
                                 fontWeight: "bold",
                             }}
                         >
-                            {isWorking ? (
-                                <CircularProgress size={24} />
-                            ) : isEditSession ? (
-                                "Update"
-                            ) : (
-                                "Create"
-                            )}
+                             {isWorking ? <CircularProgress size={24} /> : isEditSession ? t("Category.Update") : t("Category.Create")}
                         </Button>
                     </Box>
 
@@ -200,7 +197,7 @@ const CategoryModal = ({ category = {}, open, handleClose }) => {
                                     color="textSecondary"
                                     sx={{ mt: 1 }}
                                 >
-                                    Upload Image
+                                    {t("Category.UploadImage")}
                                 </Typography>
                             </>
                         )}
@@ -223,7 +220,7 @@ const CategoryModal = ({ category = {}, open, handleClose }) => {
                         variant="body2"
                         sx={{ mt: 1, position: "absolute", right: "20px" }}
                     >
-                        {errors.image.message}
+                      {errors.image.message}
                     </Typography>
                 )}
             </DialogContent>

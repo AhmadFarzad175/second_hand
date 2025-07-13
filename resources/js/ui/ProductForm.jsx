@@ -19,6 +19,8 @@ import { useNavigate } from "react-router-dom";
 import AxiosSetup from "../repositories/AxiosSetup";
 import PriceDisplay from "./PriceDisplay";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import { useTranslation } from "react-i18next";
+
 
 export default function ProductForm({
     onSubmit,
@@ -27,6 +29,8 @@ export default function ProductForm({
     editValues = {},
     navigateBackPath = "/",
 }) {
+                    const { t, i18n } = useTranslation();
+
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     // const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
@@ -259,7 +263,7 @@ const [deletedImageIds, setDeletedImageIds] = useState([]);
 
     const onFormSubmit = (data) => {
     const formData = new FormData();
-    
+
      // Build attributes object
         const attributes = {};
         categoryAttributes.forEach((attr) => {
@@ -370,11 +374,12 @@ const [deletedImageIds, setDeletedImageIds] = useState([]);
                                     variant="h6"
                                     sx={{ fontWeight: 600 }}
                                 >
-                                    Product Information
+                                        {t("Admin.Product.ProductInformation")}
+
                                 </Typography>
 
                                 <TextField
-                                    label="Product Name"
+                                    label={t("Admin.Product.Name")}
                                     register={register}
                                     control={control}
                                     errors={errors}
@@ -386,15 +391,16 @@ const [deletedImageIds, setDeletedImageIds] = useState([]);
 
                                 <Select
                                     name="category_id"
-                                    label="Category"
+                                    label={t("Admin.Product.Category")}
                                     control={control}
                                     options={categoryOptions}
                                     errors={errors}
                                     disabled={isWorking}
                                     {...register("category_id", {
-                                        required: "Category is required",
+                                        required: t("Admin.Product.CategoryRequired"),
                                     })}
                                 />
+
 
                                 <PriceDisplay
                                     control={control}
@@ -416,7 +422,7 @@ const [deletedImageIds, setDeletedImageIds] = useState([]);
                                 >
                                     <Box sx={{ flex: 1 }}>
                                         <TextField
-                                            label="Stock Quantity"
+                                            label={t("Admin.Product.StockQuantity")}
                                             register={register}
                                             control={control}
                                             errors={errors}
@@ -430,7 +436,7 @@ const [deletedImageIds, setDeletedImageIds] = useState([]);
                                     </Box>
                                     <Box sx={{ flex: 1 }}>
                                         <Select
-                                            label="Condition"
+                                             label={t("Admin.Product.Condition")}
                                             defaultValue={editValues?.condition}
                                             control={control}
                                             register={register}
@@ -453,10 +459,11 @@ const [deletedImageIds, setDeletedImageIds] = useState([]);
                                         variant="subtitle1"
                                         sx={{ fontWeight: 500, mb: 1 }}
                                     >
-                                        Product Description
+                                        {t("Admin.Product.Description")}
+
                                     </Typography>
                                     <TextArea
-                                        label="Detailed product description"
+                                        label={t("Admin.Product.Description")}
                                         register={register}
                                         control={control}
                                         errors={errors}
@@ -494,14 +501,13 @@ const [deletedImageIds, setDeletedImageIds] = useState([]);
                                         variant="h6"
                                         sx={{ fontWeight: 600 }}
                                     >
-                                        Product Images
+                                        {t("Admin.Product.ProductImages")}
                                     </Typography>
                                     <Typography
                                         variant="body2"
                                         color="text.secondary"
                                     >
-                                        Upload high-quality product images (max
-                                        6)
+                                          {t("Admin.Product.UploadMessage")}
                                     </Typography>
 
                                     {/* Add error message display */}
@@ -615,7 +621,7 @@ const [deletedImageIds, setDeletedImageIds] = useState([]);
                             textAlign: "center",
                         }}
                     >
-                        Add Image
+                        {t("Admin.Product.AddImage")}
                     </Typography>
                     <input
                         type="file"
@@ -647,7 +653,7 @@ const [deletedImageIds, setDeletedImageIds] = useState([]);
                                         variant="h6"
                                         sx={{ fontWeight: 600 }}
                                     >
-                                        Product Attributes
+                                       {t("Admin.Product.ProductAttributes")}
                                     </Typography>
 
                                     {isLoadingAttributes ? (
@@ -665,8 +671,8 @@ const [deletedImageIds, setDeletedImageIds] = useState([]);
                                             color="text.secondary"
                                         >
                                             {watchedCategory
-                                                ? "No attributes defined for this category"
-                                                : "Select a category to see available attributes"}
+        ? t("Admin.Product.NoAttributes")
+        : t("Admin.Product.SelectCategoryFirst")}
                                         </Typography>
                                     )}
                                 </Stack>
@@ -698,7 +704,7 @@ const [deletedImageIds, setDeletedImageIds] = useState([]);
                             width: { xs: "100%", sm: "auto" },
                         }}
                     >
-                        Cancel
+{t("Admin.Common.Cancel")}
                     </Button>
                     <Button
                         variant="contained"
@@ -719,10 +725,10 @@ const [deletedImageIds, setDeletedImageIds] = useState([]);
                         }
                     >
                         {isWorking
-                            ? "Processing..."
-                            : isEditSession
-                            ? "Save Changes"
-                            : "Create Product"}
+        ? t("Common.Processing")
+        : isEditSession
+        ? t("Admin.Product.SaveChanges")
+        : t("Admin.Product.CreateProduct")}
                     </Button>
                 </Box>
             </Stack>

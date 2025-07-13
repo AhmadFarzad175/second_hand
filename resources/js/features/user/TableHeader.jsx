@@ -1,17 +1,19 @@
 import PropTypes from "prop-types";
 import { TableHead, TableRow, TableCell, Checkbox } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const TableHeader = ({ onSelectAllClick, numSelected, rowCount }) => {
-    const headCells = [
-        { id: 1, numeric: false, label: "Image" },
-        { id: 2, numeric: false, label: "User Name" },
-        { id: 3, numeric: true, label: "Phone" },
-        { id: 4, numeric: true, label: "Products" },
-        { id: 5, numeric: true, label: "Rating" },
-        { id: 6, numeric: false, label: "Role" },
-        { id: 7, numeric: false, label: "Active" },
-        { id: 8, numeric: false, label: "Actions" },
-    ];
+    const { t } = useTranslation();
+const headCells = [
+  { id: 1, numeric: false, label: t("Admin.Image") },
+  { id: 2, numeric: false, label: t("Admin.Name") },
+  { id: 3, numeric: true, label: t("Users.Phone") },
+  { id: 4, numeric: true, label: t("Users.Products") },
+  { id: 5, numeric: true, label: t("Users.Rating") },
+  { id: 6, numeric: false, label: t("Users.Role") },
+  { id: 7, numeric: false, label: t("Users.Active") },
+  { id: 8, numeric: false, label: t("Users.Actions") },
+];
 
     return (
         <TableHead>

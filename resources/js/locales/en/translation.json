@@ -19,5 +19,105 @@
     "favorite": {
         "h1": "Your Treasured Favorites",
         "h3": "A collection of products you've loved and saved for later"
-    }
+    },
+    "Admin": {
+    "Product": {
+        "Image": "Image",
+        "Name": "Product Name",
+        "Category": "Category",
+        "Price": "Price",
+        "Condition": "Condition",
+        "Date": "Date",
+        "Favorites": "Favorites",
+        "Actions": "Actions",
+        "Show": "Show",
+        "Edit": "Edit",
+        "Delete": "Delete",
+        "Discount": "Discount",
+        "PriceBreakdown": "Price Breakdown",
+        "OriginalPrice": "Original Price",
+        "Fixed": "Fixed",
+        "YouPay": "You Pay",
+        "NoDiscount": "No discount applied",
+        "PriceRequired": "Price is required",
+        "PricePositive": "Price must be positive",
+        "DiscountPositive": "Discount must be positive",
+        "DiscountMax": "Discount cannot exceed 100%",
+        "StockQuantity": "Stock Quantity",
+    "Description": "Detailed product description",
+    "ProductImages": "Product Images",
+    "UploadMessage": "Upload high-quality product images (max 6)",
+    "AddImage": "Add Image",
+    "ProductAttributes": "Product Attributes",
+    "NoAttributes": "No attributes defined for this category",
+    "SelectCategoryFirst": "Select a category to see available attributes",
+    "SaveChanges": "Save Changes",
+    "CreateProduct": "Create Product"
+    },
+    "Category": {
+      "Title": "Categories",
+      "Add": "Add Category",
+      "Edit": "Edit Category",
+      "Create": "Create",
+      "Update": "Update",
+      "CategoryName": "Category Name",
+      "UploadImage": "Upload Image",
+      "NoImage": "No Image",
+      "TotalProducts": "Total Products",
+      "EditBtn": "Edit",
+      "DeleteBtn": "Delete",
+      "Selected": "{{count}} selected"    }
+  },
+    "Common": {
+  "Cancel": "Cancel",
+  "Processing": "Processing...",
+   "Home": "Home",
+    "Name": "Name",
+    "Image": "Image",
+    "Action": "Action",
+    "FilterList": "Filter list",
+    "Selected": "{{count}} selected",
+    "Delete": "Delete"
+
+    },
+    "AdminUser": {
+    "EditTitle": "Edit User",
+    "CreateTitle": "Create User",
+    "EditDescription": "Update user information",
+    "CreateDescription": "Fill in user details"
+  },
+  "Form": {
+    "FullName": "Full Name",
+    "Email": "Email",
+    "Phone": "Phone",
+    "Role": "Role",
+    "Admin": "Admin",
+    "User": "User",
+    "Password": "Password",
+    "Location": "Location",
+    "Description": "Description",
+    "UploadPhoto": "Upload photo",
+    "ImageNote": "JPG, PNG (Max. 5MB)",
+    "CreateUser": "Create User"
+  },
+  "Users": {
+  "Table": {
+    "Image": "Image",
+    "Name": "User Name",
+    "Phone": "Phone",
+    "Products": "Products",
+    "Rating": "Rating",
+    "Role": "Role",
+    "Active": "Active",
+    "Actions": "Actions",
+    "Title": "Users",
+  "Add": "Add User",
+  "Delete": "Delete",
+  "Selected": "{{count}} selected"
+  }
+},
+"UserProfile": {
+  "Title": "Profile",
+  "Subtitle": "A summary of his/her Business"
+}
 }

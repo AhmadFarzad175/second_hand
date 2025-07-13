@@ -3,8 +3,11 @@ import { useCreateProduct } from "./useCreateProduct";
 import { useUpdateProduct } from "./useUpdateProduct";
 import { useLocation } from "react-router-dom";
 import ProductForm from "../../ui/ProductForm";
+import { useTranslation } from "react-i18next";
 
 export default function AdminCreateProduct() {
+                const { t, i18n } = useTranslation();
+
     const navigate = useNavigate();
     const { state } = useLocation();
     const isEditSession = Boolean(state?.product?.id);

@@ -19,8 +19,10 @@ import TableHeader from "./TableHeader";
 import TableToolbar from "./TableToolbar"; // Correct path
 import ProductRow from "./ProductRow";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import { useTranslation } from "react-i18next";
 
 const Products = () => {
+     const { t } = useTranslation();
     const [selected, setSelected] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -80,10 +82,10 @@ const Products = () => {
                         <Typography
                             sx={{ "&:hover": { textDecoration: "underline" } }}
                         >
-                            Home
+                             {t("Common.home")}
                         </Typography>
                     </Link>
-                    <Typography color="text.primary">Products</Typography>
+                    <Typography color="text.primary">{t("Admin.Product.ProductInformation", "Products")}</Typography>
                 </Breadcrumbs>
                 <Tooltip title="Filter list">
                     <IconButton>

@@ -202,6 +202,12 @@ class ProductTransactionController extends Controller
         }
     }
 }
+// Developed: Fahim Rahimi
+// reach me at:fahimrahimi305@gmail.com
+
+
+
+
 // namespace App\Http\Controllers;
 
 // use App\Events\TransactionNotificationEvent;
