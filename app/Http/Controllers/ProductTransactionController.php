@@ -76,8 +76,8 @@ class ProductTransactionController extends Controller
             ], 422);
         }
 
-        try {
-            DB::beginTransaction();
+        // try {
+        //     DB::beginTransaction();
 
             $transaction = ProductTransaction::create([
                 'product_id' => $validated['product_id'],
@@ -124,13 +124,13 @@ class ProductTransactionController extends Controller
                     'conversation_id' => $conversation->id,
                 ]
             ], 201);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Failed to create transaction',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     return response()->json([
+        //         'message' => 'Failed to create transaction',
+        //         'error' => $e->getMessage()
+        //     ], 500);
+        // }
     }
 
     public function pending(Request $request)
