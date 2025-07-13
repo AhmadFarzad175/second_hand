@@ -37,9 +37,7 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'attributes' => $this->attributes,
             'state' =>  $this->state,
-
             'image' => asset('storage/' . $this->images[0]?->image_url),
-
         ];
     }
 }

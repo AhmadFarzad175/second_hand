@@ -13,6 +13,7 @@ class NotificationService
 
         $notification = Notification::create([
             'user_id' => $transaction->seller_id,
+            'product_id' => $transaction->product_id,
             'notifiable_id' => $transaction->id,
             'notifiable_type' => ProductTransaction::class,
             'type' => 'transaction_request',
