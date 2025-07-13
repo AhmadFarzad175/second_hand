@@ -19,9 +19,11 @@ import TableHeader from "./TableHeader";
 import TableToolbar from "./TableToolbar"; // Correct path
 import UserRow from "./UserRow";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import { useTranslation } from "react-i18next";
 
 
 const Users = () => {
+    const { t } = useTranslation();
     const [selected, setSelected] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -44,7 +46,7 @@ const Users = () => {
                 ? prevSelected.filter((item) => item !== id)
                 : [...prevSelected, id]
         );
-        
+
     };
 
     const handleChangePage = (_, newPage) => setPage(newPage);
@@ -79,12 +81,12 @@ const Users = () => {
                         <Typography
                             sx={{ "&:hover": { textDecoration: "underline" } }}
                         >
-                            Home
+                           {t("Admin.Home")}
                         </Typography>
                     </Link>
-                    <Typography color="text.primary">Users</Typography>
+                    <Typography color="text.primary">{t("Admin.Users")}</Typography>
                 </Breadcrumbs>
-                <Tooltip title="Filter list">
+                <Tooltip title={t("Common.FilterList")}>
                     <IconButton>
                         <FilterListIcon />
                     </IconButton>

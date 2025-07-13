@@ -8,9 +8,11 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 
 const TableToolbar = ({ numSelected }) => {
+    const { t } = useTranslation();
     return (
         <Toolbar
             sx={{
@@ -31,15 +33,15 @@ const TableToolbar = ({ numSelected }) => {
                     color="inherit"
                     variant="subtitle1"
                 >
-                    {numSelected} selected
+                     {t("Users.Selected", { count: numSelected })}
                 </Typography>
             ) : (
                 <Typography sx={{ flex: "1 1 100%" }} variant="h6">
-                    Users
+                    {t("Users.Title")}
                 </Typography>
             )}
             {numSelected > 0 ? (
-                <Tooltip title="Delete">
+                <Tooltip title={t("Users.Delete")}>
                     <IconButton>
                         <DeleteIcon />
                     </IconButton>
@@ -53,7 +55,7 @@ const TableToolbar = ({ numSelected }) => {
                     sx={{ whiteSpace: 'nowrap', p: "10px 20px" }}
 
                 >
-                    Add User
+                  {t("Admin.Add")}
                 </Button>
             )}
         </Toolbar>

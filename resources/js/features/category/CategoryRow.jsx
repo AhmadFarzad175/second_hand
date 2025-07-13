@@ -14,8 +14,11 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useDeleteCategory } from "./useDeleteCategory";
+import { useTranslation } from "react-i18next";
 
 const CategoryRow = ({ category, handleOpen, isSelected, handleClick }) => {
+    const { t } = useTranslation();
+
     const [anchorEl, setAnchorEl] = useState(null);
     const { isDeleting, deleteCat } = useDeleteCategory();
 
@@ -81,7 +84,7 @@ const CategoryRow = ({ category, handleOpen, isSelected, handleClick }) => {
                         }}
                     >
                         <Typography variant="caption" color="text.secondary">
-                            No Image
+                           {t("Category.NoImage")}
                         </Typography>
                     </Box>
                 )}
@@ -117,11 +120,11 @@ const CategoryRow = ({ category, handleOpen, isSelected, handleClick }) => {
                         }}
                     >
                         <EditIcon sx={{ mr: 1 }} />
-                        Edit
+                         {t("Category.EditBtn")}
                     </MenuItem>
                     <MenuItem onClick={handleDelete} disabled={isDeleting}>
                         <DeleteIcon sx={{ mr: 1 }} />
-                        Delete
+                        {t("Category.DeleteBtn")}
                     </MenuItem>
                 </Menu>
             </TableCell>

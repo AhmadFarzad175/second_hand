@@ -26,9 +26,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCreateUser } from "./useCreateUser";
 import { useUpdateUser } from "./useUpdateUser";
+import { useTranslation } from "react-i18next";
 
 // Main Form Component
 export default function CreateUser() {
+    const { t } = useTranslation();
+
     const theme = useTheme();
     const navigate = useNavigate();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -37,7 +40,7 @@ export default function CreateUser() {
     const { id: editId, ...editValues } = state?.user || {};
     // In CreateUser component, add this state:
     const [editingField, setEditingField] = useState(null);
-    
+
     const isEditSession = Boolean(editId);
     const [image, setImage] = useState(editValues?.user_image || null);
     const [imageFile, setImageFile] = useState(null);
@@ -175,16 +178,16 @@ export default function CreateUser() {
                                 mb: 1,
                             }}
                         >
-                            {isEditSession ? "Edit User" : "Create User"}
+                            {isEditSession ? t("AdminUser.EditTitle") : t("AdminUser.CreateTitle")}
                         </Typography>
-                        <Typography
-                            variant={isSmallScreen ? "body2" : "body1"}
-                            color="text.secondary"
-                        >
-                            {isEditSession
-                                ? "Update user information"
-                                : "Fill in user details"}
-                        </Typography>
+                       <Typography
+    variant={isSmallScreen ? "body2" : "body1"}
+    color="text.secondary"
+>
+    {isEditSession
+        ? t("AdminUser.EditDescription")
+        : t("AdminUser.CreateDescription")}
+</Typography>
                     </Box>
 
                     <Divider />
@@ -206,7 +209,7 @@ export default function CreateUser() {
                                         textAlign: "center",
                                     }}
                                 >
-                                    Basic Information
+                                   {isEditSession ? t("AdminUser.EditDescription") : t("AdminUser.CreateDescription")}
                                 </Typography>
                                 <Grid
                                     container
@@ -220,7 +223,7 @@ export default function CreateUser() {
                                         sx={{ pr: isSmallScreen ? 0 : 2 }}
                                     >
                                         <TextField
-                                            label="Full Name"
+                                            label={t("Form.FullName")}
                                             name="name"
                                             control={control}
                                             disabled={isWorking}
@@ -228,7 +231,7 @@ export default function CreateUser() {
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
                                         <TextField
-                                            label="Email"
+                                           label={t("Form.Email")}
                                             name="email"
                                             control={control}
                                             type="email"
@@ -249,7 +252,7 @@ export default function CreateUser() {
                                         sx={{ pr: isSmallScreen ? 0 : 2 }}
                                     >
                                         <TextField
-                                            label="Phone"
+                                           label={t("Form.Phone")}
                                             name="phone"
                                             control={control}
                                             type="tel"
@@ -258,18 +261,12 @@ export default function CreateUser() {
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
                                         <Select
-                                            label="Role"
+                                            label={t("Form.Role")}
                                             name="role"
                                             control={control}
                                             options={[
-                                                {
-                                                    value: "admin",
-                                                    label: "Admin",
-                                                },
-                                                {
-                                                    value: "user",
-                                                    label: "User",
-                                                },
+                                                 { value: "admin", label: t("Form.Admin") },
+    { value: "user", label: t("Form.User") },
                                             ]}
                                             disabled={isWorking}
                                             {...register("role", {
@@ -287,12 +284,12 @@ export default function CreateUser() {
                                             color="text.secondary"
                                             sx={{ mb: 1 }}
                                         >
-                                            Update sensitive information
+                                           {t("AdminUser.UpdateSensitiveInfo")}
                                         </Typography>
 
                                         {editingField === "password" ? (
                                             <PasswordField
-                                                label="New Password"
+                                               label={t("Form.Password")}
                                                 name="password"
                                                 control={control}
                                                 disabled={isWorking}
@@ -306,7 +303,7 @@ export default function CreateUser() {
                                             />
                                         ) : editingField === "location" ? (
                                             <LocationField
-                                                label="Location"
+                                                label={t("Form.Location")}
                                                 name="userLocation"
                                                 control={control}
                                                 disabled={isWorking}
@@ -324,7 +321,7 @@ export default function CreateUser() {
                                                 sx={{ display: "flex", gap: 2 }}
                                             >
                                                 <PasswordField
-                                                    label="New Password"
+                                                    label={t("Form.NewPassword")}
                                                     name="password"
                                                     control={control}
                                                     disabled={isWorking}
@@ -339,7 +336,7 @@ export default function CreateUser() {
                                                     }
                                                 />
                                                 <LocationField
-                                                    label="Location: click the Icon"
+                                                    label={t("Form.Location")}
                                                     name="userLocation"
                                                     control={control}
                                                     disabled={isWorking}
@@ -353,7 +350,7 @@ export default function CreateUser() {
                                                                 : null
                                                         )
                                                     }
-                                                    
+
                                                 />
                                             </Box>
                                         )}
@@ -361,14 +358,14 @@ export default function CreateUser() {
                                 ) : (
                                     <>
                                         <TextField
-                                            label="Password"
+                                            label={t("Form.Password")}
                                             name="password"
                                             control={control}
                                             type="password"
                                             disabled={isWorking}
                                         />
                                         <LocationField
-                                            label="Location"
+                                            label={t("Form.Location")}
                                             name="userLocation"
                                             control={control}
                                             disabled={isWorking}
@@ -384,10 +381,10 @@ export default function CreateUser() {
                                         }
                                         sx={{ fontWeight: 600, mb: 1 }}
                                     >
-                                        About
+                                       {t("Form.About")}
                                     </Typography>
                                     <TextArea
-                                        label="Description"
+                                        label={t("Form.Description")}
                                         name="description"
                                         control={control}
                                         rows={isSmallScreen ? 3 : 5}
@@ -407,7 +404,7 @@ export default function CreateUser() {
                                         textAlign: "center",
                                     }}
                                 >
-                                    Profile Photo
+                                    {t("Form.ProfilePicture")}
                                 </Typography>
                                 <Box
                                     sx={{
@@ -469,7 +466,7 @@ export default function CreateUser() {
                                                             : "body2"
                                                     }
                                                 >
-                                                    Upload photo
+                                                    {t("Form.UploadPhoto")}
                                                 </Typography>
                                             </Stack>
                                         )}
@@ -526,6 +523,7 @@ export default function CreateUser() {
                                         color="text.secondary"
                                         align="center"
                                     >
+                                        {t("Form.ImageNote")}
                                         JPG, PNG (Max. 5MB)
                                     </Typography>
                                 </Box>
@@ -555,7 +553,7 @@ export default function CreateUser() {
                                 width: isSmallScreen ? "100%" : "auto",
                             }}
                         >
-                            Cancel
+                           {t("Admin.Common.Cancel")}
                         </Button>
                         <Button
                             variant="contained"
@@ -570,11 +568,8 @@ export default function CreateUser() {
                                 width: isSmallScreen ? "100%" : "auto",
                             }}
                         >
-                            {isWorking
-                                ? "Processing..."
-                                : isEditSession
-                                ? "Save Changes"
-                                : "Create user"}
+
+                                 {isWorking ? t("Common.Processing") : isEditSession ? t("Common.SaveChanges") : t("Form.CreateUser")}
                         </Button>
                     </Box>
                 </Stack>
