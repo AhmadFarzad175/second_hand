@@ -112,6 +112,7 @@ class ProductTransactionController extends Controller
                     'is_read' => false,
                 ]);
             }
+
             // Only use NotificationService (removed duplicate event dispatch)
             NotificationService::notifyTransactionRequest($transaction);
 

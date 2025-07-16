@@ -8,7 +8,7 @@ export const createTransaction = async (transactionData) => {
     throw new Error(
       error.response?.data?.message || 'Failed to create transaction'
     );
-  }
+}
 };
 
 export const getProductTransactions = async (productId) => {

@@ -10,7 +10,7 @@ class NotificationService
     public static function notifyTransactionRequest(ProductTransaction $transaction)
     {
         $transaction->loadMissing(['product', 'buyer']);
-dd($transaction->product_id);
+        dd();
         $notification = Notification::create([
             'user_id' => $transaction->seller_id,
             'product_id' => $transaction->product_id,

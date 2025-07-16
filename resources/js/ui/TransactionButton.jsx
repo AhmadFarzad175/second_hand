@@ -35,15 +35,17 @@ function TransactionButton({ product, userId }) {
         toast.success('Request sent successfully!');
         setQuantity(1);
         setMessage("");
-        
+
     } catch (error) {
         console.error("Error creating Request:", error);
         // Error toast
         toast.error(`Failed to send request: ${error.message}`);
-        
+
     }
+
 };
 
+console.log("Product ID:", product.id);
     return (
         <>
             <Button
