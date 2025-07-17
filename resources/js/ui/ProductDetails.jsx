@@ -33,6 +33,9 @@ import TransactionStatus from "./TransactionStatus";
 import TransactionDialog from "./TransactionDialog";
 import toast from "react-hot-toast";
 import axios from "axios";
+import ProductCarousel from "./CategoryProductsCarousel";
+import { useCategoryProducts } from "./useCategoryProducts";
+import CategoryProductsCarousel from "./CategoryProductsCarousel";
 
 function ProductDetails({ dashboard = false }) {
     const { id } = useParams(); // 👈 get the ID from the URL
@@ -44,6 +47,9 @@ function ProductDetails({ dashboard = false }) {
     const [setNewMessage] = useState("");
     const { openChat } = useChat();
     const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
+
+
+
 
     // Fix for default icon issue
     delete L.Icon.Default.prototype._getIconUrl;
@@ -657,6 +663,9 @@ function ProductDetails({ dashboard = false }) {
                     </MapContainer>
                 </Box>
             )}
+
+{/* Replace the carousel section with the new component */}
+      <CategoryProductsCarousel categoryId={product?.category_id} />
 
             <TransactionDialog
                 open={transactionDialogOpen}

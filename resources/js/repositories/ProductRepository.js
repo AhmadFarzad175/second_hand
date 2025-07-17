@@ -33,7 +33,7 @@ export async function createUpdateProduct(formData, id = null) {
         return response.data;
     } catch (error) {
         throw new Error(
-            error.response?.data?.message || 
+            error.response?.data?.message ||
             `Failed to ${id ? "update" : "create"} product`
         );
     }
@@ -62,4 +62,22 @@ export async function updateUserStatus(id, isActive) {
             error.response?.data?.message || "Failed to update user status"
         );
     }
+}
+
+export async function getCategoryProducts(categoryId) {
+  try {
+    const response = await AxiosSetup.get('/products/suggestedProducts', {
+      params: { category_id: categoryId }
+    });
+
+    // Return the entire response data which contains the data array
+    return response.data;
+
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to fetch category products"
+    );
+  }
 }

@@ -116,6 +116,7 @@ class ProductTransactionController extends Controller
             // Only use NotificationService (removed duplicate event dispatch)
             NotificationService::notifyTransactionRequest($transaction);
 
+            // dd('Store method called?'); // Debugging line to check if this method is hit
             DB::commit();
 
             return response()->json([

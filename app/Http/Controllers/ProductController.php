@@ -2,23 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CategoryAttributesResource;
-use App\Http\Resources\ShowProductResource;
-use App\Models\Category;
+use App\Models\User;
 use App\Models\Image;
 use App\Models\Product;
-use App\Traits\ImageManipulation;
+use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Models\ProductAttribute;
+use App\Traits\ImageManipulation;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ImageResource;
 use App\Http\Resources\ProductResource;
-use App\Http\Resources\WebsiteProductsResource;
-use App\Models\ProductAttribute;
-use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Resources\ShowProductResource;
+use App\Http\Resources\WebsiteProductsResource;
+use App\Http\Resources\SuggestedProductResource;
+use App\Http\Resources\CategoryAttributesResource;
 use App\Services\ProductFilter; // Import the ProductFilter service
-use Illuminate\Support\Facades\File;
 
 
 class ProductController extends Controller
@@ -111,6 +112,15 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         return ShowProductResource::make($product->load(['images', 'category', 'user']));
+    }
+    public function categoryProducts(Request $request)
+    {
+        $categoryId = $request->input('category_id');
+        $products = Product::where('category_id', $categoryId)
+            ->with([ 'user'])
+            ->get();
+
+        return SuggestedProductResource::collection($products);
     }
 
     public function StateOfProduct(ProductRequest $request, $id)

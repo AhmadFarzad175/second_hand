@@ -94,10 +94,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     ///////////////// PRODUCTS///////////////////////
+    Route::get('products/suggestedProducts', [ProductController::class, 'categoryProducts']);
     Route::apiResource('products', ProductController::class);
     Route::get('categories/{id}/attributes', [ProductController::class, 'getAttributesByCategory']);
     Route::patch('/products/{id}/state', [ProductController::class, 'StateOfProduct']);
     Route::Post('products/update/{product}', [ProductController::class, 'update']);
+
 
 
     Route::post('/products/{productId}/favorite', [FavoriteController::class, 'toggle']);
